@@ -1,0 +1,54 @@
+version: '3.1'
+
+services:
+  node:
+    build:
+      context: .
+      dockerfile: ./docker/dev/Dockerfile
+    volumes:
+      - .:/var/www/deliveryapp-api
+    env_file: .env
+    ports:
+      - '3000:3000'
+    links:
+      - mongodb
+      - postgres
+    depends_on:
+      - mongodb
+      - postgres
+    networks:
+      - app-network
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:3.4
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+
+  postgres:
+    container_name: 'postgres'
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_DB=${PG_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    external: true
+  mongo_data:
+    external: true
