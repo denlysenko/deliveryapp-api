@@ -1,0 +1,8 @@
+export enum OrderStatuses {
+  NEW,
+  CALCULATED,
+  IN_PROGRESS,
+  DELIVERED_TO_WAREHOUSE,
+  DELIVERED_TO_CUSTOMER,
+  CANCELED,
+}

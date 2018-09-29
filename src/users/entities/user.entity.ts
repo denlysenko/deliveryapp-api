@@ -1,5 +1,5 @@
 import { Role } from 'common/enums/roles.enum';
-import { UserValidationErrors } from 'common/enums/validation-errors.enum';
+import { UserErrors } from 'common/enums/validation-errors.enum';
 import * as crypto from 'crypto';
 import {
   AllowNull,
@@ -38,14 +38,14 @@ export class User extends Model<User> {
     type: DataType.STRING(45),
     unique: {
       name: 'unique_email_idx',
-      msg: UserValidationErrors.UNIQUE_EMAIL_ERR,
+      msg: UserErrors.UNIQUE_EMAIL_ERR,
     },
     validate: {
       isEmail: {
-        msg: UserValidationErrors.INVALID_EMAIL_ERR,
+        msg: UserErrors.INVALID_EMAIL_ERR,
       },
       notEmpty: {
-        msg: UserValidationErrors.EMAIL_REQUIRED_ERR,
+        msg: UserErrors.EMAIL_REQUIRED_ERR,
       },
     },
   })
@@ -72,7 +72,7 @@ export class User extends Model<User> {
     type: DataType.VIRTUAL,
     validate: {
       notEmpty: {
-        msg: UserValidationErrors.PASSWORD_REQUIRED_ERR,
+        msg: UserErrors.PASSWORD_REQUIRED_ERR,
       },
     },
   })

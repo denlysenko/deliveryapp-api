@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { AuthErrors, UserValidationErrors } from 'common/enums/validation-errors.enum';
+import { AuthErrors, UserErrors } from 'common/enums/validation-errors.enum';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
 import { ConfigService } from 'config/config.service';
 import * as _ from 'lodash';
@@ -39,7 +39,7 @@ export class UsersService {
     const user = await this.findById(id);
 
     if (!user) {
-      throw new NotFoundException(UserValidationErrors.USER_NOT_FOUND_ERR);
+      throw new NotFoundException(UserErrors.USER_NOT_FOUND_ERR);
     }
 
     await this.sequelize.transaction(async transaction => {
@@ -68,6 +68,7 @@ export class UsersService {
       await Promise.all(promises);
     });
 
+    // refetch with includes
     return await this.findById(id);
   }
 
