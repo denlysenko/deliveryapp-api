@@ -1,19 +1,15 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { UserValidationErrors } from 'common/enums/validation-errors.enum';
-import { ApiResponse } from 'common/interfaces/api-response.interface';
+import { AuthErrors, UserValidationErrors } from 'common/enums/validation-errors.enum';
+import { BaseResponse } from 'common/interfaces/base-response.interface';
 import { ConfigService } from 'config/config.service';
 import * as _ from 'lodash';
-import { Op } from 'sequelize';
+import { Op, Sequelize, ValidationError, ValidationErrorItem } from 'sequelize';
 
+import { PasswordDto } from './dto/password.dto';
 import { UserDto } from './dto/user.dto';
 import { Address } from './entities/address.entity';
 import { BankDetails } from './entities/bank-details.entity';
 import { User } from './entities/user.entity';
-
-// import { PasswordDto } from './models/password/password.dto';
-
-// import { BadRequestException } from '../../common/exceptions/bad-request.exception';
-// import { ServerError } from '../../common/exceptions/server.error';
 
 const USER_ATTRIBUTES = [
   'id',
@@ -24,69 +20,78 @@ const USER_ATTRIBUTES = [
   'phone',
   'role',
   'createdAt',
+  'updatedAt',
 ];
 
 @Injectable()
 export class UsersService {
   constructor(
     @Inject('UsersRepository') private readonly usersRepository: typeof User,
+    @Inject('Sequelize') private readonly sequelize: Sequelize,
     private readonly configService: ConfigService,
   ) {}
 
   async create(userDto: UserDto): Promise<User> {
-    const user = new User(userDto);
-    return await user.save();
+    return await User.create(userDto, { raw: true });
   }
 
   async update(id: number, userDto: UserDto): Promise<User> {
-    const user = await this.usersRepository.findById(id);
+    const user = await this.findById(id);
 
     if (!user) {
       throw new NotFoundException(UserValidationErrors.USER_NOT_FOUND_ERR);
     }
 
-    const { address, bankDetails, ...updatedUser } = userDto;
+    await this.sequelize.transaction(async transaction => {
+      const { address, bankDetails, ...updatedUser } = userDto;
+      const promises = [];
 
-    user.set(updatedUser);
+      user.set(updatedUser);
+      promises.push(user.save({ transaction }));
 
-    const promises = [];
+      if (!_.isEmpty(address)) {
+        promises.push(
+          user.address && user.address.id
+            ? user.address.update(address, { transaction })
+            : user.$create('Address', address, { transaction }),
+        );
+      }
 
-    if (!_.isEmpty(address)) {
-      promises.push(user.$set('Address', Address.build(address)));
-    }
+      if (!_.isEmpty(bankDetails)) {
+        promises.push(
+          user.bankDetails && user.bankDetails.id
+            ? user.bankDetails.update(bankDetails, { transaction })
+            : user.$create('BankDetails', bankDetails, { transaction }),
+        );
+      }
 
-    if (!_.isEmpty(bankDetails)) {
-      promises.push(user.$set('BankDetails', BankDetails.build(bankDetails)));
-    }
-
-    if (promises.length) {
       await Promise.all(promises);
-    }
+    });
 
-    return await user.save();
+    return await this.findById(id);
   }
 
-  // async changePassword(id: number, passwordDto: PasswordDto): Promise<void> {
-  //   const user = await this.usersRepository.findById(id);
+  async changePassword(id: number, passwordDto: PasswordDto): Promise<void> {
+    const user = await this.usersRepository.findById(id);
+    const { oldPassword, newPassword } = passwordDto;
 
-  //   if (!user.authenticate(passwordDto.oldPassword)) {
-  //     throw new BadRequestException(
-  //       new ServerError('BadRequestError', [
-  //         new ValidationErrorItem(
-  //           'INCORRECT_PASSWORD_ERR',
-  //           '',
-  //           'oldPassword',
-  //           passwordDto.oldPassword
-  //         )
-  //       ])
-  //     );
-  //   }
+    if (!user.authenticate(oldPassword)) {
+      const name = 'ValidationError';
+      throw new ValidationError(name, [
+        new ValidationErrorItem(
+          AuthErrors.INCORRECT_PASSWORD_ERR,
+          '',
+          'oldPassword',
+          oldPassword,
+        ),
+      ]);
+    }
 
-  //   user.password = passwordDto.newPassword;
-  //   await user.save();
-  // }
+    user.password = newPassword;
+    await user.save();
+  }
 
-  async findAll(query?: any): Promise<ApiResponse<User>> {
+  async findAll(query?: any): Promise<BaseResponse<User>> {
     const where = _.transform(
       query.filter || {},
       (result, value, key: string) => {
@@ -106,8 +111,9 @@ export class UsersService {
 
     return await this.usersRepository.findAndCountAll({
       where,
-      limit: +query.limit || Number(this.configService.get('DEFAULT_LIMIT')),
-      offset: +query.offset || 0,
+      limit:
+        Number(query.limit) || Number(this.configService.get('DEFAULT_LIMIT')),
+      offset: Number(query.offset) || 0,
       order: order.length ? order : [['id', 'asc']],
       attributes: USER_ATTRIBUTES,
     });

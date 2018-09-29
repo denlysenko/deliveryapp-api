@@ -34,8 +34,8 @@ export class AuthService {
     return { token: this.createToken(newUser.id) };
   }
 
-  validate({ id }): Promise<User> {
-    return this.usersService.findById(id);
+  async validate({ id }): Promise<User> {
+    return await this.usersService.findById(id);
   }
 
   private createToken(id: number): string {

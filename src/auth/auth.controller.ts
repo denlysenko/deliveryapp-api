@@ -1,5 +1,6 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiImplicitBody, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import { Body, Controller, HttpCode, HttpStatus, Post, UseInterceptors } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { ValidationError } from 'common/models/ValidationError.model';
 import { UserDto } from 'users/dto/user.dto';
 
@@ -10,20 +11,14 @@ import { AuthError, AuthResponse } from './responses/auth.response';
 
 @ApiUseTags('auth')
 @Controller('auth')
-// @UseInterceptors(ExceptionInterceptor)
+@UseInterceptors(ErrorsInterceptor)
 export class AuthController {
   constructor(
     private readonly authService: AuthService, // private readonly loggerService: LoggerService,
   ) {}
 
-  // POST `/auth/local`
+  // POST `/auth/login`
   @ApiOperation({ title: 'Authentication' })
-  @ApiImplicitBody({
-    name: 'credentials',
-    description: 'Email and Password',
-    required: true,
-    type: AuthDto,
-  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns JWT token',
@@ -34,7 +29,8 @@ export class AuthController {
     description: 'Authorization Error',
     type: AuthError,
   })
-  @Post('local')
+  @HttpCode(HttpStatus.OK)
+  @Post('login')
   async authenticate(@Body() authDto: AuthDto): Promise<AuthPayload> {
     const { email, password } = authDto;
     return await this.authService.login(email, password);
