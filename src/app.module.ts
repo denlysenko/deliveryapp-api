@@ -3,6 +3,7 @@ import { AuthModule } from 'auth/auth.module';
 import { ConfigModule } from 'config/config.module';
 import { OrdersModule } from 'orders/orders.module';
 import { PaymentsModule } from 'payments/payments.module';
+import { SettingsModule } from 'settings/settings.module';
 import { UsersModule } from 'users/users.module';
 
 @Module({
@@ -12,8 +13,7 @@ import { UsersModule } from 'users/users.module';
     UsersModule,
     PaymentsModule,
     OrdersModule,
+    SettingsModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}
