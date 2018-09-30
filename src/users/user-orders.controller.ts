@@ -13,37 +13,31 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiImplicitParam, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
-import { Roles } from 'common/decorators/roles.decorator';
 import { Self } from 'common/decorators/self.decorator';
-import { Role } from 'common/enums/roles.enum';
-import { OrderErrors } from 'common/enums/validation-errors.enum';
-import { RolesGuard } from 'common/guards/roles.guard';
 import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { ValidationError } from 'common/models/ValidationError.model';
-import { ValidationError as SequelizeValidationError, ValidationErrorItem } from 'sequelize';
-import { User } from 'users/entities';
+import { OrderDto } from 'orders/dto/order.dto';
+import { OrderService } from 'orders/orders.service';
+import { OrdersQuery } from 'orders/queries/orders.query';
+import { OrdersResponse } from 'orders/responses/orders.response';
 
-import { OrderDto } from './dto/order.dto';
-import { Order } from './entities';
-import { OrderService } from './orders.service';
-import { OrdersQuery } from './queries/orders.query';
-import { OrdersResponse } from './responses/orders.response';
+import { User } from './entities';
 
-@ApiUseTags('orders')
+@ApiUseTags('users')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Controller('users/self/orders')
+@UseGuards(AuthGuard('jwt'))
 @UseInterceptors(ErrorsInterceptor)
-@Controller('orders')
-export class OrdersController {
+export class UserOrdersController {
   constructor(
-    private readonly orderService: OrderService, // private readonly loggerService: LoggerService
+    private readonly orderService: OrderService, // private readonly loggerService: LoggerService,
   ) {}
 
   /**
-   * GET /orders
+   * GET /users/self/orders
    */
   @Get()
-  @ApiOperation({ title: 'Get orders' })
+  @ApiOperation({ title: 'Gets all orders for authenticated user' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns orders',
@@ -53,48 +47,15 @@ export class OrdersController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Authorization Error',
   })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Forbidden Error',
-  })
-  @Roles(Role.MANAGER, Role.ADMIN)
-  async getAll(@Query() query: OrdersQuery) {
-    return await this.orderService.getAll(query);
+  async getOrdersSelf(@Self() user: User, @Query() query: OrdersQuery) {
+    return this.orderService.getAll(query, user.id);
   }
 
   /**
-   * GET /orders/:id
-   */
-  @Get(':id')
-  @ApiOperation({ title: 'Get order' })
-  @ApiImplicitParam({
-    name: 'id',
-    description: 'Order ID',
-    required: true,
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Returns order',
-    type: OrderDto,
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Authorization Error',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Forbidden Error',
-  })
-  @Roles(Role.MANAGER, Role.ADMIN)
-  async getById(@Param('id') id: number): Promise<Order> {
-    return await this.orderService.getById(id);
-  }
-
-  /**
-   * POST /orders
+   * POST /users/self/orders
    */
   @Post()
-  @ApiOperation({ title: 'Create order' })
+  @ApiOperation({ title: 'Creates order for authenticated user' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns created order',
@@ -105,31 +66,16 @@ export class OrdersController {
     description: 'Authorization Error',
   })
   @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Forbidden Error',
-  })
-  @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
     type: ValidationError,
   })
-  @Roles(Role.MANAGER, Role.ADMIN)
   @HttpCode(HttpStatus.OK)
-  async create(@Self() user: User, @Body() orderDto: OrderDto) {
-    if (!orderDto.clientId) {
-      throw new SequelizeValidationError('ValidationError', [
-        new ValidationErrorItem(
-          OrderErrors.CLIENT_REQUIRED_ERR,
-          null,
-          'clientId',
-          null,
-        ),
-      ]);
-    }
-
+  async createOrder(@Self() user: User, @Body() orderDto: OrderDto) {
     const order = await this.orderService.create({
       ...orderDto,
       creatorId: user.id,
+      clientId: user.id,
     });
 
     // await this.loggerService.create(
@@ -138,16 +84,16 @@ export class OrdersController {
     //     userId: user.id,
     //     createdAt: new Date(),
     //     data: {
-    //       id: order.id
-    //     }
-    //   })
+    //       id: order.id,
+    //     },
+    //   }),
     // );
 
     return order;
   }
 
   /**
-   * PATCH /orders/:id
+   * PATCH /users/self/orders/:id
    */
   @Patch(':id')
   @ApiOperation({ title: 'Update order' })
@@ -166,17 +112,12 @@ export class OrdersController {
     description: 'Authorization Error',
   })
   @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Forbidden Error',
-  })
-  @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
     type: ValidationError,
   })
-  @Roles(Role.MANAGER, Role.ADMIN)
   @HttpCode(HttpStatus.OK)
-  async update(
+  async updateOrder(
     @Self() user: User,
     @Param('id') id: number,
     @Body() orderDto: OrderDto,

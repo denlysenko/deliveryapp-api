@@ -18,6 +18,7 @@ export class AuthController {
   ) {}
 
   // POST `/auth/login`
+  @Post('login')
   @ApiOperation({ title: 'Authentication' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -30,13 +31,13 @@ export class AuthController {
     type: AuthError,
   })
   @HttpCode(HttpStatus.OK)
-  @Post('login')
   async authenticate(@Body() authDto: AuthDto): Promise<AuthPayload> {
     const { email, password } = authDto;
     return await this.authService.login(email, password);
   }
 
   // POST `/auth/register`
+  @Post('register')
   @ApiOperation({ title: 'Registration' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -49,7 +50,6 @@ export class AuthController {
     type: ValidationError,
   })
   @HttpCode(HttpStatus.OK)
-  @Post('register')
   async register(@Body() userDto: UserDto): Promise<AuthPayload> {
     // await this.loggerService.create(
     //   new LogDto({
