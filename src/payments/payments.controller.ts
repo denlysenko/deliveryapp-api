@@ -16,39 +16,39 @@ import { ApiBearerAuth, ApiImplicitParam, ApiOperation, ApiResponse, ApiUseTags 
 import { Roles } from 'common/decorators/roles.decorator';
 import { Self } from 'common/decorators/self.decorator';
 import { Role } from 'common/enums/roles.enum';
-import { OrderErrors } from 'common/enums/validation-errors.enum';
+import { PaymentErrors } from 'common/enums/validation-errors.enum';
 import { RolesGuard } from 'common/guards/roles.guard';
 import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
-import { ValidationError } from 'common/models/ValidationError.model';
 import { ValidationError as SequelizeValidationError, ValidationErrorItem } from 'sequelize';
 import { User } from 'users/entities';
 
-import { OrderDto } from './dto/order.dto';
-import { Order } from './entities';
-import { OrderService } from './orders.service';
-import { OrdersQuery } from './queries/orders.query';
-import { OrdersResponse } from './responses/orders.response';
+import { PaymentDto } from './dto/payment.dto';
+import { Payment } from './entities';
+import { PaymentsService } from './payments.service';
+import { PaymentsQuery } from './queries/payments.query';
+import { PaymentResponse as PaymentRes } from './responses/payment.response';
+import { PaymentsResponse } from './responses/payments.response';
 
-@ApiUseTags('orders')
+@ApiUseTags('payments')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @UseInterceptors(ErrorsInterceptor)
-@Controller('orders')
-export class OrdersController {
+@Controller('payments')
+export class PaymentsController {
   constructor(
-    private readonly orderService: OrderService, // private readonly loggerService: LoggerService
+    private readonly paymentsService: PaymentsService, // private readonly loggerService: LoggerService
   ) {}
 
   /**
-   * GET /orders
+   * GET /payments
    */
   @Get()
-  @ApiOperation({ title: 'Get orders' })
+  @ApiOperation({ title: 'Get payments' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Returns orders',
-    type: OrdersResponse,
+    description: 'Returns payments',
+    type: PaymentsResponse,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -59,24 +59,24 @@ export class OrdersController {
     description: 'Forbidden Error',
   })
   @Roles(Role.MANAGER, Role.ADMIN)
-  async getAll(@Query() query: OrdersQuery): Promise<BaseResponse<Order>> {
-    return await this.orderService.getAll(query);
+  async getAll(@Query() query: PaymentsQuery): Promise<BaseResponse<Payment>> {
+    return await this.paymentsService.getAll(query);
   }
 
   /**
-   * GET /orders/:id
+   * GET /payments/:id
    */
   @Get(':id')
-  @ApiOperation({ title: 'Get order' })
+  @ApiOperation({ title: 'Get payment' })
   @ApiImplicitParam({
     name: 'id',
-    description: 'Order ID',
+    description: 'Payment ID',
     required: true,
   })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns order',
-    type: OrderDto,
+    type: PaymentRes,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -87,19 +87,19 @@ export class OrdersController {
     description: 'Forbidden Error',
   })
   @Roles(Role.MANAGER, Role.ADMIN)
-  async getById(@Param('id') id: number): Promise<Order> {
-    return await this.orderService.getById(id);
+  async getById(@Param('id') id: number): Promise<Payment> {
+    return await this.paymentsService.getById(id);
   }
 
   /**
-   * POST /orders
+   * POST /payments
    */
   @Post()
-  @ApiOperation({ title: 'Create order' })
+  @ApiOperation({ title: 'Create payment' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Returns created order',
-    type: OrderDto,
+    description: 'Returns created payment',
+    type: PaymentRes,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -112,26 +112,33 @@ export class OrdersController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
-    type: ValidationError,
   })
   @Roles(Role.MANAGER, Role.ADMIN)
   @HttpCode(HttpStatus.OK)
-  async create(@Self() user: User, @Body() orderDto: OrderDto): Promise<Order> {
-    if (!orderDto.clientId) {
+  async create(@Self() user: User, @Body() paymentDto: PaymentDto) {
+    if (!paymentDto.orders || !paymentDto.orders.length) {
       throw new SequelizeValidationError('ValidationError', [
         new ValidationErrorItem(
-          OrderErrors.CLIENT_REQUIRED_ERR,
+          PaymentErrors.ORDER_REQUIRED_ERR,
           null,
-          'clientId',
+          'orders',
           null,
         ),
       ]);
     }
 
-    const order = await this.orderService.create({
-      ...orderDto,
-      creatorId: user.id,
-    });
+    if (!paymentDto.clientId) {
+      throw new SequelizeValidationError('ValidationError', [
+        new ValidationErrorItem(
+          PaymentErrors.CLIENT_REQUIRED_ERR,
+          null,
+          'client',
+          null,
+        ),
+      ]);
+    }
+
+    const payment = await this.paymentsService.create(paymentDto, user.id);
 
     // await this.loggerService.create(
     //   new LogDto({
@@ -139,28 +146,28 @@ export class OrdersController {
     //     userId: user.id,
     //     createdAt: new Date(),
     //     data: {
-    //       id: order.id
-    //     }
-    //   })
+    //       id: payment.id,
+    //     },
+    //   }),
     // );
 
-    return order;
+    return payment;
   }
 
   /**
-   * PATCH /orders/:id
+   * PATCH /payments/:id
    */
   @Patch(':id')
-  @ApiOperation({ title: 'Update order' })
+  @ApiOperation({ title: 'Update payment' })
   @ApiImplicitParam({
     name: 'id',
-    description: 'Order ID',
+    description: 'Payment ID',
     required: true,
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Returns update order',
-    type: OrderDto,
+    description: 'Returns update payment',
+    type: PaymentRes,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -173,28 +180,27 @@ export class OrdersController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
-    type: ValidationError,
   })
   @Roles(Role.MANAGER, Role.ADMIN)
   @HttpCode(HttpStatus.OK)
   async update(
     @Self() user: User,
     @Param('id') id: number,
-    @Body() orderDto: OrderDto,
-  ): Promise<Order> {
-    const order = await this.orderService.update(id, user.role, orderDto);
+    @Body() paymentDto: PaymentDto,
+  ) {
+    const payment = await this.paymentsService.update(id, paymentDto);
 
     // await this.loggerService.create(
     //   new LogDto({
-    //     action: LogActions.ORDER_UPDATE,
+    //     action: LogActions.PAYMENT_UPDATE,
     //     userId: user.id,
     //     createdAt: new Date(),
     //     data: {
-    //       id: order.id,
-    //     },
-    //   }),
+    //       id: payment.id
+    //     }
+    //   })
     // );
 
-    return order;
+    return payment;
   }
 }

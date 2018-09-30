@@ -15,13 +15,15 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiImplicitParam, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { Self } from 'common/decorators/self.decorator';
 import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
+import { BaseResponse } from 'common/interfaces/base-response.interface';
 import { ValidationError } from 'common/models/ValidationError.model';
 import { OrderDto } from 'orders/dto/order.dto';
+import { Order } from 'orders/entities';
 import { OrderService } from 'orders/orders.service';
 import { OrdersQuery } from 'orders/queries/orders.query';
 import { OrdersResponse } from 'orders/responses/orders.response';
 
-import { User } from './entities';
+import { User } from '../entities';
 
 @ApiUseTags('users')
 @ApiBearerAuth()
@@ -47,7 +49,10 @@ export class UserOrdersController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Authorization Error',
   })
-  async getOrdersSelf(@Self() user: User, @Query() query: OrdersQuery) {
+  async getOrders(
+    @Self() user: User,
+    @Query() query: OrdersQuery,
+  ): Promise<BaseResponse<Order>> {
     return this.orderService.getAll(query, user.id);
   }
 
@@ -71,7 +76,10 @@ export class UserOrdersController {
     type: ValidationError,
   })
   @HttpCode(HttpStatus.OK)
-  async createOrder(@Self() user: User, @Body() orderDto: OrderDto) {
+  async createOrder(
+    @Self() user: User,
+    @Body() orderDto: OrderDto,
+  ): Promise<Order> {
     const order = await this.orderService.create({
       ...orderDto,
       creatorId: user.id,
@@ -121,7 +129,7 @@ export class UserOrdersController {
     @Self() user: User,
     @Param('id') id: number,
     @Body() orderDto: OrderDto,
-  ) {
+  ): Promise<Order> {
     const order = await this.orderService.update(id, user.role, orderDto);
 
     // await this.loggerService.create(

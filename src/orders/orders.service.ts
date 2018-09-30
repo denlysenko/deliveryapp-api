@@ -42,7 +42,10 @@ export class OrderService {
     private readonly configService: ConfigService, // private readonly messagesService: MessagesService
   ) {}
 
-  async getAll(query?: any, userId = null): Promise<BaseResponse<Order>> {
+  async getAll(
+    query?: any,
+    userId: number = null,
+  ): Promise<BaseResponse<Order>> {
     const where = _.transform(
       query.filter || {},
       (result, value, key: string) => {

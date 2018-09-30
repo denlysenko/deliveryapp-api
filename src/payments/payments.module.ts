@@ -2,11 +2,13 @@ import { Module } from '@nestjs/common';
 import { DatabaseModule } from 'database/database.module';
 
 import { paymentsProviders } from './payment.providers';
+import { PaymentsController } from './payments.controller';
+import { PaymentsService } from './payments.service';
 
 @Module({
-  modules: [DatabaseModule],
-  controllers: [],
-  providers: [...paymentsProviders],
-  exports: [...paymentsProviders],
+  imports: [DatabaseModule],
+  controllers: [PaymentsController],
+  providers: [PaymentsService, ...paymentsProviders],
+  exports: [PaymentsService, ...paymentsProviders],
 })
 export class PaymentsModule {}

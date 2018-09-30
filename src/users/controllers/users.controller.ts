@@ -21,12 +21,12 @@ import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
 import { ValidationError } from 'common/models/ValidationError.model';
 
-import { UserDto } from './dto/user.dto';
-import { User } from './entities';
-import { UsersQuery } from './queries/users.query';
-import { UserResponse } from './responses/user.response';
-import { UsersResponse } from './responses/users.response';
-import { UsersService } from './users.service';
+import { UserDto } from '../dto/user.dto';
+import { User } from '../entities';
+import { UsersQuery } from '../queries/users.query';
+import { UserResponse } from '../responses/user.response';
+import { UsersResponse } from '../responses/users.response';
+import { UsersService } from '../users.service';
 
 @ApiUseTags('users')
 @ApiBearerAuth()

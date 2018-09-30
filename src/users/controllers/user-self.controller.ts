@@ -5,11 +5,11 @@ import { Self } from 'common/decorators/self.decorator';
 import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { ValidationError } from 'common/models/ValidationError.model';
 
-import { PasswordDto } from './dto/password.dto';
-import { UserDto } from './dto/user.dto';
-import { User } from './entities';
-import { UserResponse } from './responses/user.response';
-import { UsersService } from './users.service';
+import { PasswordDto } from '../dto/password.dto';
+import { UserDto } from '../dto/user.dto';
+import { User } from '../entities';
+import { UserResponse } from '../responses/user.response';
+import { UsersService } from '../users.service';
 
 @ApiUseTags('users')
 @ApiBearerAuth()
@@ -35,7 +35,7 @@ export class UserSelfController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Authorization Error',
   })
-  async getUserSelf(@Self() user: User): Promise<User> {
+  async getSelf(@Self() user: User): Promise<User> {
     const { id } = user;
     return await this.usersService.findById(id);
   }
