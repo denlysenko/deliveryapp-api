@@ -117,6 +117,7 @@ export class UsersService {
       offset: Number(query.offset) || 0,
       order: order.length ? order : [['id', 'asc']],
       attributes: USER_ATTRIBUTES,
+      raw: true,
     });
   }
 
