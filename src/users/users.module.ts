@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from 'database/database.module';
+import { LogsModule } from 'logs/logs.module';
 import { OrdersModule } from 'orders/orders.module';
 import { PaymentsModule } from 'payments/payments.module';
 
@@ -11,7 +12,7 @@ import { usersProviders } from './users.providers';
 import { UsersService } from './users.service';
 
 @Module({
-  imports: [DatabaseModule, OrdersModule, PaymentsModule],
+  imports: [DatabaseModule, OrdersModule, PaymentsModule, LogsModule],
   controllers: [
     UsersController,
     UserSelfController,

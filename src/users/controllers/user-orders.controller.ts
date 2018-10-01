@@ -14,9 +14,12 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiImplicitParam, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { Self } from 'common/decorators/self.decorator';
+import { LogActions } from 'common/enums/logs.enum';
 import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
 import { ValidationError } from 'common/models/ValidationError.model';
+import { LogDto } from 'logs/dto/log.dto';
+import { LogsService } from 'logs/logs.service';
 import { OrderDto } from 'orders/dto/order.dto';
 import { Order } from 'orders/entities';
 import { OrderService } from 'orders/orders.service';
@@ -32,7 +35,8 @@ import { User } from '../entities';
 @UseInterceptors(ErrorsInterceptor)
 export class UserOrdersController {
   constructor(
-    private readonly orderService: OrderService, // private readonly loggerService: LoggerService,
+    private readonly orderService: OrderService,
+    private readonly logsService: LogsService,
   ) {}
 
   /**
@@ -86,16 +90,16 @@ export class UserOrdersController {
       clientId: user.id,
     });
 
-    // await this.loggerService.create(
-    //   new LogDto({
-    //     action: LogActions.ORDER_CREATE,
-    //     userId: user.id,
-    //     createdAt: new Date(),
-    //     data: {
-    //       id: order.id,
-    //     },
-    //   }),
-    // );
+    await this.logsService.create(
+      new LogDto({
+        action: LogActions.ORDER_CREATE,
+        userId: user.id,
+        createdAt: new Date(),
+        data: {
+          id: order.id,
+        },
+      }),
+    );
 
     return order;
   }
@@ -132,16 +136,16 @@ export class UserOrdersController {
   ): Promise<Order> {
     const order = await this.orderService.update(id, user.role, orderDto);
 
-    // await this.loggerService.create(
-    //   new LogDto({
-    //     action: LogActions.ORDER_UPDATE,
-    //     userId: user.id,
-    //     createdAt: new Date(),
-    //     data: {
-    //       id: order.id,
-    //     },
-    //   }),
-    // );
+    await this.logsService.create(
+      new LogDto({
+        action: LogActions.ORDER_UPDATE,
+        userId: user.id,
+        createdAt: new Date(),
+        data: {
+          id: order.id,
+        },
+      }),
+    );
 
     return order;
   }

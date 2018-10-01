@@ -2,8 +2,11 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Patch, UseGuards, UseInter
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { Self } from 'common/decorators/self.decorator';
+import { LogActions } from 'common/enums/logs.enum';
 import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { ValidationError } from 'common/models/ValidationError.model';
+import { LogDto } from 'logs/dto/log.dto';
+import { LogsService } from 'logs/logs.service';
 
 import { PasswordDto } from '../dto/password.dto';
 import { UserDto } from '../dto/user.dto';
@@ -18,7 +21,8 @@ import { UsersService } from '../users.service';
 @UseInterceptors(ErrorsInterceptor)
 export class UserSelfController {
   constructor(
-    private readonly usersService: UsersService, // private readonly loggerService: LoggerService,
+    private readonly usersService: UsersService,
+    private readonly logsService: LogsService,
   ) {}
 
   /**
@@ -66,13 +70,13 @@ export class UserSelfController {
   ): Promise<User> {
     const updatedUser = await this.usersService.update(user.id, userDto);
 
-    // await this.loggerService.create(
-    //   new LogDto({
-    //     action: LogActions.UPDATE_PROFILE,
-    //     userId: user.id,
-    //     createdAt: new Date()
-    //   })
-    // );
+    await this.logsService.create(
+      new LogDto({
+        action: LogActions.UPDATE_PROFILE,
+        userId: user.id,
+        createdAt: new Date(),
+      }),
+    );
 
     return updatedUser;
   }
@@ -102,12 +106,12 @@ export class UserSelfController {
   ): Promise<void> {
     await this.usersService.changePassword(user.id, passwordDto);
 
-    // await this.loggerService.create(
-    //   new LogDto({
-    //     action: LogActions.CHANGE_PASSWORD,
-    //     userId: user.id,
-    //     createdAt: new Date()
-    //   })
-    // );
+    await this.logsService.create(
+      new LogDto({
+        action: LogActions.CHANGE_PASSWORD,
+        userId: user.id,
+        createdAt: new Date(),
+      }),
+    );
   }
 }

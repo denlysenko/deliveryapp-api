@@ -15,11 +15,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiImplicitParam, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { Roles } from 'common/decorators/roles.decorator';
 import { Self } from 'common/decorators/self.decorator';
+import { LogActions } from 'common/enums/logs.enum';
 import { Role } from 'common/enums/roles.enum';
 import { PaymentErrors } from 'common/enums/validation-errors.enum';
 import { RolesGuard } from 'common/guards/roles.guard';
 import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
+import { LogDto } from 'logs/dto/log.dto';
+import { LogsService } from 'logs/logs.service';
 import { ValidationError as SequelizeValidationError, ValidationErrorItem } from 'sequelize';
 import { User } from 'users/entities';
 
@@ -37,7 +40,8 @@ import { PaymentsResponse } from './responses/payments.response';
 @Controller('payments')
 export class PaymentsController {
   constructor(
-    private readonly paymentsService: PaymentsService, // private readonly loggerService: LoggerService
+    private readonly paymentsService: PaymentsService,
+    private readonly logsService: LogsService,
   ) {}
 
   /**
@@ -140,16 +144,16 @@ export class PaymentsController {
 
     const payment = await this.paymentsService.create(paymentDto, user.id);
 
-    // await this.loggerService.create(
-    //   new LogDto({
-    //     action: LogActions.ORDER_CREATE,
-    //     userId: user.id,
-    //     createdAt: new Date(),
-    //     data: {
-    //       id: payment.id,
-    //     },
-    //   }),
-    // );
+    await this.logsService.create(
+      new LogDto({
+        action: LogActions.ORDER_CREATE,
+        userId: user.id,
+        createdAt: new Date(),
+        data: {
+          id: payment.id,
+        },
+      }),
+    );
 
     return payment;
   }
@@ -190,16 +194,16 @@ export class PaymentsController {
   ) {
     const payment = await this.paymentsService.update(id, paymentDto);
 
-    // await this.loggerService.create(
-    //   new LogDto({
-    //     action: LogActions.PAYMENT_UPDATE,
-    //     userId: user.id,
-    //     createdAt: new Date(),
-    //     data: {
-    //       id: payment.id
-    //     }
-    //   })
-    // );
+    await this.logsService.create(
+      new LogDto({
+        action: LogActions.PAYMENT_UPDATE,
+        userId: user.id,
+        createdAt: new Date(),
+        data: {
+          id: payment.id,
+        },
+      }),
+    );
 
     return payment;
   }

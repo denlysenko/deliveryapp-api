@@ -3,6 +3,7 @@ import { Role } from 'common/enums/roles.enum';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
 import { ConfigService } from 'config/config.service';
 import * as _ from 'lodash';
+import { MessagesService } from 'messages/messages.service';
 import { Payment } from 'payments/entities';
 import { Op } from 'sequelize';
 import { User } from 'users/entities';
@@ -39,7 +40,8 @@ const ROLE_CLIENT_UPDATE_ALLOWED_FIELDS = [
 export class OrderService {
   constructor(
     @Inject('OrdersRepository') private readonly ordersRepository: typeof Order,
-    private readonly configService: ConfigService, // private readonly messagesService: MessagesService
+    private readonly configService: ConfigService,
+    private readonly messagesService: MessagesService,
   ) {}
 
   async getAll(
@@ -107,17 +109,15 @@ export class OrderService {
   }
 
   async create(orderDto: OrderDto): Promise<Order> {
-    const order = Order.create(orderDto);
-    // const message = {
-    //   text: `Создана новая заявка № ${savedOrder.id} клиентом с ID ${
-    //     orderDto.clientId
-    //   }`,
-    //   forEmployee: true
-    // };
+    const order = await Order.create(orderDto);
+    const message = {
+      text: `New order # ${order.id} created by client ${orderDto.clientId}`,
+      forEmployee: true,
+    };
 
-    // try {
-    //   await this.messagesService.saveAndSendToEmployees(message);
-    // } catch (err) {}
+    try {
+      await this.messagesService.saveAndSendToEmployees(message);
+    } catch (err) {}
 
     return order;
   }
@@ -134,28 +134,29 @@ export class OrderService {
     }
 
     order.set(orderDto);
+
     await order.save(
       userRole === Role.CLIENT
         ? { fields: ROLE_CLIENT_UPDATE_ALLOWED_FIELDS }
         : {},
     );
 
-    // const message = {
-    //   text: `Заявка № ${savedOrder.id} обновлена`,
-    //   // tslint:disable-next-line:no-string-literal
-    //   recipientId: userRole === Role.CLIENT ? null : savedOrder['clientId'],
-    //   forEmployee: userRole === Role.CLIENT
-    // };
+    const message = {
+      text: `Order # ${order.id} has been updated`,
+      // tslint:disable-next-line:no-string-literal
+      recipientId: userRole === Role.CLIENT ? null : order['clientId'],
+      forEmployee: userRole === Role.CLIENT,
+    };
 
-    // try {
-    //   await (userRole !== Role.CLIENT)
-    //     ? this.messagesService.saveAndSendToUser(
-    //         // tslint:disable-next-line:no-string-literal
-    //         savedOrder['clientId'],
-    //         message
-    //       )
-    //     : this.messagesService.saveAndSendToEmployees(message);
-    // } catch (err) {}
+    try {
+      (await (userRole !== Role.CLIENT))
+        ? this.messagesService.saveAndSendToUser(
+            // tslint:disable-next-line:no-string-literal
+            order['clientId'],
+            message,
+          )
+        : this.messagesService.saveAndSendToEmployees(message);
+    } catch (err) {}
 
     // refetch with includes
     return this.getById(order.id);

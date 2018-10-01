@@ -1,4 +1,4 @@
-import { Component } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as _ from 'lodash';
 import { Model } from 'mongoose';
@@ -9,7 +9,7 @@ import { Message } from './interfaces/message.interface';
 import { Session } from './interfaces/session.interface';
 import { EMPLOYEES_ROOM, MARK_AS_READ_SUCCESS, MESSAGE } from './messages.gateway';
 
-@Component()
+@Injectable()
 export class MessagesService {
   server: SocketIO.Server;
 

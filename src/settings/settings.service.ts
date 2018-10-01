@@ -1,10 +1,10 @@
-import { Component, Inject, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 
 import { CompanyAddressDto } from './dto/company-address.dto';
 import { CompanyBankDetailsDto } from './dto/company-bank-details.dto';
 import { CompanyAddress, CompanyBankDetails } from './entities';
 
-@Component()
+@Injectable()
 export class SettingsService {
   constructor(
     @Inject('CompanyAddressRepository')

@@ -3,10 +3,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiImplicitParam, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { Roles } from 'common/decorators/roles.decorator';
 import { Self } from 'common/decorators/self.decorator';
+import { LogActions } from 'common/enums/logs.enum';
 import { Role } from 'common/enums/roles.enum';
 import { RolesGuard } from 'common/guards/roles.guard';
 import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { ValidationError } from 'common/models/ValidationError.model';
+import { LogDto } from 'logs/dto/log.dto';
+import { LogsService } from 'logs/logs.service';
 import { User } from 'users/entities';
 
 import { CompanyAddressDto } from './dto/company-address.dto';
@@ -21,7 +24,8 @@ import { SettingsService } from './settings.service';
 @Controller('settings')
 export class SettingsController {
   constructor(
-    private readonly settingsService: SettingsService, // private readonly loggerService: LoggerService
+    private readonly settingsService: SettingsService,
+    private readonly logsService: LogsService,
   ) {}
 
   /**
@@ -78,13 +82,13 @@ export class SettingsController {
   ): Promise<CompanyAddress> {
     const address = await this.settingsService.createAddress(addressDto);
 
-    /*await this.loggerService.create(
+    await this.logsService.create(
       new LogDto({
         action: LogActions.CREATE_COMPANY_ADDRESS,
         userId: user.id,
-        createdAt: new Date()
-      })
-    );*/
+        createdAt: new Date(),
+      }),
+    );
 
     return address;
   }
@@ -126,13 +130,13 @@ export class SettingsController {
   ): Promise<CompanyAddress> {
     const address = await this.settingsService.updateAddress(id, addressDto);
 
-    /*await this.loggerService.create(
+    await this.logsService.create(
       new LogDto({
         action: LogActions.UPDATE_COMPANY_ADDRESS,
         userId: user.id,
         createdAt: new Date(),
       }),
-    );*/
+    );
 
     return address;
   }
@@ -193,13 +197,13 @@ export class SettingsController {
       bankDetailsDto,
     );
 
-    /*await this.loggerService.create(
+    await this.logsService.create(
       new LogDto({
         action: LogActions.CREATE_COMPANY_BANK_DETAILS,
         userId: user.id,
         createdAt: new Date(),
       }),
-    );*/
+    );
 
     return bankDetails;
   }
@@ -244,13 +248,13 @@ export class SettingsController {
       bankDetailsDto,
     );
 
-    // await this.loggerService.create(
-    //   new LogDto({
-    //     action: LogActions.UPDATE_COMPANY_BANK_DETAILS,
-    //     userId: user.id,
-    //     createdAt: new Date(),
-    //   }),
-    // );
+    await this.logsService.create(
+      new LogDto({
+        action: LogActions.UPDATE_COMPANY_BANK_DETAILS,
+        userId: user.id,
+        createdAt: new Date(),
+      }),
+    );
 
     return bankDetails;
   }

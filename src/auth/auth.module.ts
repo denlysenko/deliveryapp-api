@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from 'database/database.module';
+import { LogsModule } from 'logs/logs.module';
 
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
@@ -7,7 +8,7 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 
 @Module({
-  imports: [DatabaseModule, UsersModule],
+  imports: [DatabaseModule, UsersModule, LogsModule],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
   exports: [AuthService],

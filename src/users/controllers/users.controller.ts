@@ -15,11 +15,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiImplicitParam, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { Roles } from 'common/decorators/roles.decorator';
 import { Self } from 'common/decorators/self.decorator';
+import { LogActions } from 'common/enums/logs.enum';
 import { Role } from 'common/enums/roles.enum';
 import { RolesGuard } from 'common/guards/roles.guard';
 import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
 import { ValidationError } from 'common/models/ValidationError.model';
+import { LogDto } from 'logs/dto/log.dto';
+import { LogsService } from 'logs/logs.service';
 
 import { UserDto } from '../dto/user.dto';
 import { User } from '../entities';
@@ -35,7 +38,8 @@ import { UsersService } from '../users.service';
 @UseInterceptors(ErrorsInterceptor)
 export class UsersController {
   constructor(
-    private readonly usersService: UsersService, // private readonly loggerService: LoggerService,
+    private readonly usersService: UsersService,
+    private readonly logsService: LogsService,
   ) {}
 
   /**
@@ -115,16 +119,16 @@ export class UsersController {
     delete createdUser.dataValues.hashedPassword;
     delete createdUser.dataValues.salt;
 
-    // await this.loggerService.create(
-    //   new LogDto({
-    //     action: LogActions.CREATE_USER,
-    //     userId: user.id,
-    //     createdAt: new Date(),
-    //     data: {
-    //       id: createdUser.id
-    //     }
-    //   })
-    // );
+    await this.logsService.create(
+      new LogDto({
+        action: LogActions.CREATE_USER,
+        userId: user.id,
+        createdAt: new Date(),
+        data: {
+          id: createdUser.id,
+        },
+      }),
+    );
 
     return createdUser;
   }
@@ -167,16 +171,16 @@ export class UsersController {
   ): Promise<User> {
     const updatedUser = await this.usersService.update(id, userDto);
 
-    // await this.loggerService.create(
-    //   new LogDto({
-    //     action: LogActions.UPDATE_USER,
-    //     userId: user.id,
-    //     createdAt: new Date(),
-    //     data: {
-    //       id: updatedUser.id
-    //     }
-    //   })
-    // );
+    await this.logsService.create(
+      new LogDto({
+        action: LogActions.UPDATE_USER,
+        userId: user.id,
+        createdAt: new Date(),
+        data: {
+          id: updatedUser.id,
+        },
+      }),
+    );
 
     return updatedUser;
   }

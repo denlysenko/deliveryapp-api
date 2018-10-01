@@ -2,6 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
 import { ConfigService } from 'config/config.service';
 import * as _ from 'lodash';
+import { MessagesService } from 'messages/messages.service';
 import { Order } from 'orders/entities';
 import { Sequelize } from 'sequelize';
 import { User } from 'users/entities';
@@ -24,7 +25,8 @@ export class PaymentsService {
     @Inject('PaymentsRepository')
     private readonly paymentsRepository: typeof Payment,
     @Inject('Sequelize') private readonly sequelize: Sequelize,
-    private readonly configService: ConfigService, // private messagesService: MessagesService
+    private readonly configService: ConfigService,
+    private readonly messagesService: MessagesService,
   ) {}
 
   async getAll(
@@ -86,19 +88,20 @@ export class PaymentsService {
 
       return payment;
     });
-    // const message = {
-    //   text: `Создана новый инвойс № ${savedPayment.id}`,
-    //   // tslint:disable-next-line:no-string-literal
-    //   recipientId: savedPayment['clientId'],
-    // };
 
-    // try {
-    //   await this.messagesService.saveAndSendToUser(
-    //     // tslint:disable-next-line:no-string-literal
-    //     savedPayment['clientId'],
-    //     message,
-    //   );
-    // } catch (err) {}
+    const message = {
+      text: `New invoice created # ${savedPayment.id}`,
+      // tslint:disable-next-line:no-string-literal
+      recipientId: savedPayment['clientId'],
+    };
+
+    try {
+      await this.messagesService.saveAndSendToUser(
+        // tslint:disable-next-line:no-string-literal
+        savedPayment['clientId'],
+        message,
+      );
+    } catch (err) {}
 
     // refetch with associations
     return this.getById(savedPayment.id);
@@ -125,19 +128,19 @@ export class PaymentsService {
       await Promise.all(promises);
     });
 
-    // const message = {
-    //   text: `Инвойс № ${savedPayment.id} обновлен`,
-    //   // tslint:disable-next-line:no-string-literal
-    //   recipientId: savedPayment['clientId'],
-    // };
+    const message = {
+      text: `Invoice # ${payment.id} has been updated`,
+      // tslint:disable-next-line:no-string-literal
+      recipientId: payment['clientId'],
+    };
 
-    // try {
-    //   await this.messagesService.saveAndSendToUser(
-    //     // tslint:disable-next-line:no-string-literal
-    //     savedPayment['clientId'],
-    //     message,
-    //   );
-    // } catch (err) {}
+    try {
+      await this.messagesService.saveAndSendToUser(
+        // tslint:disable-next-line:no-string-literal
+        payment['clientId'],
+        message,
+      );
+    } catch (err) {}
 
     // refetch with associations
     return this.getById(id);
