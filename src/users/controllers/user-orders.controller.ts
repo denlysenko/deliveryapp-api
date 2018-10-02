@@ -21,12 +21,12 @@ import { ValidationError } from 'common/models/ValidationError.model';
 import { LogDto } from 'logs/dto/log.dto';
 import { LogsService } from 'logs/logs.service';
 import { OrderDto } from 'orders/dto/order.dto';
-import { Order } from 'orders/entities';
+import { Order } from 'orders/entities/Order';
 import { OrderService } from 'orders/orders.service';
 import { OrdersQuery } from 'orders/queries/orders.query';
 import { OrdersResponse } from 'orders/responses/orders.response';
 
-import { User } from '../entities';
+import { User } from '../entities/User';
 
 @ApiUseTags('users')
 @ApiBearerAuth()

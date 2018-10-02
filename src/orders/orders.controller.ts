@@ -25,10 +25,10 @@ import { ValidationError } from 'common/models/ValidationError.model';
 import { LogDto } from 'logs/dto/log.dto';
 import { LogsService } from 'logs/logs.service';
 import { ValidationError as SequelizeValidationError, ValidationErrorItem } from 'sequelize';
-import { User } from 'users/entities';
+import { User } from 'users/entities/User';
 
 import { OrderDto } from './dto/order.dto';
-import { Order } from './entities';
+import { Order } from './entities/Order';
 import { OrderService } from './orders.service';
 import { OrdersQuery } from './queries/orders.query';
 import { OrdersResponse } from './responses/orders.response';

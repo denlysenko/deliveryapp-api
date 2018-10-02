@@ -1,4 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Repository } from 'common/enums/repositories.enum';
 import { AuthErrors, UserErrors } from 'common/enums/validation-errors.enum';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
 import { ConfigService } from 'config/config.service';
@@ -7,9 +8,9 @@ import { Op, Sequelize, ValidationError, ValidationErrorItem } from 'sequelize';
 
 import { PasswordDto } from './dto/password.dto';
 import { UserDto } from './dto/user.dto';
-import { Address } from './entities/address.entity';
-import { BankDetails } from './entities/bank-details.entity';
-import { User } from './entities/user.entity';
+import { Address } from './entities/Address';
+import { BankDetails } from './entities/BankDetails';
+import { User } from './entities/User';
 
 const USER_ATTRIBUTES = [
   'id',
@@ -26,7 +27,7 @@ const USER_ATTRIBUTES = [
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject('UsersRepository') private readonly usersRepository: typeof User,
+    @Inject(Repository.USERS) private readonly usersRepository: typeof User,
     @Inject('Sequelize') private readonly sequelize: Sequelize,
     private readonly configService: ConfigService,
   ) {}

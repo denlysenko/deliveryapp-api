@@ -4,12 +4,12 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/sw
 import { Self } from 'common/decorators/self.decorator';
 import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
-import { Payment } from 'payments/entities';
+import { Payment } from 'payments/entities/Payment';
 import { PaymentsService } from 'payments/payments.service';
 import { PaymentsQuery } from 'payments/queries/payments.query';
 import { PaymentsResponse } from 'payments/responses/payments.response';
 
-import { User } from '../entities';
+import { User } from '../entities/User';
 
 @ApiUseTags('users')
 @ApiBearerAuth()

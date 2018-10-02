@@ -24,10 +24,10 @@ import { BaseResponse } from 'common/interfaces/base-response.interface';
 import { LogDto } from 'logs/dto/log.dto';
 import { LogsService } from 'logs/logs.service';
 import { ValidationError as SequelizeValidationError, ValidationErrorItem } from 'sequelize';
-import { User } from 'users/entities';
+import { User } from 'users/entities/User';
 
 import { PaymentDto } from './dto/payment.dto';
-import { Payment } from './entities';
+import { Payment } from './entities/Payment';
 import { PaymentsService } from './payments.service';
 import { PaymentsQuery } from './queries/payments.query';
 import { PaymentResponse as PaymentRes } from './responses/payment.response';

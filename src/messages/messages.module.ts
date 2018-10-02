@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from 'auth/auth.module';
 
@@ -13,7 +13,7 @@ import { SessionSchema } from './schemas/session.schema';
       { name: 'Message', schema: MessageSchema },
       { name: 'Session', schema: SessionSchema },
     ]),
-    AuthModule,
+    forwardRef(() => AuthModule),
   ],
   providers: [MessagesGateway, MessagesService],
   exports: [MessagesService],

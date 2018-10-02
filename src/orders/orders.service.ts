@@ -1,15 +1,16 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Repository } from 'common/enums/repositories.enum';
 import { Role } from 'common/enums/roles.enum';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
 import { ConfigService } from 'config/config.service';
 import * as _ from 'lodash';
 import { MessagesService } from 'messages/messages.service';
-import { Payment } from 'payments/entities';
+import { Payment } from 'payments/entities/Payment';
 import { Op } from 'sequelize';
-import { User } from 'users/entities';
+import { User } from 'users/entities/User';
 
 import { OrderDto } from './dto/order.dto';
-import { Order } from './entities';
+import { Order } from './entities/Order';
 
 const USER_ATTRIBUTES = [
   'id',
@@ -39,7 +40,7 @@ const ROLE_CLIENT_UPDATE_ALLOWED_FIELDS = [
 @Injectable()
 export class OrderService {
   constructor(
-    @Inject('OrdersRepository') private readonly ordersRepository: typeof Order,
+    @Inject(Repository.ORDERS) private readonly ordersRepository: typeof Order,
     private readonly configService: ConfigService,
     private readonly messagesService: MessagesService,
   ) {}

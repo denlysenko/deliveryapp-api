@@ -10,11 +10,12 @@ import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { ValidationError } from 'common/models/ValidationError.model';
 import { LogDto } from 'logs/dto/log.dto';
 import { LogsService } from 'logs/logs.service';
-import { User } from 'users/entities';
+import { User } from 'users/entities/User';
 
 import { CompanyAddressDto } from './dto/company-address.dto';
 import { CompanyBankDetailsDto } from './dto/company-bank-details.dto';
-import { CompanyAddress, CompanyBankDetails } from './entities';
+import { CompanyAddress } from './entities/CompanyAddress';
+import { CompanyBankDetails } from './entities/CompanyBankDetails';
 import { SettingsService } from './settings.service';
 
 @ApiUseTags('settings')

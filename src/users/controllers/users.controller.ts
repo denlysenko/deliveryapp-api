@@ -25,7 +25,7 @@ import { LogDto } from 'logs/dto/log.dto';
 import { LogsService } from 'logs/logs.service';
 
 import { UserDto } from '../dto/user.dto';
-import { User } from '../entities';
+import { User } from '../entities/User';
 import { UsersQuery } from '../queries/users.query';
 import { UserResponse } from '../responses/user.response';
 import { UsersResponse } from '../responses/users.response';

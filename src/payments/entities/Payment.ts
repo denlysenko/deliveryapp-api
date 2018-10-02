@@ -1,4 +1,4 @@
-import { Order } from 'orders/entities';
+import { Order } from 'orders/entities/Order';
 import {
   AutoIncrement,
   BelongsTo,
@@ -10,7 +10,7 @@ import {
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
-import { User } from 'users/entities';
+import { User } from 'users/entities/User';
 
 @Table({
   timestamps: true,

@@ -1,7 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
 
-import { entities } from './database.entities';
-
 export const databaseProviders = [
   {
     provide: 'Sequelize',
@@ -16,7 +14,7 @@ export const databaseProviders = [
         operatorsAliases: false,
         logging: process.env.NODE_ENV === 'development',
       });
-      sequelize.addModels(entities);
+      sequelize.addModels([`${__dirname}/../**/entities/*.{ts,js}`]);
       await sequelize.sync();
       return sequelize;
     },

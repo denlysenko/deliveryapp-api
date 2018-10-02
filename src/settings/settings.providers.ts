@@ -1,12 +1,15 @@
-import { CompanyAddress, CompanyBankDetails } from './entities';
+import { Repository } from 'common/enums/repositories.enum';
+
+import { CompanyAddress } from './entities/CompanyAddress';
+import { CompanyBankDetails } from './entities/CompanyBankDetails';
 
 export const settingsProviders = [
   {
-    provide: 'CompanyAddressRepository',
+    provide: Repository.COMPANY_ADDRESS,
     useValue: CompanyAddress,
   },
   {
-    provide: 'CompanyBankDetailsRepository',
+    provide: Repository.COMPANY_BANK_DETAILS,
     useValue: CompanyBankDetails,
   },
 ];

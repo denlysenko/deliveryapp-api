@@ -10,7 +10,7 @@ import { LogsService } from 'logs/logs.service';
 
 import { PasswordDto } from '../dto/password.dto';
 import { UserDto } from '../dto/user.dto';
-import { User } from '../entities';
+import { User } from '../entities/User';
 import { UserResponse } from '../responses/user.response';
 import { UsersService } from '../users.service';
 

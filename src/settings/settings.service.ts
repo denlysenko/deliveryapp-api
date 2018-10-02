@@ -1,15 +1,17 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Repository } from 'common/enums/repositories.enum';
 
 import { CompanyAddressDto } from './dto/company-address.dto';
 import { CompanyBankDetailsDto } from './dto/company-bank-details.dto';
-import { CompanyAddress, CompanyBankDetails } from './entities';
+import { CompanyAddress } from './entities/CompanyAddress';
+import { CompanyBankDetails } from './entities/CompanyBankDetails';
 
 @Injectable()
 export class SettingsService {
   constructor(
-    @Inject('CompanyAddressRepository')
+    @Inject(Repository.COMPANY_ADDRESS)
     private readonly addressRepository: typeof CompanyAddress,
-    @Inject('CompanyBankDetailsRepository')
+    @Inject(Repository.COMPANY_BANK_DETAILS)
     private readonly bankDetailsRepository: typeof CompanyBankDetails,
   ) {}
 

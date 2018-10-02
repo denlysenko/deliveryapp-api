@@ -15,8 +15,8 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import { Address } from './address.entity';
-import { BankDetails } from './bank-details.entity';
+import { Address } from './Address';
+import { BankDetails } from './BankDetails';
 
 const DEFAULT_BYTE_SIZE = 16;
 const DEFAULT_ITERATIONS = 10000;

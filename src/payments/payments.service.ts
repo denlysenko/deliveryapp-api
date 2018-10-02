@@ -1,14 +1,15 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Repository } from 'common/enums/repositories.enum';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
 import { ConfigService } from 'config/config.service';
 import * as _ from 'lodash';
 import { MessagesService } from 'messages/messages.service';
-import { Order } from 'orders/entities';
+import { Order } from 'orders/entities/Order';
 import { Sequelize } from 'sequelize';
-import { User } from 'users/entities';
+import { User } from 'users/entities/User';
 
 import { PaymentDto } from './dto/payment.dto';
-import { Payment } from './entities';
+import { Payment } from './entities/Payment';
 
 const USER_ATTRIBUTES = [
   'id',
@@ -22,7 +23,7 @@ const USER_ATTRIBUTES = [
 @Injectable()
 export class PaymentsService {
   constructor(
-    @Inject('PaymentsRepository')
+    @Inject(Repository.PAYMENTS)
     private readonly paymentsRepository: typeof Payment,
     @Inject('Sequelize') private readonly sequelize: Sequelize,
     private readonly configService: ConfigService,

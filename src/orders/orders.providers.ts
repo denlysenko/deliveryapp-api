@@ -1,8 +1,10 @@
-import { Order } from './entities';
+import { Repository } from 'common/enums/repositories.enum';
+
+import { Order } from './entities/Order';
 
 export const ordersProviders = [
   {
-    provide: 'OrdersRepository',
+    provide: Repository.ORDERS,
     useValue: Order,
   },
 ];
