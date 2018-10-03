@@ -14,11 +14,11 @@ import { UsersService } from './users.service';
 @Module({
   imports: [DatabaseModule, OrdersModule, PaymentsModule],
   controllers: [
-    UsersController,
     UserSelfController,
     UserOrdersController,
     UserPaymentsController,
     UserMessagesController,
+    UsersController,
   ],
   providers: [...usersProviders, UsersService],
   exports: [...usersProviders, UsersService],
