@@ -1,11 +1,13 @@
+// tslint:disable-next-line:no-var-requires
+require('module-alias/register');
+// tslint:disable-next-line:no-var-requires
+require('dotenv').config();
+
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as helmet from 'helmet';
 
 import { AppModule } from './app.module';
-
-// tslint:disable-next-line:no-var-requires
-require('dotenv').config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,6 +16,7 @@ async function bootstrap() {
   app.enableCors();
 
   const options = new DocumentBuilder()
+    .setSchemes('http', 'https')
     .setTitle('Delivery App API')
     .setDescription('Delivery App API')
     .setVersion('1.0')
@@ -24,6 +27,6 @@ async function bootstrap() {
 
   SwaggerModule.setup('/docs', app, document);
 
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

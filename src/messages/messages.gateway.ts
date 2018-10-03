@@ -5,7 +5,7 @@ import { JwtPayload } from 'auth/interfaces/jwt-payload.interface';
 import { Role } from 'common/enums/roles.enum';
 import { ConfigService } from 'config/config.service';
 import * as jwt from 'jsonwebtoken';
-import { User } from 'users/entities';
+import { User } from 'users/entities/User';
 
 import { SessionDto } from './dto/session.dto';
 import { MessagesService } from './messages.service';
