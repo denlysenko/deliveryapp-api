@@ -2,7 +2,7 @@
 
 ## Description
 
-Bookapp API using NestJS, Sequelize, Mongoose
+Deliveryapp API using NestJS, Sequelize, Mongoose
 
 ## Installation
 
