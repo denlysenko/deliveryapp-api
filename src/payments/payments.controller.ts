@@ -12,7 +12,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiImplicitParam, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiImplicitParam,
+  ApiOperation,
+  ApiResponse,
+  ApiUseTags,
+} from '@nestjs/swagger';
+
 import { Roles } from 'common/decorators/roles.decorator';
 import { Self } from 'common/decorators/self.decorator';
 import { LogActions } from 'common/enums/logs.enum';
@@ -21,9 +28,15 @@ import { PaymentErrors } from 'common/enums/validation-errors.enum';
 import { RolesGuard } from 'common/guards/roles.guard';
 import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
+
 import { LogDto } from 'logs/dto/log.dto';
 import { LogsService } from 'logs/logs.service';
-import { ValidationError as SequelizeValidationError, ValidationErrorItem } from 'sequelize';
+
+import {
+  ValidationError as SequelizeValidationError,
+  ValidationErrorItem,
+} from 'sequelize';
+
 import { User } from 'users/entities/User';
 
 import { PaymentDto } from './dto/payment.dto';

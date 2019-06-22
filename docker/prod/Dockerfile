@@ -1,4 +1,4 @@
-FROM node:8.11.4-alpine
+FROM node:10.16.0-alpine
 LABEL author="denlysenko"
 WORKDIR /var/www/deliveryapp-api
 COPY package.json /var/www/deliveryapp-api

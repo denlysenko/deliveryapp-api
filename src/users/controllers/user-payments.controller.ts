@@ -1,9 +1,23 @@
-import { Controller, Get, HttpStatus, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Query,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiUseTags,
+} from '@nestjs/swagger';
+
 import { Self } from 'common/decorators/self.decorator';
 import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
+
 import { Payment } from 'payments/entities/Payment';
 import { PaymentsService } from 'payments/payments.service';
 import { PaymentsQuery } from 'payments/queries/payments.query';

@@ -1,5 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+
 import { AuthModule } from 'auth/auth.module';
 
 import { MessagesGateway } from './messages.gateway';

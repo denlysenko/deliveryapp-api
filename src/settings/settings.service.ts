@@ -1,4 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+
 import { Repository } from 'common/enums/repositories.enum';
 
 import { CompanyAddressDto } from './dto/company-address.dto';
@@ -33,7 +34,7 @@ export class SettingsService {
     id: number,
     addressDto: CompanyAddressDto,
   ): Promise<CompanyAddress> {
-    const address = await this.addressRepository.findById(id);
+    const address = await this.addressRepository.findByPk(id);
 
     if (!address) {
       throw new NotFoundException();
@@ -54,7 +55,7 @@ export class SettingsService {
     id: number,
     bankDetailsDto: CompanyBankDetailsDto,
   ): Promise<CompanyBankDetails> {
-    const bankDetails = await this.bankDetailsRepository.findById(id);
+    const bankDetails = await this.bankDetailsRepository.findByPk(id);
 
     if (!bankDetails) {
       throw new NotFoundException();

@@ -1,9 +1,13 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+
 import { Repository } from 'common/enums/repositories.enum';
 import { AuthErrors, UserErrors } from 'common/enums/validation-errors.enum';
 import { BaseResponse } from 'common/interfaces/base-response.interface';
+
 import { ConfigService } from 'config/config.service';
+
 import * as _ from 'lodash';
+
 import { Op, Sequelize, ValidationError, ValidationErrorItem } from 'sequelize';
 
 import { PasswordDto } from './dto/password.dto';
@@ -74,7 +78,7 @@ export class UsersService {
   }
 
   async changePassword(id: number, passwordDto: PasswordDto): Promise<void> {
-    const user = await this.usersRepository.findById(id);
+    const user = await this.usersRepository.findByPk(id);
     const { oldPassword, newPassword } = passwordDto;
 
     if (!user.authenticate(oldPassword)) {
@@ -123,7 +127,7 @@ export class UsersService {
   }
 
   async findById(id: number): Promise<User> {
-    return await this.usersRepository.findById(id, {
+    return await this.usersRepository.findByPk(id, {
       attributes: USER_ATTRIBUTES,
       include: [{ model: Address }, { model: BankDetails }],
     });

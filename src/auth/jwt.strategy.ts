@@ -1,7 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+
 import { AuthErrors } from 'common/enums/validation-errors.enum';
+
 import { ConfigService } from 'config/config.service';
+
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { AuthService } from './auth.service';

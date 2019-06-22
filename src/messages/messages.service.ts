@@ -7,7 +7,11 @@ import { MessageDto } from './dto/message.dto';
 import { SessionDto } from './dto/session.dto';
 import { Message } from './interfaces/message.interface';
 import { Session } from './interfaces/session.interface';
-import { EMPLOYEES_ROOM, MARK_AS_READ_SUCCESS, MESSAGE } from './messages.gateway';
+import {
+  EMPLOYEES_ROOM,
+  MARK_AS_READ_SUCCESS,
+  MESSAGE,
+} from './messages.gateway';
 
 @Injectable()
 export class MessagesService {

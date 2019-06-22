@@ -1,5 +1,7 @@
 import { ApiModelProperty } from '@nestjs/swagger';
+
 import { OrderDto } from 'orders/dto/order.dto';
+
 import { UserResponse } from 'users/responses/user.response';
 
 export class PaymentResponse {

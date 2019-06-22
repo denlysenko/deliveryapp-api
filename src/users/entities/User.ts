@@ -1,6 +1,8 @@
 import { Role } from 'common/enums/roles.enum';
 import { UserErrors } from 'common/enums/validation-errors.enum';
+
 import * as crypto from 'crypto';
+
 import {
   AllowNull,
   AutoIncrement,

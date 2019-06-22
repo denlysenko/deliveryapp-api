@@ -1,6 +1,19 @@
-import { Controller, Get, HttpStatus, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Query,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiUseTags,
+} from '@nestjs/swagger';
+
 import { Roles } from 'common/decorators/roles.decorator';
 import { Role } from 'common/enums/roles.enum';
 import { RolesGuard } from 'common/guards/roles.guard';

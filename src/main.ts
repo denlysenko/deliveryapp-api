@@ -1,10 +1,11 @@
 // tslint:disable-next-line:no-var-requires
-require('module-alias/register');
+// require('module-alias/register');
 // tslint:disable-next-line:no-var-requires
 require('dotenv').config();
 
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
 import * as helmet from 'helmet';
 
 import { AppModule } from './app.module';

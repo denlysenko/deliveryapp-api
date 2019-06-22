@@ -1,9 +1,22 @@
-import { Controller, Get, HttpStatus, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiUseTags,
+} from '@nestjs/swagger';
+
 import { Self } from 'common/decorators/self.decorator';
 import { Role } from 'common/enums/roles.enum';
 import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
+
 import { MessageDto } from 'messages/dto/message.dto';
 import { Message } from 'messages/interfaces/message.interface';
 import { MessagesService } from 'messages/messages.service';

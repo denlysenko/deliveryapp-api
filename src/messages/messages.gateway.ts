@@ -1,10 +1,20 @@
 import { UnauthorizedException } from '@nestjs/common';
-import { OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import {
+  OnGatewayDisconnect,
+  OnGatewayInit,
+  SubscribeMessage,
+  WebSocketGateway,
+} from '@nestjs/websockets';
+
 import { AuthService } from 'auth/auth.service';
 import { JwtPayload } from 'auth/interfaces/jwt-payload.interface';
+
 import { Role } from 'common/enums/roles.enum';
+
 import { ConfigService } from 'config/config.service';
+
 import * as jwt from 'jsonwebtoken';
+
 import { User } from 'users/entities/User';
 
 import { SessionDto } from './dto/session.dto';

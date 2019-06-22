@@ -1,7 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+
 import { AuthErrors } from 'common/enums/validation-errors.enum';
+
 import { ConfigService } from 'config/config.service';
+
 import * as jwt from 'jsonwebtoken';
+
 import { User } from 'users/entities/User';
 import { UsersService } from 'users/users.service';
 
