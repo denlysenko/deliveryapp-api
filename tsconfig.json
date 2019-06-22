@@ -12,7 +12,20 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./src",
-    "lib": ["es7", "dom", "esnext.asynciterable"]
+    "lib": ["es7", "dom", "esnext.asynciterable"],
+    "paths": {
+      "@auth": ["auth/*"],
+      "@common": ["common/*"],
+      "@config": ["config/*"],
+      "@core": ["core/*"],
+      "@database": ["database/*"],
+      "@logs": ["logs/*"],
+      "@messages": ["messages/*"],
+      "@orders": ["orders/*"],
+      "@payments": ["payments/*"],
+      "@settings": ["settings/*"],
+      "@users": ["users/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]
