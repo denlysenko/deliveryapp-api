@@ -14,7 +14,7 @@ export const databaseProviders = [
         // tslint:disable-next-line:no-console
         logging: process.env.NODE_ENV === 'development' ? console.log : false,
       });
-      sequelize.addModels([`${__dirname}/../**/entities/*.{ts,js}`]);
+      sequelize.addModels([`${__dirname}/../**/entities/!(index).{ts,js}`]);
       await sequelize.sync();
       return sequelize;
     },

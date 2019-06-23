@@ -1,7 +1,6 @@
+import { Repository } from '@common/enums';
+
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-
-import { Repository } from 'common/enums/repositories.enum';
-
 import { CompanyAddressDto } from './dto/company-address.dto';
 import { CompanyBankDetailsDto } from './dto/company-bank-details.dto';
 import { CompanyAddress } from './entities/CompanyAddress';

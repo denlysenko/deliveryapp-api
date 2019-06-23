@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "moduleResolution": "node",
     "declaration": true,
     "noImplicitAny": false,
     "removeComments": true,
@@ -14,17 +15,17 @@
     "baseUrl": "./src",
     "lib": ["es7", "dom", "esnext.asynciterable"],
     "paths": {
-      "@auth": ["auth/*"],
-      "@common": ["common/*"],
-      "@config": ["config/*"],
-      "@core": ["core/*"],
-      "@database": ["database/*"],
-      "@logs": ["logs/*"],
-      "@messages": ["messages/*"],
-      "@orders": ["orders/*"],
-      "@payments": ["payments/*"],
-      "@settings": ["settings/*"],
-      "@users": ["users/*"]
+      "@auth/*": ["auth/*"],
+      "@common/*": ["common/*"],
+      "@config/*": ["config/*"],
+      "@core/*": ["core/*"],
+      "@database/*": ["database/*"],
+      "@logs/*": ["logs/*"],
+      "@messages/*": ["messages/*"],
+      "@orders/*": ["orders/*"],
+      "@payments/*": ["payments/*"],
+      "@settings/*": ["settings/*"],
+      "@users/*": ["users/*"]
     }
   },
   "include": ["src/**/*"],

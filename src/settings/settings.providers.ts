@@ -1,4 +1,4 @@
-import { Repository } from 'common/enums/repositories.enum';
+import { Repository } from '@common/enums';
 
 import { CompanyAddress } from './entities/CompanyAddress';
 import { CompanyBankDetails } from './entities/CompanyBankDetails';

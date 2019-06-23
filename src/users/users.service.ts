@@ -1,13 +1,11 @@
+import { AuthErrors, Repository, UserErrors } from '@common/enums';
+import { BaseResponse } from '@common/interfaces';
+
+import { ConfigService } from '@config/config.service';
+
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 
-import { Repository } from 'common/enums/repositories.enum';
-import { AuthErrors, UserErrors } from 'common/enums/validation-errors.enum';
-import { BaseResponse } from 'common/interfaces/base-response.interface';
-
-import { ConfigService } from 'config/config.service';
-
 import * as _ from 'lodash';
-
 import { Op, Sequelize, ValidationError, ValidationErrorItem } from 'sequelize';
 
 import { PasswordDto } from './dto/password.dto';

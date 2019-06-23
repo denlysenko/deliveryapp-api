@@ -1,3 +1,13 @@
+import { Roles, Self } from '@common/decorators';
+import { LogActions, Role } from '@common/enums';
+import { RolesGuard } from '@common/guards';
+import { ErrorsInterceptor } from '@common/interceptors';
+import { BaseResponse } from '@common/interfaces';
+import { ValidationError } from '@common/models';
+
+import { LogDto } from '@logs/dto';
+import { LogsService } from '@logs/logs.service';
+
 import {
   Body,
   Controller,
@@ -19,18 +29,6 @@ import {
   ApiResponse,
   ApiUseTags,
 } from '@nestjs/swagger';
-
-import { Roles } from 'common/decorators/roles.decorator';
-import { Self } from 'common/decorators/self.decorator';
-import { LogActions } from 'common/enums/logs.enum';
-import { Role } from 'common/enums/roles.enum';
-import { RolesGuard } from 'common/guards/roles.guard';
-import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
-import { BaseResponse } from 'common/interfaces/base-response.interface';
-import { ValidationError } from 'common/models/ValidationError.model';
-
-import { LogDto } from 'logs/dto/log.dto';
-import { LogsService } from 'logs/logs.service';
 
 import { UserDto } from '../dto/user.dto';
 import { User } from '../entities/User';

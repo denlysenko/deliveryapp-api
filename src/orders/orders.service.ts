@@ -1,20 +1,18 @@
+import { Repository, Role } from '@common/enums';
+import { BaseResponse } from '@common/interfaces';
+
+import { ConfigService } from '@config/config.service';
+
+import { MessagesService } from '@messages/messages.service';
+
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 
-import { Repository } from 'common/enums/repositories.enum';
-import { Role } from 'common/enums/roles.enum';
-import { BaseResponse } from 'common/interfaces/base-response.interface';
+import { Payment } from '@payments/entities';
 
-import { ConfigService } from 'config/config.service';
+import { User } from '@users/entities';
 
 import * as _ from 'lodash';
-
-import { MessagesService } from 'messages/messages.service';
-
-import { Payment } from 'payments/entities/Payment';
-
 import { Op } from 'sequelize';
-
-import { User } from 'users/entities/User';
 
 import { OrderDto } from './dto/order.dto';
 import { Order } from './entities/Order';

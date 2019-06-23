@@ -81,16 +81,16 @@
     "testEnvironment": "node"
   },
   "_moduleAliases": {
-    "auth": "dist/auth",
-    "common": "dist/common",
-    "config": "dist/config",
-    "core": "dist/core",
-    "database": "dist/database",
-    "logs": "dist/logs",
-    "messages": "dist/messages",
-    "orders": "dist/orders",
-    "payments": "dist/payments",
-    "settings": "dist/settings",
-    "users": "dist/users"
+    "@auth": "dist/auth",
+    "@common": "dist/common",
+    "@config": "dist/config",
+    "@core": "dist/core",
+    "@database": "dist/database",
+    "@logs": "dist/logs",
+    "@messages": "dist/messages",
+    "@orders": "dist/orders",
+    "@payments": "dist/payments",
+    "@settings": "dist/settings",
+    "@users": "dist/users"
   }
 }

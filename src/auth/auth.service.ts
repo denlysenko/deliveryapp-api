@@ -1,13 +1,13 @@
+import { AuthErrors } from '@common/enums';
+
+import { ConfigService } from '@config/config.service';
+
 import { BadRequestException, Injectable } from '@nestjs/common';
 
-import { AuthErrors } from 'common/enums/validation-errors.enum';
-
-import { ConfigService } from 'config/config.service';
+import { User } from '@users/entities';
+import { UsersService } from '@users/users.service';
 
 import * as jwt from 'jsonwebtoken';
-
-import { User } from 'users/entities/User';
-import { UsersService } from 'users/users.service';
 
 import { AuthPayload } from './interfaces/auth-payload.interface';
 

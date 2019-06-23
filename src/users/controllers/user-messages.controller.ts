@@ -1,3 +1,11 @@
+import { Self } from '@common/decorators';
+import { Role } from '@common/enums';
+import { ErrorsInterceptor } from '@common/interceptors';
+
+import { MessageDto } from '@messages/dto';
+import { Message } from '@messages/interfaces';
+import { MessagesService } from '@messages/messages.service';
+
 import {
   Controller,
   Get,
@@ -12,14 +20,6 @@ import {
   ApiResponse,
   ApiUseTags,
 } from '@nestjs/swagger';
-
-import { Self } from 'common/decorators/self.decorator';
-import { Role } from 'common/enums/roles.enum';
-import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
-
-import { MessageDto } from 'messages/dto/message.dto';
-import { Message } from 'messages/interfaces/message.interface';
-import { MessagesService } from 'messages/messages.service';
 
 import { User } from '../entities/User';
 

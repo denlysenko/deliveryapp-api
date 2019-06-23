@@ -1,3 +1,7 @@
+import { Self } from '@common/decorators';
+import { ErrorsInterceptor } from '@common/interceptors';
+import { BaseResponse } from '@common/interfaces';
+
 import {
   Controller,
   Get,
@@ -14,14 +18,10 @@ import {
   ApiUseTags,
 } from '@nestjs/swagger';
 
-import { Self } from 'common/decorators/self.decorator';
-import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
-import { BaseResponse } from 'common/interfaces/base-response.interface';
-
-import { Payment } from 'payments/entities/Payment';
-import { PaymentsService } from 'payments/payments.service';
-import { PaymentsQuery } from 'payments/queries/payments.query';
-import { PaymentsResponse } from 'payments/responses/payments.response';
+import { Payment } from '@payments/entities';
+import { PaymentsService } from '@payments/payments.service';
+import { PaymentsQuery } from '@payments/queries';
+import { PaymentsResponse } from '@payments/responses';
 
 import { User } from '../entities/User';
 

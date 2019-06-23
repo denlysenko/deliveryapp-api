@@ -1,4 +1,6 @@
-import { Order } from 'orders/entities/Order';
+import { Order } from '@orders/entities';
+
+import { User } from '@users/entities';
 
 import {
   AutoIncrement,
@@ -11,8 +13,6 @@ import {
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
-
-import { User } from 'users/entities/User';
 
 @Table({
   timestamps: true,

@@ -1,11 +1,11 @@
+import { ConfigModule } from '@config/config.module';
+
+import { DatabaseModule } from '@database/database.module';
+
+import { LogsModule } from '@logs/logs.module';
+
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-
-import { ConfigModule } from 'config/config.module';
-
-import { DatabaseModule } from 'database/database.module';
-
-import { LogsModule } from 'logs/logs.module';
 
 import { set } from 'mongoose';
 

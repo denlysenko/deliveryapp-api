@@ -1,7 +1,8 @@
-import { OrderStatuses } from 'common/enums/order-statuses.enum';
-import { OrderErrors, UserErrors } from 'common/enums/validation-errors.enum';
+import { OrderErrors, OrderStatuses, UserErrors } from '@common/enums';
 
-import { Payment } from 'payments/entities/Payment';
+import { Payment } from '@payments/entities';
+
+import { User } from '@users/entities';
 
 import {
   AllowNull,
@@ -14,8 +15,6 @@ import {
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
-
-import { User } from 'users/entities/User';
 
 @Table({
   timestamps: true,

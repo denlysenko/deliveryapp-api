@@ -1,8 +1,7 @@
+import { DatabaseModule } from '@database/database.module';
+import { MessagesModule } from '@messages/messages.module';
+
 import { Module } from '@nestjs/common';
-
-import { DatabaseModule } from 'database/database.module';
-
-import { MessagesModule } from 'messages/messages.module';
 
 import { OrdersController } from './orders.controller';
 import { ordersProviders } from './orders.providers';
