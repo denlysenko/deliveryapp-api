@@ -1,12 +1,22 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseInterceptors } from '@nestjs/common';
+import { LogActions } from '@common/enums';
+import { ErrorsInterceptor } from '@common/interceptors';
+import { ValidationError } from '@common/models';
+
+import { LogDto } from '@logs/dto';
+import { LogsService } from '@logs/logs.service';
+
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
-import { LogActions } from 'common/enums/logs.enum';
-import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
-import { ValidationError } from 'common/models/ValidationError.model';
-import { LogDto } from 'logs/dto/log.dto';
-import { LogsService } from 'logs/logs.service';
-import { UserDto } from 'users/dto/user.dto';
-import { UsersService } from 'users/users.service';
+
+import { UserDto } from '@users/dto';
+import { UsersService } from '@users/users.service';
 
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';

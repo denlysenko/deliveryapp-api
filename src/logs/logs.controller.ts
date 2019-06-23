@@ -1,12 +1,24 @@
-import { Controller, Get, HttpStatus, Query, UseGuards, UseInterceptors } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
-import { Roles } from 'common/decorators/roles.decorator';
-import { Role } from 'common/enums/roles.enum';
-import { RolesGuard } from 'common/guards/roles.guard';
-import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
-import { BaseResponse } from 'common/interfaces/base-response.interface';
+import { Roles } from '@common/decorators';
+import { Role } from '@common/enums';
+import { RolesGuard } from '@common/guards';
+import { ErrorsInterceptor } from '@common/interceptors';
+import { BaseResponse } from '@common/interfaces';
 
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Query,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiUseTags,
+} from '@nestjs/swagger';
 import { LogDto } from './dto/log.dto';
 import { Log } from './interfaces/log.interface';
 import { LogsService } from './logs.service';

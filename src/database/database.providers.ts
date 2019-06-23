@@ -11,10 +11,10 @@ export const databaseProviders = [
         username: process.env.PG_USER,
         password: process.env.PG_PASSWORD,
         database: process.env.PG_DB,
-        operatorsAliases: false,
-        logging: process.env.NODE_ENV === 'development',
+        // tslint:disable-next-line:no-console
+        logging: process.env.NODE_ENV === 'development' ? console.log : false,
       });
-      sequelize.addModels([`${__dirname}/../**/entities/*.{ts,js}`]);
+      sequelize.addModels([`${__dirname}/../**/entities/!(index).{ts,js}`]);
       await sequelize.sync();
       return sequelize;
     },

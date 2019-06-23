@@ -1,7 +1,10 @@
+import { AuthErrors } from '@common/enums';
+
+import { ConfigService } from '@config/config.service';
+
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { AuthErrors } from 'common/enums/validation-errors.enum';
-import { ConfigService } from 'config/config.service';
+
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { AuthService } from './auth.service';
@@ -10,7 +13,7 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly configService: ConfigService,
+    readonly configService: ConfigService,
     private readonly authService: AuthService,
   ) {
     super({

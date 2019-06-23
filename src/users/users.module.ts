@@ -1,7 +1,12 @@
+import { DatabaseModule } from '@database/database.module';
+
+import { MessagesModule } from '@messages/messages.module';
+
 import { Module } from '@nestjs/common';
-import { DatabaseModule } from 'database/database.module';
-import { OrdersModule } from 'orders/orders.module';
-import { PaymentsModule } from 'payments/payments.module';
+
+import { OrdersModule } from '@orders/orders.module';
+
+import { PaymentsModule } from '@payments/payments.module';
 
 import { UserMessagesController } from './controllers/user-messages.controller';
 import { UserOrdersController } from './controllers/user-orders.controller';
@@ -12,7 +17,7 @@ import { usersProviders } from './users.providers';
 import { UsersService } from './users.service';
 
 @Module({
-  imports: [DatabaseModule, OrdersModule, PaymentsModule],
+  imports: [DatabaseModule, OrdersModule, PaymentsModule, MessagesModule],
   controllers: [
     UserSelfController,
     UserOrdersController,

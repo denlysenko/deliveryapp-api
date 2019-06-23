@@ -1,7 +1,10 @@
+import { BaseResponse } from '@common/interfaces';
+
+import { ConfigService } from '@config/config.service';
+
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { BaseResponse } from 'common/interfaces/base-response.interface';
-import { ConfigService } from 'config/config.service';
+
 import { Model } from 'mongoose';
 
 import { LogDto } from './dto/log.dto';

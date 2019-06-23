@@ -1,13 +1,18 @@
+import { Repository, Role } from '@common/enums';
+import { BaseResponse } from '@common/interfaces';
+
+import { ConfigService } from '@config/config.service';
+
+import { MessagesService } from '@messages/messages.service';
+
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'common/enums/repositories.enum';
-import { Role } from 'common/enums/roles.enum';
-import { BaseResponse } from 'common/interfaces/base-response.interface';
-import { ConfigService } from 'config/config.service';
+
+import { Payment } from '@payments/entities';
+
+import { User } from '@users/entities';
+
 import * as _ from 'lodash';
-import { MessagesService } from 'messages/messages.service';
-import { Payment } from 'payments/entities/Payment';
 import { Op } from 'sequelize';
-import { User } from 'users/entities/User';
 
 import { OrderDto } from './dto/order.dto';
 import { Order } from './entities/Order';
@@ -90,7 +95,7 @@ export class OrderService {
   }
 
   async getById(id: number): Promise<Order> {
-    return await this.ordersRepository.findById(id, {
+    return await this.ordersRepository.findByPk(id, {
       include: [
         {
           model: User,
@@ -128,7 +133,7 @@ export class OrderService {
     userRole: number,
     orderDto: OrderDto,
   ): Promise<Order> {
-    const order = await this.ordersRepository.findById(id);
+    const order = await this.ordersRepository.findByPk(id);
 
     if (!order) {
       throw new NotFoundException();

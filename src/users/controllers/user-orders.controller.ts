@@ -1,3 +1,12 @@
+import { Self } from '@common/decorators';
+import { LogActions } from '@common/enums';
+import { ErrorsInterceptor } from '@common/interceptors';
+import { BaseResponse } from '@common/interfaces';
+import { ValidationError } from '@common/models';
+
+import { LogDto } from '@logs/dto';
+import { LogsService } from '@logs/logs.service';
+
 import {
   Body,
   Controller,
@@ -12,19 +21,19 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiImplicitParam, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
-import { Self } from 'common/decorators/self.decorator';
-import { LogActions } from 'common/enums/logs.enum';
-import { ErrorsInterceptor } from 'common/interceptors/errors.interceptor';
-import { BaseResponse } from 'common/interfaces/base-response.interface';
-import { ValidationError } from 'common/models/ValidationError.model';
-import { LogDto } from 'logs/dto/log.dto';
-import { LogsService } from 'logs/logs.service';
-import { OrderDto } from 'orders/dto/order.dto';
-import { Order } from 'orders/entities/Order';
-import { OrderService } from 'orders/orders.service';
-import { OrdersQuery } from 'orders/queries/orders.query';
-import { OrdersResponse } from 'orders/responses/orders.response';
+import {
+  ApiBearerAuth,
+  ApiImplicitParam,
+  ApiOperation,
+  ApiResponse,
+  ApiUseTags,
+} from '@nestjs/swagger';
+
+import { OrderDto } from '@orders/dto';
+import { Order } from '@orders/entities';
+import { OrderService } from '@orders/orders.service';
+import { OrdersQuery } from '@orders/queries';
+import { OrdersResponse } from '@orders/responses';
 
 import { User } from '../entities/User';
 

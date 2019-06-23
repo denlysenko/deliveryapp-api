@@ -1,5 +1,5 @@
-import { Role } from 'common/enums/roles.enum';
-import { UserErrors } from 'common/enums/validation-errors.enum';
+import { Role, UserErrors } from '@common/enums';
+
 import * as crypto from 'crypto';
 import {
   AllowNull,
@@ -14,7 +14,6 @@ import {
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
-
 import { Address } from './Address';
 import { BankDetails } from './BankDetails';
 

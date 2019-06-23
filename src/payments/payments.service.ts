@@ -1,12 +1,18 @@
+import { Repository } from '@common/enums';
+import { BaseResponse } from '@common/interfaces';
+
+import { ConfigService } from '@config/config.service';
+
+import { MessagesService } from '@messages/messages.service';
+
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'common/enums/repositories.enum';
-import { BaseResponse } from 'common/interfaces/base-response.interface';
-import { ConfigService } from 'config/config.service';
+
+import { Order } from '@orders/entities';
+
+import { User } from '@users/entities';
+
 import * as _ from 'lodash';
-import { MessagesService } from 'messages/messages.service';
-import { Order } from 'orders/entities/Order';
 import { Sequelize } from 'sequelize';
-import { User } from 'users/entities/User';
 
 import { PaymentDto } from './dto/payment.dto';
 import { Payment } from './entities/Payment';
@@ -63,7 +69,7 @@ export class PaymentsService {
   }
 
   async getById(id: number): Promise<Payment> {
-    return await this.paymentsRepository.findById(id, {
+    return await this.paymentsRepository.findByPk(id, {
       include: [
         { model: Order },
         { model: User, as: 'client', attributes: USER_ATTRIBUTES },
@@ -109,7 +115,7 @@ export class PaymentsService {
   }
 
   async update(id: number, paymentDto: PaymentDto): Promise<Payment> {
-    const payment = await this.paymentsRepository.findById(id);
+    const payment = await this.paymentsRepository.findByPk(id);
 
     if (!payment) {
       throw new NotFoundException();
