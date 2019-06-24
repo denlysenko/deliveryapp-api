@@ -108,7 +108,10 @@ export class PaymentsService {
         savedPayment['clientId'],
         message,
       );
-    } catch (err) {}
+    } catch (err) {
+      // tslint:disable-next-line:no-console
+      console.error('Error while sending Push', err);
+    }
 
     // refetch with associations
     return this.getById(savedPayment.id);
@@ -147,7 +150,10 @@ export class PaymentsService {
         payment['clientId'],
         message,
       );
-    } catch (err) {}
+    } catch (err) {
+      // tslint:disable-next-line:no-console
+      console.error('Error while sending Push', err);
+    }
 
     // refetch with associations
     return this.getById(id);
