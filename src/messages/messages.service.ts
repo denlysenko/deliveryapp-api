@@ -41,6 +41,18 @@ export class MessagesService {
     await this.sessionModel.remove({ socketId }).exec();
   }
 
+  async subscribeToEmployees(
+    socketId: string,
+  ): Promise<admin.messaging.MessagingTopicManagementResponse> {
+    return await admin.messaging().subscribeToTopic(socketId, TOPIC_NAME);
+  }
+
+  async unsubscribeFromEmployees(
+    socketId: string,
+  ): Promise<admin.messaging.MessagingTopicManagementResponse> {
+    return await admin.messaging().unsubscribeFromTopic(socketId, TOPIC_NAME);
+  }
+
   async markAsRead(messageId: string) {
     const message = await this.messageModel.findById(messageId);
     _.assignIn(message, { read: true });
