@@ -1,9 +1,7 @@
-import { AuthModule } from '@auth/auth.module';
-
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { MessagesGateway } from './messages.gateway';
+import { MessagesController } from './messages.controller';
 import { MessagesService } from './messages.service';
 import { MessageSchema } from './schemas/message.schema';
 import { SessionSchema } from './schemas/session.schema';
@@ -14,9 +12,9 @@ import { SessionSchema } from './schemas/session.schema';
       { name: 'Message', schema: MessageSchema },
       { name: 'Session', schema: SessionSchema },
     ]),
-    forwardRef(() => AuthModule),
   ],
-  providers: [MessagesGateway, MessagesService],
+  controllers: [MessagesController],
+  providers: [MessagesService],
   exports: [MessagesService],
 })
 export class MessagesModule {}

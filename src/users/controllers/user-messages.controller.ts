@@ -23,6 +23,7 @@ import {
 } from '@nestjs/swagger';
 
 import { User } from '../entities/User';
+import { MessagesQuery } from '../queries/messages.query';
 
 @ApiUseTags('users')
 @ApiBearerAuth()
@@ -49,7 +50,7 @@ export class UserMessagesController {
   })
   async getMessagesSelf(
     @Self() user: User,
-    @Query() query: { offset: number; limit: number },
+    @Query() query: MessagesQuery,
   ): Promise<Message[]> {
     return user.role === Role.CLIENT
       ? await this.messagesService.getByUserId(user.id, query)

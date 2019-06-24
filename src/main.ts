@@ -1,5 +1,5 @@
 // tslint:disable-next-line:no-var-requires
-require('module-alias/register');
+// require('module-alias/register');
 // tslint:disable-next-line:no-var-requires
 require('dotenv').config();
 

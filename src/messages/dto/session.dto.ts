@@ -1,8 +1,6 @@
-export class SessionDto {
-  readonly socketId: string;
-  readonly userId: number;
+import { ApiModelProperty } from '@nestjs/swagger';
 
-  constructor(options: SessionDto) {
-    Object.assign(this, options);
-  }
+export class SessionDto {
+  @ApiModelProperty()
+  readonly socketId: string;
 }

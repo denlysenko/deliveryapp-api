@@ -8,7 +8,6 @@ import * as _ from 'lodash';
 import { Model } from 'mongoose';
 
 import { MessageDto } from './dto/message.dto';
-import { SessionDto } from './dto/session.dto';
 import { Message } from './interfaces/message.interface';
 import { Session } from './interfaces/session.interface';
 
@@ -32,8 +31,8 @@ export class MessagesService {
     });
   }
 
-  async createSession(sessionDto: SessionDto): Promise<Session> {
-    const createdSession = new this.sessionModel(sessionDto);
+  async createSession(session: Partial<Session>): Promise<Session> {
+    const createdSession = new this.sessionModel(session);
     return await createdSession.save();
   }
 
