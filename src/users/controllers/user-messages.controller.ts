@@ -10,6 +10,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -46,9 +47,12 @@ export class UserMessagesController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Authorization Error',
   })
-  async getMessagesSelf(@Self() user: User): Promise<Message[]> {
+  async getMessagesSelf(
+    @Self() user: User,
+    @Query() query: { offset: number; limit: number },
+  ): Promise<Message[]> {
     return user.role === Role.CLIENT
-      ? await this.messagesService.getByUserId(user.id)
-      : await this.messagesService.getForEmployees();
+      ? await this.messagesService.getByUserId(user.id, query)
+      : await this.messagesService.getForEmployees(query);
   }
 }
