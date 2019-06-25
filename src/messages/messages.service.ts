@@ -37,7 +37,7 @@ export class MessagesService {
   }
 
   async removeSession(socketId: string) {
-    await this.sessionModel.remove({ socketId }).exec();
+    await this.sessionModel.deleteOne({ socketId }).exec();
   }
 
   async subscribeToEmployees(
@@ -95,6 +95,14 @@ export class MessagesService {
         title: MESSAGE_TITLE,
         body: message.text,
       },
+      data: {
+        _id: message._id,
+        recipientId: message.recipientId.toString(),
+        text: message.text,
+        createdAt: message.createdAt.toISOString(),
+        forEmployee: message.forEmployee.toString(),
+        read: message.toString(),
+      },
     };
 
     return await admin.messaging().sendToTopic(TOPIC_NAME, payload);
@@ -110,6 +118,14 @@ export class MessagesService {
       notification: {
         title: MESSAGE_TITLE,
         body: message.text,
+      },
+      data: {
+        _id: message._id,
+        recipientId: message.recipientId.toString(),
+        text: message.text,
+        createdAt: message.createdAt.toISOString(),
+        forEmployee: message.forEmployee.toString(),
+        read: message.toString(),
       },
     };
 
