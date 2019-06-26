@@ -1,3 +1,5 @@
+import { BaseResponse } from '@common/interfaces';
+
 import { ConfigService } from '@config/config.service';
 
 import { Injectable } from '@nestjs/common';
@@ -58,32 +60,48 @@ export class MessagesService {
     return await message.save();
   }
 
-  async getByUserId(id: number, query?: any): Promise<Message[]> {
+  async getByUserId(id: number, query?: any): Promise<BaseResponse<Message>> {
+    const conditions = { recipientId: id };
     const offset = (query && Number(query.offset)) || 0;
     const limit =
       (query && Number(query.limit)) ||
       Number(this.configService.get('DEFAULT_LIMIT'));
 
-    return await this.messageModel
-      .find({ recipientId: id })
+    const count = await this.messageModel.countDocuments(conditions);
+
+    const rows = await this.messageModel
+      .find(conditions)
       .skip(offset)
       .limit(limit)
-      .sort(SORT_FIELD)
+      .sort({ [SORT_FIELD]: 'desc' })
       .exec();
+
+    return {
+      count,
+      rows,
+    };
   }
 
-  async getForEmployees(query?: any): Promise<Message[]> {
+  async getForEmployees(query?: any): Promise<BaseResponse<Message>> {
+    const conditions = { forEmployee: true };
     const offset = (query && Number(query.offset)) || 0;
     const limit =
       (query && Number(query.limit)) ||
       Number(this.configService.get('DEFAULT_LIMIT'));
 
-    return await this.messageModel
-      .find({ forEmployee: true })
+    const count = await this.messageModel.countDocuments(conditions);
+
+    const rows = await this.messageModel
+      .find(conditions)
       .skip(offset)
       .limit(limit)
-      .sort(SORT_FIELD)
+      .sort({ [SORT_FIELD]: 'desc' })
       .exec();
+
+    return {
+      count,
+      rows,
+    };
   }
 
   async saveAndSendToEmployees(
