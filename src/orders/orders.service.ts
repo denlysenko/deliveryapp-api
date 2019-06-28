@@ -123,7 +123,10 @@ export class OrderService {
 
     try {
       await this.messagesService.saveAndSendToEmployees(message);
-    } catch (err) {}
+    } catch (err) {
+      // tslint:disable-next-line:no-console
+      console.error('Error while sending Push', err);
+    }
 
     return order;
   }
@@ -162,7 +165,10 @@ export class OrderService {
             message,
           )
         : this.messagesService.saveAndSendToEmployees(message);
-    } catch (err) {}
+    } catch (err) {
+      // tslint:disable-next-line:no-console
+      console.error('Error while sending Push', err);
+    }
 
     // refetch with includes
     return this.getById(order.id);

@@ -6,6 +6,7 @@ COPY package-lock.json /var/www/deliveryapp-api
 RUN npm install
 COPY . /var/www/deliveryapp-api
 COPY .env.production ./.env
+COPY firebase-adminsdk.json .
 ENV NODE_ENV production
 RUN npm run prestart:prod
 EXPOSE 3000
