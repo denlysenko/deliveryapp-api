@@ -114,8 +114,7 @@ export class MessagesService {
         body: message.text,
       },
       data: {
-        _id: message._id,
-        recipientId: message.recipientId.toString(),
+        _id: message._id.toString(),
         text: message.text,
         createdAt: message.createdAt.toISOString(),
         forEmployee: message.forEmployee.toString(),
@@ -138,7 +137,7 @@ export class MessagesService {
         body: message.text,
       },
       data: {
-        _id: message._id,
+        _id: message._id.toString(),
         recipientId: message.recipientId.toString(),
         text: message.text,
         createdAt: message.createdAt.toISOString(),
