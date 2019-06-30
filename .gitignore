@@ -44,3 +44,4 @@ Thumbs.db
 .env.production
 /src/config/.env
 /firebase-adminsdk.json
+deploy
