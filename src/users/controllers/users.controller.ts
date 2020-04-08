@@ -24,10 +24,10 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
-  ApiImplicitParam,
+  ApiParam,
   ApiOperation,
   ApiResponse,
-  ApiUseTags,
+  ApiTags,
 } from '@nestjs/swagger';
 
 import { UserDto } from '../dto/user.dto';
@@ -37,7 +37,7 @@ import { UserResponse } from '../responses/user.response';
 import { UsersResponse } from '../responses/users.response';
 import { UsersService } from '../users.service';
 
-@ApiUseTags('users')
+@ApiTags('users')
 @ApiBearerAuth()
 @Controller('users')
 @UseGuards(AuthGuard('jwt'))
@@ -52,7 +52,7 @@ export class UsersController {
    * GET /users
    */
   @Get()
-  @ApiOperation({ title: 'Gets all users' })
+  @ApiOperation({ summary: 'Gets all users' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns users',
@@ -76,8 +76,8 @@ export class UsersController {
    * GET /users/:id
    */
   @Get(':id')
-  @ApiOperation({ title: 'Get user by ID' })
-  @ApiImplicitParam({
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiParam({
     name: 'id',
     description: 'User ID',
     required: true,
@@ -105,7 +105,7 @@ export class UsersController {
    * POST /users
    */
   @Post()
-  @ApiOperation({ title: 'Creates user' })
+  @ApiOperation({ summary: 'Creates user' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns created user',
@@ -144,8 +144,8 @@ export class UsersController {
    * PATCH /users/:id
    */
   @Patch(':id')
-  @ApiOperation({ title: 'Updates user' })
-  @ApiImplicitParam({
+  @ApiOperation({ summary: 'Updates user' })
+  @ApiParam({
     name: 'id',
     description: 'User ID',
     required: true,

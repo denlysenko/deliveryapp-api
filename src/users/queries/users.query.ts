@@ -1,62 +1,62 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UsersQuery {
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Offset',
     required: false,
   })
   readonly offset: number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Limit',
     required: false,
   })
   readonly limit: number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'User ID',
     required: false,
   })
   readonly 'filter[id]': number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Role',
     enum: ['Client', 'Manager', 'Admin'],
     required: false,
   })
   readonly 'filter[role]': number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'User email',
     required: false,
   })
   readonly 'filter[email]': string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'User First Name',
     required: false,
   })
   readonly 'filter[firstName]': string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'User Last Name',
     required: false,
   })
   readonly 'filter[lastName]': string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Order by ID',
     required: false,
   })
   readonly 'order[id]': 'asc' | 'desc';
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Order by First Name',
     required: false,
   })
   readonly 'order[firstName]': 'asc' | 'desc';
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Order by Last Name',
     required: false,
   })

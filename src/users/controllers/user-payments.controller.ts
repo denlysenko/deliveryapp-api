@@ -15,7 +15,7 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiUseTags,
+  ApiTags,
 } from '@nestjs/swagger';
 
 import { Payment } from '@payments/entities';
@@ -25,7 +25,7 @@ import { PaymentsResponse } from '@payments/responses';
 
 import { User } from '../entities/User';
 
-@ApiUseTags('users')
+@ApiTags('users')
 @ApiBearerAuth()
 @Controller('users/self/payments')
 @UseGuards(AuthGuard('jwt'))
@@ -37,7 +37,7 @@ export class UserPaymentsController {
    * GET /users/self/payments
    */
   @Get()
-  @ApiOperation({ title: 'Gets all payments for authenticated user' })
+  @ApiOperation({ summary: 'Gets all payments for authenticated user' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns payments',

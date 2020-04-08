@@ -13,7 +13,10 @@ set('debug', process.env.NODE_ENV === 'development');
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGO_URL, { useNewUrlParser: true }),
+    MongooseModule.forRoot(process.env.MONGO_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }),
     DatabaseModule,
     ConfigModule,
     LogsModule,

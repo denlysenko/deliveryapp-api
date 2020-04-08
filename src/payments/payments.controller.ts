@@ -23,10 +23,10 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
-  ApiImplicitParam,
+  ApiParam,
   ApiOperation,
   ApiResponse,
-  ApiUseTags,
+  ApiTags,
 } from '@nestjs/swagger';
 
 import { User } from '@users/entities';
@@ -43,7 +43,7 @@ import { PaymentsQuery } from './queries/payments.query';
 import { PaymentResponse as PaymentRes } from './responses/payment.response';
 import { PaymentsResponse } from './responses/payments.response';
 
-@ApiUseTags('payments')
+@ApiTags('payments')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @UseInterceptors(ErrorsInterceptor)
@@ -58,7 +58,7 @@ export class PaymentsController {
    * GET /payments
    */
   @Get()
-  @ApiOperation({ title: 'Get payments' })
+  @ApiOperation({ summary: 'Get payments' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns payments',
@@ -81,8 +81,8 @@ export class PaymentsController {
    * GET /payments/:id
    */
   @Get(':id')
-  @ApiOperation({ title: 'Get payment' })
-  @ApiImplicitParam({
+  @ApiOperation({ summary: 'Get payment' })
+  @ApiParam({
     name: 'id',
     description: 'Payment ID',
     required: true,
@@ -109,7 +109,7 @@ export class PaymentsController {
    * POST /payments
    */
   @Post()
-  @ApiOperation({ title: 'Create payment' })
+  @ApiOperation({ summary: 'Create payment' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns created payment',
@@ -172,8 +172,8 @@ export class PaymentsController {
    * PATCH /payments/:id
    */
   @Patch(':id')
-  @ApiOperation({ title: 'Update payment' })
-  @ApiImplicitParam({
+  @ApiOperation({ summary: 'Update payment' })
+  @ApiParam({
     name: 'id',
     description: 'Payment ID',
     required: true,

@@ -1,33 +1,33 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 import { AddressDto } from '../dto/address.dto';
 import { BankDetailsDto } from '../dto/bank-details.dto';
 
 export class UserResponse {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly id: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly email: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly firstName: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly lastName: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly company: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly phone: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly role: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly address: AddressDto;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly bankDetails: BankDetailsDto;
 }

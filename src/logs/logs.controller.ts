@@ -17,14 +17,14 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiUseTags,
+  ApiTags,
 } from '@nestjs/swagger';
 import { LogDto } from './dto/log.dto';
 import { Log } from './interfaces/log.interface';
 import { LogsService } from './logs.service';
 import { LogsQuery } from './queries/log.query';
 
-@ApiUseTags('logs')
+@ApiTags('logs')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @UseInterceptors(ErrorsInterceptor)
@@ -36,7 +36,7 @@ export class LogsController {
    * GET /logs
    */
   @Get()
-  @ApiOperation({ title: 'Get action logs' })
+  @ApiOperation({ summary: 'Get action logs' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns action logs',

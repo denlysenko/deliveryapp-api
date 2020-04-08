@@ -21,7 +21,7 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiUseTags,
+  ApiTags,
 } from '@nestjs/swagger';
 
 import { PasswordDto } from '../dto/password.dto';
@@ -30,7 +30,7 @@ import { User } from '../entities/User';
 import { UserResponse } from '../responses/user.response';
 import { UsersService } from '../users.service';
 
-@ApiUseTags('users')
+@ApiTags('users')
 @ApiBearerAuth()
 @Controller('users/self')
 @UseGuards(AuthGuard('jwt'))
@@ -45,7 +45,7 @@ export class UserSelfController {
    * GET /users/self
    */
   @Get()
-  @ApiOperation({ title: 'Get authenticated user' })
+  @ApiOperation({ summary: 'Get authenticated user' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns authenticated user',
@@ -64,7 +64,7 @@ export class UserSelfController {
    * PATCH /users/self
    */
   @Patch()
-  @ApiOperation({ title: 'Update authenticated user' })
+  @ApiOperation({ summary: 'Update authenticated user' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns updated user',
@@ -101,7 +101,7 @@ export class UserSelfController {
    * PATCH /users/self/password
    */
   @Patch('password')
-  @ApiOperation({ title: 'Change password for authenticated user' })
+  @ApiOperation({ summary: 'Change password for authenticated user' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'This method returns nothing',

@@ -13,7 +13,7 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { UserDto } from '@users/dto';
 import { UsersService } from '@users/users.service';
@@ -23,7 +23,7 @@ import { AuthDto } from './dto/auth.dto';
 import { AuthPayload } from './interfaces/auth-payload.interface';
 import { AuthError, AuthResponse } from './responses/auth.response';
 
-@ApiUseTags('auth')
+@ApiTags('auth')
 @Controller('auth')
 @UseInterceptors(ErrorsInterceptor)
 export class AuthController {
@@ -35,7 +35,7 @@ export class AuthController {
 
   // POST `/auth/login`
   @Post('login')
-  @ApiOperation({ title: 'Authentication' })
+  @ApiOperation({ summary: 'Authentication' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns JWT token',
@@ -54,7 +54,7 @@ export class AuthController {
 
   // POST `/auth/register`
   @Post('register')
-  @ApiOperation({ title: 'Registration' })
+  @ApiOperation({ summary: 'Registration' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns JWT token',

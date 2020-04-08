@@ -1,15 +1,15 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CompanyBankDetailsDto {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly name: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly bin: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly accountNumber: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly swift: string;
 }

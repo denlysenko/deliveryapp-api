@@ -1,19 +1,19 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class LogsQuery {
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Action',
     required: false,
   })
   readonly 'filter[action]': number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'User ID',
     required: false,
   })
   readonly 'filter[userId]': number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Creation Date',
     required: false,
   })

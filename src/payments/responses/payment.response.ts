@@ -1,51 +1,51 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 import { OrderDto } from '@orders/dto';
 
 import { UserResponse } from '@users/responses';
 
 export class PaymentResponse {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly id: number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Payment method',
     enum: ['Cash', 'Non Cash'],
   })
   readonly method: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly status: boolean;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly total: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly paymentAmount: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly paymentDate: Date;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly dueDate: Date;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly notes: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly description: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Client',
   })
   readonly client: UserResponse;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Creator',
   })
   readonly creator: UserResponse;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Associated orders',
     isArray: true,
   })

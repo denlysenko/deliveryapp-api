@@ -1,5 +1,5 @@
 // tslint:disable-next-line:no-var-requires
-require('module-alias/register');
+// require('module-alias/register');
 // tslint:disable-next-line:no-var-requires
 require('dotenv').config();
 
@@ -17,7 +17,6 @@ async function bootstrap() {
   app.enableCors();
 
   const options = new DocumentBuilder()
-    .setSchemes('http', 'https')
     .setTitle('Delivery App API')
     .setDescription('Delivery App API')
     .setVersion('1.0')

@@ -1,33 +1,33 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 import { AddressDto } from './address.dto';
 import { BankDetailsDto } from './bank-details.dto';
 
 export class UserDto {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly id: number;
 
-  @ApiModelProperty({ required: true })
+  @ApiProperty({ required: true })
   readonly email: string;
 
-  @ApiModelProperty({ required: true })
+  @ApiProperty({ required: true })
   readonly password: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly firstName: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly lastName: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly company: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly phone: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   address?: AddressDto;
 
-  @ApiModelProperty()
+  @ApiProperty()
   bankDetails?: BankDetailsDto;
 }

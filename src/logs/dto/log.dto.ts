@@ -1,16 +1,16 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class LogDto {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly action: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly userId: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly createdAt: Date;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly data?: any = null;
 
   constructor(options: LogDto) {

@@ -1,49 +1,49 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class OrdersQuery {
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Order ID or Number',
     required: false,
   })
   readonly 'filter[id]': number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'City From',
     required: false,
   })
   readonly 'filter[cityFrom]': string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'City To',
     required: false,
   })
   readonly 'filter[cityTo]': string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Cargo Name',
     required: false,
   })
   readonly 'filter[cargoName]': string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Order by ID or Number',
     required: false,
   })
   readonly 'order[id]': 'asc' | 'desc';
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Order by City From',
     required: false,
   })
   readonly 'order[cityFrom]': 'asc' | 'desc';
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Order by City To',
     required: false,
   })
   readonly 'order[cityTo]': 'asc' | 'desc';
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Order by Cargo Name',
     required: false,
   })

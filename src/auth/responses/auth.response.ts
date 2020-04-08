@@ -1,14 +1,14 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthResponse {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly token: string;
 }
 
 export class AuthError {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly message: string;
 
-  @ApiModelProperty({ type: String, isArray: true })
+  @ApiProperty({ type: String, isArray: true })
   readonly fields: string[];
 }

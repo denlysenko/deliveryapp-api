@@ -1,9 +1,9 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthDto {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly email: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly password: string;
 }

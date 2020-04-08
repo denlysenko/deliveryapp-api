@@ -1,9 +1,9 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PasswordDto {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly oldPassword: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly newPassword: string;
 }

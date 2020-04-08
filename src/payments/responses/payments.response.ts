@@ -1,11 +1,11 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 import { PaymentResponse } from './payment.response';
 
 export class PaymentsResponse {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly count: number;
 
-  @ApiModelProperty({ isArray: true })
+  @ApiProperty({ isArray: true })
   readonly rows: PaymentResponse;
 }

@@ -23,10 +23,10 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
-  ApiImplicitParam,
+  ApiParam,
   ApiOperation,
   ApiResponse,
-  ApiUseTags,
+  ApiTags,
 } from '@nestjs/swagger';
 
 import { OrderDto } from '@orders/dto';
@@ -37,7 +37,7 @@ import { OrdersResponse } from '@orders/responses';
 
 import { User } from '../entities/User';
 
-@ApiUseTags('users')
+@ApiTags('users')
 @ApiBearerAuth()
 @Controller('users/self/orders')
 @UseGuards(AuthGuard('jwt'))
@@ -52,7 +52,7 @@ export class UserOrdersController {
    * GET /users/self/orders
    */
   @Get()
-  @ApiOperation({ title: 'Gets all orders for authenticated user' })
+  @ApiOperation({ summary: 'Gets all orders for authenticated user' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns orders',
@@ -73,7 +73,7 @@ export class UserOrdersController {
    * POST /users/self/orders
    */
   @Post()
-  @ApiOperation({ title: 'Creates order for authenticated user' })
+  @ApiOperation({ summary: 'Creates order for authenticated user' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns created order',
@@ -117,8 +117,8 @@ export class UserOrdersController {
    * PATCH /users/self/orders/:id
    */
   @Patch(':id')
-  @ApiOperation({ title: 'Update order' })
-  @ApiImplicitParam({
+  @ApiOperation({ summary: 'Update order' })
+  @ApiParam({
     name: 'id',
     description: 'Order ID',
     required: true,

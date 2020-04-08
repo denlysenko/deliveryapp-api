@@ -20,13 +20,13 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiUseTags,
+  ApiTags,
 } from '@nestjs/swagger';
 
 import { User } from '../entities/User';
 import { MessagesQuery } from '../queries/messages.query';
 
-@ApiUseTags('users')
+@ApiTags('users')
 @ApiBearerAuth()
 @Controller('users/self/messages')
 @UseGuards(AuthGuard('jwt'))
@@ -38,7 +38,7 @@ export class UserMessagesController {
    * GET /users/self/messages
    */
   @Get()
-  @ApiOperation({ title: 'Gets all messages for authenticated user' })
+  @ApiOperation({ summary: 'Gets all messages for authenticated user' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns messages',

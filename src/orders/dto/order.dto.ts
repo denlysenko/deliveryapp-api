@@ -1,66 +1,66 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class OrderDto {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly id: number;
 
-  @ApiModelProperty({ required: true })
+  @ApiProperty({ required: true })
   readonly cityFrom: string;
 
-  @ApiModelProperty({ required: true })
+  @ApiProperty({ required: true })
   readonly cityTo: string;
 
-  @ApiModelProperty({ required: true })
+  @ApiProperty({ required: true })
   readonly addressFrom: string;
 
-  @ApiModelProperty({ required: true })
+  @ApiProperty({ required: true })
   readonly addressTo: string;
 
-  @ApiModelProperty({ required: true })
+  @ApiProperty({ required: true })
   readonly cargoName: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly additionalData: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly comment: string;
 
-  @ApiModelProperty({ required: true })
+  @ApiProperty({ required: true })
   readonly cargoWeight: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly cargoVolume: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly senderName: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly senderCompany: string;
 
-  @ApiModelProperty({ required: true })
+  @ApiProperty({ required: true })
   readonly senderEmail: string;
 
-  @ApiModelProperty({ required: true })
+  @ApiProperty({ required: true })
   readonly senderPhone: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly status: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly deliveryCosts: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly deliveryDate: Date;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly paid: boolean;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly paymentDate: Date;
 
   readonly invoiceId: number;
   readonly creatorId?: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly clientId?: number;
 }

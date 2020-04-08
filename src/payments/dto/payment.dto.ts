@@ -1,41 +1,41 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PaymentDto {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly id: number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Payment method CASH = 1, NON_CASH = 2',
   })
   readonly method: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly status: boolean;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly total: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly paymentAmount: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly paymentDate: Date;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly dueDate: Date;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly notes: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly description: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Client ID',
   })
   readonly clientId: number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Array of Order IDS',
   })
   readonly orders: number[];

@@ -1,15 +1,15 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CompanyAddressDto {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly country: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly city: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly street: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly house: string;
 }

@@ -1,35 +1,35 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ValidationErrorItem {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly message: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly type: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly path: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly value: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly origin: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly validatorKey: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly validatorName: string;
 
-  @ApiModelProperty({ type: String, isArray: true })
+  @ApiProperty({ type: String, isArray: true })
   readonly validatorArgs: string[];
 }
 
 export class ValidationError {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly name: string;
 
-  @ApiModelProperty({ type: ValidationErrorItem, isArray: true })
+  @ApiProperty({ type: ValidationErrorItem, isArray: true })
   readonly errors: ValidationErrorItem[];
 }

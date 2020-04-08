@@ -22,10 +22,10 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
-  ApiImplicitParam,
+  ApiParam,
   ApiOperation,
   ApiResponse,
-  ApiUseTags,
+  ApiTags,
 } from '@nestjs/swagger';
 
 import { User } from '@users/entities';
@@ -36,7 +36,7 @@ import { CompanyAddress } from './entities/CompanyAddress';
 import { CompanyBankDetails } from './entities/CompanyBankDetails';
 import { SettingsService } from './settings.service';
 
-@ApiUseTags('settings')
+@ApiTags('settings')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @UseInterceptors(ErrorsInterceptor)
@@ -51,7 +51,7 @@ export class SettingsController {
    * GET /settings/address
    */
   @Get('address')
-  @ApiOperation({ title: 'Get company address' })
+  @ApiOperation({ summary: 'Get company address' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns company`s address',
@@ -74,7 +74,7 @@ export class SettingsController {
    * POST /settings/address
    */
   @Post('address')
-  @ApiOperation({ title: 'Create company address' })
+  @ApiOperation({ summary: 'Create company address' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns created company`s address',
@@ -116,8 +116,8 @@ export class SettingsController {
    * PATCH /settings/address/:id
    */
   @Patch('address/:id')
-  @ApiOperation({ title: 'Update company address' })
-  @ApiImplicitParam({
+  @ApiOperation({ summary: 'Update company address' })
+  @ApiParam({
     name: 'id',
     description: 'Company Address ID',
     required: true,
@@ -164,7 +164,7 @@ export class SettingsController {
    * GET /settings/bank-details
    */
   @Get('bank-details')
-  @ApiOperation({ title: 'Get company`s bank details' })
+  @ApiOperation({ summary: 'Get company`s bank details' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns company`s bank details',
@@ -187,7 +187,7 @@ export class SettingsController {
    * POST /settings/bank-details
    */
   @Post('bank-details')
-  @ApiOperation({ title: 'Create company bank details' })
+  @ApiOperation({ summary: 'Create company bank details' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns created company`s bank details',
@@ -231,8 +231,8 @@ export class SettingsController {
    * PATCH /settings/bank-details/:id
    */
   @Patch('bank-details/:id')
-  @ApiOperation({ title: 'Update company bank details' })
-  @ApiImplicitParam({
+  @ApiOperation({ summary: 'Update company bank details' })
+  @ApiParam({
     name: 'id',
     description: 'Company Bank Details ID',
     required: true,

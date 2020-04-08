@@ -1,19 +1,19 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class MessageDto {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly recipientId?: number;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly text: string;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly createdAt?: Date;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly forEmployee?: boolean;
 
-  @ApiModelProperty()
+  @ApiProperty()
   readonly read?: boolean;
 
   constructor(options: MessageDto) {

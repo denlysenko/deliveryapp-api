@@ -15,10 +15,10 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
-  ApiImplicitParam,
+  ApiParam,
   ApiOperation,
   ApiResponse,
-  ApiUseTags,
+  ApiTags,
   ApiBearerAuth,
 } from '@nestjs/swagger';
 
@@ -28,7 +28,7 @@ import { SessionDto } from './dto/session.dto';
 import { Message } from './interfaces';
 import { MessagesService } from './messages.service';
 
-@ApiUseTags('messages')
+@ApiTags('messages')
 @ApiBearerAuth()
 @Controller('messages')
 @UseGuards(AuthGuard('jwt'))
@@ -40,8 +40,8 @@ export class MessagesController {
    * PATCH /messages/{id}
    */
   @Patch(':id')
-  @ApiOperation({ title: 'Marks message as read' })
-  @ApiImplicitParam({
+  @ApiOperation({ summary: 'Marks message as read' })
+  @ApiParam({
     name: 'id',
     description: 'Message ID',
     required: true,
@@ -62,7 +62,7 @@ export class MessagesController {
    * POST /messages/subscribe
    */
   @Post('subscribe')
-  @ApiOperation({ title: 'Subscribes device to messages' })
+  @ApiOperation({ summary: 'Subscribes device to messages' })
   @ApiResponse({
     status: HttpStatus.OK,
   })
@@ -95,7 +95,7 @@ export class MessagesController {
    * POST /messages/unsubscribe
    */
   @Post('unsubscribe')
-  @ApiOperation({ title: 'Unsubscribes device from messages' })
+  @ApiOperation({ summary: 'Unsubscribes device from messages' })
   @ApiResponse({
     status: HttpStatus.OK,
   })

@@ -1,13 +1,13 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class MessagesQuery {
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Offset',
     required: false,
   })
   readonly offset: number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     description: 'Limit',
     required: false,
   })

@@ -1,11 +1,11 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 import { OrderDto } from '../dto/order.dto';
 
 export class OrdersResponse {
-  @ApiModelProperty()
+  @ApiProperty()
   readonly count: number;
 
-  @ApiModelProperty({ isArray: true })
+  @ApiProperty({ isArray: true })
   readonly rows: OrderDto;
 }
