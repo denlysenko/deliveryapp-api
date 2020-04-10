@@ -1,7 +1,7 @@
-version: '3.1'
+version: '3'
 
 services:
-  node:
+  api:
     build:
       context: .
       dockerfile: ./docker/dev/Dockerfile
@@ -10,14 +10,9 @@ services:
     env_file: .env
     ports:
       - '3000:3000'
-    links:
-      - mongodb
-      - postgres
     depends_on:
       - mongodb
       - postgres
-    networks:
-      - app-network
 
   mongodb:
     container_name: mongodb
@@ -26,11 +21,9 @@ services:
       - '27017:27017'
     volumes:
       - mongo_data:/data/db
-    networks:
-      - app-network
 
   postgres:
-    container_name: 'postgres'
+    container_name: postgres
     image: postgres
     ports:
       - '5432:5432'
@@ -39,13 +32,7 @@ services:
       - POSTGRES_PASSWORD=${PG_PASSWORD}
       - POSTGRES_DB=${PG_DB}
     volumes:
-      - postgres_data:/var/lib/postgresql
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:
