@@ -1,65 +1,73 @@
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
-import {
-  LogActions,
-  ErrorsInterceptor,
-  ValidationError,
-} from '@deliveryapp/common';
-
-import { LogDto, LogsService } from '@deliveryapp/logs';
-
 import {
   Body,
   Controller,
   HttpCode,
   HttpStatus,
   Post,
+  UseGuards,
   UseInterceptors,
+  UsePipes,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
-import { UserDto, UsersService } from '@deliveryapp/users';
+import { CurrentUser } from '@deliveryapp/common';
+import {
+  AuthPayload,
+  AuthPayloadDto,
+  CreateUserDto,
+  ErrorsInterceptor,
+  JwtAuthGuard,
+  LoginDto,
+  LoginErrorDto,
+  User,
+  ValidationError,
+  ValidationErrorPipe,
+} from '@deliveryapp/core';
 
 import { AuthService } from './auth.service';
-import { AuthDto } from './dto/auth.dto';
-import { AuthPayload } from './interfaces/auth-payload.interface';
-import { AuthError, AuthResponse } from './responses/auth.response';
 
 @ApiTags('auth')
 @Controller('auth')
+@UsePipes(ValidationErrorPipe)
 @UseInterceptors(ErrorsInterceptor)
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly usersService: UsersService,
-    private readonly logsService: LogsService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
-  // POST `/auth/login`
+  /**
+   * POST `/auth/login`
+   */
   @Post('login')
   @ApiOperation({ summary: 'Authentication' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns JWT token',
-    type: AuthResponse,
+    type: AuthPayloadDto,
   })
   @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
+    status: HttpStatus.BAD_REQUEST,
     description: 'Authorization Error',
-    type: AuthError,
+    type: LoginErrorDto,
   })
   @HttpCode(HttpStatus.OK)
-  async authenticate(@Body() authDto: AuthDto): Promise<AuthPayload> {
-    const { email, password } = authDto;
-    return await this.authService.login(email, password);
+  authenticate(@Body() loginDto: LoginDto): Promise<AuthPayload> {
+    const { email, password } = loginDto;
+    return this.authService.login(email, password);
   }
 
-  // POST `/auth/register`
+  /**
+   * POST `/auth/register`
+   */
   @Post('register')
   @ApiOperation({ summary: 'Registration' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns JWT token',
-    type: AuthResponse,
+    type: AuthPayloadDto,
   })
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -67,17 +75,29 @@ export class AuthController {
     type: ValidationError,
   })
   @HttpCode(HttpStatus.OK)
-  async register(@Body() userDto: UserDto): Promise<AuthPayload> {
-    const user = await this.usersService.create(userDto);
+  register(@Body() createUserDto: CreateUserDto): Promise<AuthPayload> {
+    return this.authService.register(createUserDto);
+  }
 
-    await this.logsService.create(
-      new LogDto({
-        action: LogActions.REGISTRATION,
-        userId: user.id,
-        createdAt: new Date(),
-      }),
-    );
-
+  /**
+   * POST `/auth/refreshToken`
+   */
+  @Post('refreshToken')
+  @ApiOperation({ summary: 'Refresh token' })
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns JWT token',
+    type: AuthPayloadDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    description: 'Validation Error',
+    type: ValidationError,
+  })
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  refreshToken(@CurrentUser() user: User): AuthPayload {
     return { token: this.authService.createToken(user.id) };
   }
 }

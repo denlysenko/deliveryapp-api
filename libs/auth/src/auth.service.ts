@@ -1,36 +1,60 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 
-import { AuthErrors } from '@deliveryapp/common';
+import { AuthErrors, LogActions } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
-import { User, UsersService } from '@deliveryapp/users';
+import {
+  AuthPayload,
+  CreateUserDto,
+  JwtPayload,
+  User,
+} from '@deliveryapp/core';
+import { LogDto, LogsService } from '@deliveryapp/logs';
+import { UserEntity } from '@deliveryapp/repository';
 
 import * as jwt from 'jsonwebtoken';
-
-import { AuthPayload } from './interfaces/auth-payload.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly configService: ConfigService,
-    private readonly usersService: UsersService,
+    private readonly logsService: LogsService,
+    private readonly usersRepository: typeof UserEntity,
   ) {}
 
   async login(email: string, password: string): Promise<AuthPayload> {
-    const user = await this.usersService.findByEmail(email);
+    const user = await this.usersRepository.findOne({
+      where: { email },
+      attributes: ['id', 'hashedPassword', 'salt'],
+    });
 
-    if (!user) {
-      throw new BadRequestException(AuthErrors.INCORRECT_EMAIL_ERR);
-    }
-
-    if (!user.authenticate(password)) {
-      throw new BadRequestException(AuthErrors.INCORRECT_PASSWORD_ERR);
+    if (!user || !user.authenticate(password)) {
+      throw new BadRequestException(AuthErrors.INCORRECT_EMAIL_OR_PASSWORD_ERR);
     }
 
     return { token: this.createToken(user.id) };
   }
 
-  async validate({ id }): Promise<User> {
-    return await this.usersService.findById(id);
+  async register(createUserDto: CreateUserDto): Promise<AuthPayload> {
+    const user = UserEntity.build(createUserDto);
+
+    await user.save();
+    await this.logsService.create(
+      // TODO: rename
+      new LogDto({
+        action: LogActions.REGISTRATION,
+        userId: user.id,
+        createdAt: new Date(),
+      }),
+    );
+
+    return { token: this.createToken(user.id) };
+  }
+
+  async validate({ id }: JwtPayload): Promise<User> {
+    return await this.usersRepository.findByPk(id, {
+      attributes: ['id', 'role'],
+      raw: true,
+    });
   }
 
   createToken(id: number): string {
