@@ -6,7 +6,9 @@
   "compilerOptions": {
     "webpack": true,
     "tsConfigPath": "apps/api/tsconfig.app.json",
-    "assets": ["../../../libs/**/*.env"]
+    "assets": [
+      "../../../libs/**/*.env"
+    ]
   },
   "projects": {
     "api": {
@@ -115,6 +117,15 @@
       "sourceRoot": "libs/settings/src",
       "compilerOptions": {
         "tsConfigPath": "libs/settings/tsconfig.lib.json"
+      }
+    },
+    "repository": {
+      "type": "library",
+      "root": "libs/repository",
+      "entryFile": "index",
+      "sourceRoot": "libs/repository/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/repository/tsconfig.lib.json"
       }
     }
   }

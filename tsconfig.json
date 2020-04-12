@@ -32,7 +32,9 @@
       "@deliveryapp/payments": ["libs/payments/src"],
       "@deliveryapp/payments/*": ["libs/payments/src/*"],
       "@deliveryapp/settings": ["libs/settings/src"],
-      "@deliveryapp/settings/*": ["libs/settings/src/*"]
+      "@deliveryapp/settings/*": ["libs/settings/src/*"],
+      "@deliveryapp/repository": ["libs/repository/src"],
+      "@deliveryapp/repository/*": ["libs/repository/src/*"]
     }
   },
   "exclude": ["node_modules", "dist"]

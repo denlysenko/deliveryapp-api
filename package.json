@@ -30,6 +30,8 @@
     "@nestjs/platform-socket.io": "^7.0.7",
     "@nestjs/swagger": "^4.5.1",
     "@nestjs/websockets": "^7.0.7",
+    "class-transformer": "^0.2.3",
+    "class-validator": "^0.11.1",
     "dotenv": "^8.2.0",
     "firebase-admin": "^8.10.0",
     "helmet": "^3.22.0",
@@ -56,6 +58,7 @@
     "@types/lodash": "^4.14.149",
     "@types/mongoose": "^5.7.8",
     "@types/node": "^13.11.0",
+    "@types/passport-jwt": "^3.0.3",
     "@types/socket.io": "^2.1.4",
     "@types/supertest": "^2.0.8",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
@@ -113,7 +116,9 @@
       "@deliveryapp/payments/(.*)": "<rootDir>/libs/payments/src/$1",
       "@deliveryapp/payments": "<rootDir>/libs/payments/src",
       "@deliveryapp/settings/(.*)": "<rootDir>/libs/settings/src/$1",
-      "@deliveryapp/settings": "<rootDir>/libs/settings/src"
+      "@deliveryapp/settings": "<rootDir>/libs/settings/src",
+      "@deliveryapp/repository/(.*)": "<rootDir>/libs/repository/src/$1",
+      "@deliveryapp/repository": "<rootDir>/libs/repository/src"
     }
   }
 }
