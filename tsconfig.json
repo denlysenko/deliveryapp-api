@@ -34,7 +34,9 @@
       "@deliveryapp/settings": ["libs/settings/src"],
       "@deliveryapp/settings/*": ["libs/settings/src/*"],
       "@deliveryapp/repository": ["libs/repository/src"],
-      "@deliveryapp/repository/*": ["libs/repository/src/*"]
+      "@deliveryapp/repository/*": ["libs/repository/src/*"],
+      "@deliveryapp/testing": ["libs/testing/src"],
+      "@deliveryapp/testing/*": ["libs/testing/src/*"]
     }
   },
   "exclude": ["node_modules", "dist"]

@@ -118,7 +118,9 @@
       "@deliveryapp/settings/(.*)": "<rootDir>/libs/settings/src/$1",
       "@deliveryapp/settings": "<rootDir>/libs/settings/src",
       "@deliveryapp/repository/(.*)": "<rootDir>/libs/repository/src/$1",
-      "@deliveryapp/repository": "<rootDir>/libs/repository/src"
+      "@deliveryapp/repository": "<rootDir>/libs/repository/src",
+      "@deliveryapp/testing/(.*)": "<rootDir>/libs/testing/src/$1",
+      "@deliveryapp/testing": "<rootDir>/libs/testing/src"
     }
   }
 }
