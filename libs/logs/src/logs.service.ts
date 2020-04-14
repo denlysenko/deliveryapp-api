@@ -14,9 +14,8 @@ export class LogsService {
     private readonly configService: ConfigService,
   ) {}
 
-  async create(log: ILog): Promise<ILog> {
-    const createdLog = await this.logModel.create(log);
-    return createdLog.toObject();
+  create(log: ILog): Promise<ILog> {
+    return this.logModel.create(log);
   }
 
   async get(query: BaseQuery): Promise<BaseResponse<ILog>> {
