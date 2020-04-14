@@ -5,3 +5,6 @@ export * from './order.interface';
 export * from './payment.interface';
 export * from './auth-payload.interface';
 export * from './jwt-payload.interface';
+export * from './log.interface';
+export * from './base-response.interface';
+export * from './base-query.interface';

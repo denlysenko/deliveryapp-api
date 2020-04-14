@@ -6,9 +6,10 @@ import {
   AuthPayload,
   CreateUserDto,
   JwtPayload,
+  Log,
   User,
 } from '@deliveryapp/core';
-import { LogDto, LogsService } from '@deliveryapp/logs';
+import { LogsService } from '@deliveryapp/logs';
 import { UserEntity } from '@deliveryapp/repository';
 
 import * as jwt from 'jsonwebtoken';
@@ -39,8 +40,7 @@ export class AuthService {
 
     await user.save();
     await this.logsService.create(
-      // TODO: rename
-      new LogDto({
+      new Log({
         action: LogActions.REGISTRATION,
         userId: user.id,
         createdAt: new Date(),

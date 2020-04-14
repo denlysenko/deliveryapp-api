@@ -48,6 +48,5 @@ set('debug', process.env.NODE_ENV === 'development');
       },
     },
   ],
-  exports: [SEQUELIZE],
 })
 export class RepositoryModule {}

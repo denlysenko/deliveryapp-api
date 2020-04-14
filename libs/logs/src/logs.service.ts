@@ -1,37 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 
-import { BaseResponse } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
+import { BaseResponse, ILog, BaseQuery } from '@deliveryapp/core';
 
-import { Model } from 'mongoose';
+import { Model, Document } from 'mongoose';
 
-import { LogDto } from './dto/log.dto';
-import { Log } from './interfaces/log.interface';
+interface LogModel extends ILog, Document {}
 
 @Injectable()
 export class LogsService {
   constructor(
-    @InjectModel('Log') private readonly logModel: Model<Log>,
+    private readonly logModel: Model<LogModel>,
     private readonly configService: ConfigService,
   ) {}
 
-  async create(logDto: LogDto): Promise<Log> {
-    const createdLog = new this.logModel(logDto);
-    return await createdLog.save();
+  async create(log: ILog): Promise<ILog> {
+    const createdLog = await this.logModel.create(log);
+    return createdLog.toObject();
   }
 
-  async get(query?: any): Promise<BaseResponse<Log>> {
-    const conditions = query.filter || {};
-    const count = await this.logModel.countDocuments(conditions);
-    const rows = await this.logModel
-      .find(conditions)
-      .skip(Number(query.offset) || 0)
-      .limit(
-        Number(query.limit) || Number(this.configService.get('DEFAULT_LIMIT')),
-      )
-      .sort(query.order)
-      .exec();
+  async get(query: BaseQuery): Promise<BaseResponse<ILog>> {
+    const where = query.filter ?? {};
+    const offset = query.offset ?? 0;
+    const limit =
+      query.limit ?? parseInt(this.configService.get('DEFAULT_LIMIT'), 10);
+
+    const cursor = this.logModel
+      .find(where)
+      .skip(offset)
+      .limit(limit)
+      .sort(query.order);
+
+    const [count, rows] = await Promise.all([
+      this.logModel.countDocuments(where),
+      cursor.exec(),
+    ]);
 
     return {
       count,

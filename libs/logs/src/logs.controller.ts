@@ -4,33 +4,26 @@ import {
   HttpStatus,
   Query,
   UseGuards,
-  UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
-import {
-  Roles,
-  Role,
-  RolesGuard,
-  ErrorsInterceptor,
-  BaseResponse,
-} from '@deliveryapp/common';
+import { BaseResponse, Role, Roles, RolesGuard } from '@deliveryapp/common';
+import { ILog, JwtAuthGuard, LogDto } from '@deliveryapp/core';
 
-import { LogDto } from './dto/log.dto';
-import { Log } from './interfaces/log.interface';
+import { LogsQuery } from './logs.query';
 import { LogsService } from './logs.service';
-import { LogsQuery } from './queries/log.query';
 
 @ApiTags('logs')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'), RolesGuard)
-@UseInterceptors(ErrorsInterceptor)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('logs')
 export class LogsController {
   constructor(private readonly logsService: LogsService) {}
@@ -38,7 +31,6 @@ export class LogsController {
   /**
    * GET /logs
    */
-  @Get()
   @ApiOperation({ summary: 'Get action logs' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -53,8 +45,41 @@ export class LogsController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Error',
   })
+  @ApiQuery({
+    name: 'filter[action]',
+    description: 'Action',
+    type: String,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'filter[userId]',
+    description: 'User ID',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'order[createdAt]',
+    description: 'Creation Date',
+    type: String,
+    enum: ['asc', 'desc'],
+    required: false,
+  })
+  @ApiQuery({
+    name: 'offset',
+    description: 'Offset',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: 'Limit',
+    type: Number,
+    required: false,
+  })
+  @Get()
   @Roles(Role.ADMIN)
-  async getLogs(@Query() query: LogsQuery): Promise<BaseResponse<Log>> {
-    return await this.logsService.get(query);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  getLogs(@Query() query: LogsQuery): Promise<BaseResponse<ILog>> {
+    return this.logsService.get(query);
   }
 }
