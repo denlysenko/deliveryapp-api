@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 
 import { AuthErrors, LogActions } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
@@ -14,7 +14,6 @@ import { UserEntity } from '@deliveryapp/repository';
 
 import * as jwt from 'jsonwebtoken';
 
-@Injectable()
 export class AuthService {
   constructor(
     private readonly configService: ConfigService,

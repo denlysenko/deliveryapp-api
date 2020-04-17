@@ -8,6 +8,7 @@ export interface User {
   lastName: string;
   company: string;
   phone: string;
+  role?: number;
   address?: Address;
   bankDetails?: BankDetails;
 }

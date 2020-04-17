@@ -1,5 +1,3 @@
-import { Injectable } from '@nestjs/common';
-
 import { ConfigService } from '@deliveryapp/config';
 import { BaseResponse, ILog, BaseQuery } from '@deliveryapp/core';
 
@@ -7,7 +5,6 @@ import { Model, Document } from 'mongoose';
 
 interface LogModel extends ILog, Document {}
 
-@Injectable()
 export class LogsService {
   constructor(
     private readonly logModel: Model<LogModel>,

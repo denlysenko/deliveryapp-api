@@ -7,6 +7,7 @@ import {
   Column,
   DataType,
   Default,
+  Scopes,
   Table,
 } from 'sequelize-typescript';
 
@@ -14,6 +15,29 @@ import { BaseEntity } from './base-entity';
 import { PaymentEntity } from './payment.entity';
 import { UserEntity } from './user.entity';
 
+const USER_ATTRIBUTES = [
+  'id',
+  'email',
+  'firstName',
+  'lastName',
+  'company',
+  'phone',
+];
+
+@Scopes(() => ({
+  client: {
+    include: [
+      {
+        model: UserEntity,
+        as: 'client',
+        attributes: USER_ATTRIBUTES,
+      },
+    ],
+  },
+  payment: {
+    include: [PaymentEntity],
+  },
+}))
 @Table({
   timestamps: true,
   paranoid: true,

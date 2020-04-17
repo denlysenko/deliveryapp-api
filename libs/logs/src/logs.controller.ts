@@ -5,7 +5,6 @@ import {
   Query,
   UseGuards,
   UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -16,7 +15,7 @@ import {
 } from '@nestjs/swagger';
 
 import { BaseResponse, Role, Roles, RolesGuard } from '@deliveryapp/common';
-import { ILog, JwtAuthGuard, LogDto } from '@deliveryapp/core';
+import { ILog, JwtAuthGuard, LogDto, TransformPipe } from '@deliveryapp/core';
 
 import { LogsQuery } from './logs.query';
 import { LogsService } from './logs.service';
@@ -78,7 +77,7 @@ export class LogsController {
   })
   @Get()
   @Roles(Role.ADMIN)
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(TransformPipe)
   getLogs(@Query() query: LogsQuery): Promise<BaseResponse<ILog>> {
     return this.logsService.get(query);
   }

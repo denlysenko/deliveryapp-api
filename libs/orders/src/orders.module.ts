@@ -1,16 +1,38 @@
 import { Module } from '@nestjs/common';
 
-import { DatabaseModule } from '@deliveryapp/database';
-import { MessagesModule } from '@deliveryapp/messages';
+import { ConfigService } from '@deliveryapp/config';
+import { LogsService } from '@deliveryapp/logs';
+import { MessagesModule, MessagesService } from '@deliveryapp/messages';
+import { OrderEntity, ORDERS_REPOSITORY } from '@deliveryapp/repository';
 
 import { OrdersController } from './orders.controller';
-import { ordersProviders } from './orders.providers';
 import { OrderService } from './orders.service';
 
 @Module({
-  imports: [DatabaseModule, MessagesModule],
+  imports: [MessagesModule],
   controllers: [OrdersController],
-  providers: [OrderService, ...ordersProviders],
-  exports: [OrderService, ...ordersProviders],
+  providers: [
+    {
+      provide: ORDERS_REPOSITORY,
+      useValue: OrderEntity,
+    },
+    {
+      provide: OrderService,
+      useFactory: (
+        ordersRepository,
+        configService: ConfigService,
+        messagesService: MessagesService,
+        logsService: LogsService,
+      ) =>
+        new OrderService(
+          ordersRepository,
+          configService,
+          messagesService,
+          logsService,
+        ),
+      inject: [ORDERS_REPOSITORY, ConfigService, MessagesService, LogsService],
+    },
+  ],
+  exports: [OrderService],
 })
 export class OrdersModule {}

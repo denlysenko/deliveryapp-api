@@ -1,7 +1,7 @@
 import { User } from './user.interface';
 
 export interface Order {
-  id: number;
+  id?: number;
   cityFrom: string;
   cityTo: string;
   addressFrom: string;
@@ -15,11 +15,11 @@ export interface Order {
   senderCompany: string;
   senderEmail: string;
   senderPhone: string;
-  status: number;
-  deliveryCosts: number;
-  deliveryDate: Date;
-  paid: boolean;
-  paymentDate: Date;
+  status?: number;
+  deliveryCosts?: number;
+  deliveryDate?: Date;
+  paid?: boolean;
+  paymentDate?: Date;
   invoiceId?: number;
   creatorId?: number;
   creator?: Partial<User>;
