@@ -39,7 +39,7 @@ export class OrderService {
     private readonly logsService: LogsService,
   ) {}
 
-  async getOrders(
+  getOrders(
     query: BaseQuery,
     user: Partial<User>,
   ): Promise<BaseResponse<Order>> {

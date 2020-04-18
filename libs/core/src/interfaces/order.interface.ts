@@ -7,12 +7,12 @@ export interface Order {
   addressFrom: string;
   addressTo: string;
   cargoName: string;
-  additionalData: string;
-  comment: string;
+  additionalData?: string;
+  comment?: string;
   cargoWeight: number;
-  cargoVolume: number;
-  senderName: string;
-  senderCompany: string;
+  cargoVolume?: number;
+  senderName?: string;
+  senderCompany?: string;
   senderEmail: string;
   senderPhone: string;
   status?: number;
