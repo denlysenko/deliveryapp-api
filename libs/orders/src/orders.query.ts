@@ -6,6 +6,9 @@ export class OrdersFilter {
   @Type(() => Number)
   id: number;
 
+  @Type(() => Number)
+  clientId: number;
+
   cityFrom: string;
   cityTo: string;
   cargoName: string;

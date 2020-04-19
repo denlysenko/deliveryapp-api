@@ -1,3 +1,4 @@
+import { PaymentErrors } from '@deliveryapp/common';
 import { Payment } from '@deliveryapp/core';
 
 import {
@@ -6,6 +7,7 @@ import {
   DataType,
   Default,
   HasMany,
+  Scopes,
   Table,
 } from 'sequelize-typescript';
 
@@ -13,6 +15,29 @@ import { BaseEntity } from './base-entity';
 import { OrderEntity } from './order.entity';
 import { UserEntity } from './user.entity';
 
+const USER_ATTRIBUTES = [
+  'id',
+  'email',
+  'firstName',
+  'lastName',
+  'company',
+  'phone',
+];
+
+@Scopes(() => ({
+  client: {
+    include: [
+      {
+        model: UserEntity,
+        as: 'client',
+        attributes: USER_ATTRIBUTES,
+      },
+    ],
+  },
+  order: {
+    include: [OrderEntity],
+  },
+}))
 @Table({
   timestamps: true,
   paranoid: true,
@@ -20,14 +45,29 @@ import { UserEntity } from './user.entity';
 })
 export class PaymentEntity extends BaseEntity<PaymentEntity>
   implements Payment {
-  @Column
+  @Column({
+    validate: {
+      notEmpty: {
+        msg: PaymentErrors.METHOD_REQUIRED_ERR,
+      },
+    },
+  })
   method: number;
 
   @Default(false)
   @Column
   status: boolean;
 
-  @Column
+  @Column({
+    validate: {
+      notEmpty: {
+        msg: PaymentErrors.TOTAL_REQUIRED_ERR,
+      },
+      isNumeric: {
+        msg: PaymentErrors.TOTAL_NOT_NUMBER_ERR,
+      },
+    },
+  })
   total: number;
 
   @Column
@@ -40,6 +80,11 @@ export class PaymentEntity extends BaseEntity<PaymentEntity>
 
   @Column({
     type: DataType.DATE,
+    validate: {
+      notEmpty: {
+        msg: PaymentErrors.DUE_DATE_REQUIRED_ERR,
+      },
+    },
   })
   dueDate: Date;
 

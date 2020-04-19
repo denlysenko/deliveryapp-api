@@ -15,7 +15,8 @@ export class SequelizeQueryPipe implements PipeTransform<object, object> {
       (result, value, key: string) => {
         switch (key) {
           case 'id':
-          case 'role': {
+          case 'role':
+          case 'clientId': {
             return value && Object.assign(result, { [key]: value });
           }
         }

@@ -1,16 +1,42 @@
 import { Module } from '@nestjs/common';
 
-import { DatabaseModule } from '@deliveryapp/database';
-import { MessagesModule } from '@deliveryapp/messages';
+import { ConfigService } from '@deliveryapp/config';
+import { LogsService } from '@deliveryapp/logs';
+import { MessagesModule, MessagesService } from '@deliveryapp/messages';
+import { PaymentEntity, PAYMENTS_REPOSITORY } from '@deliveryapp/repository';
 
-import { paymentsProviders } from './payment.providers';
 import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
 
 @Module({
-  imports: [DatabaseModule, MessagesModule],
+  imports: [MessagesModule],
   controllers: [PaymentsController],
-  providers: [PaymentsService, ...paymentsProviders],
-  exports: [PaymentsService, ...paymentsProviders],
+  providers: [
+    {
+      provide: PAYMENTS_REPOSITORY,
+      useValue: PaymentEntity,
+    },
+    {
+      provide: PaymentsService,
+      useFactory: (
+        paymentsRepository,
+        configService: ConfigService,
+        messagesService: MessagesService,
+        logsService: LogsService,
+      ) =>
+        new PaymentsService(
+          paymentsRepository,
+          configService,
+          messagesService,
+          logsService,
+        ),
+      inject: [
+        PAYMENTS_REPOSITORY,
+        ConfigService,
+        MessagesService,
+        LogsService,
+      ],
+    },
+  ],
 })
 export class PaymentsModule {}

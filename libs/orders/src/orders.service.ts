@@ -73,9 +73,7 @@ export class OrderService {
 
     if (user.role === Role.CLIENT) {
       where.clientId = user.id;
-    }
-
-    if (user.role !== Role.CLIENT) {
+    } else {
       scope.push('client');
     }
 

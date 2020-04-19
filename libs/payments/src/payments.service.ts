@@ -1,159 +1,200 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
-import { Repository, BaseResponse } from '@deliveryapp/common';
+import { BaseResponse, LogActions, Role } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
+import {
+  BaseQuery,
+  CreatePaymentDto,
+  Log,
+  Payment,
+  UpdatePaymentDto,
+  User,
+} from '@deliveryapp/core';
+import { LogsService } from '@deliveryapp/logs';
 import { MessagesService } from '@deliveryapp/messages';
-import { Order } from '@deliveryapp/orders';
-import { User } from '@deliveryapp/users';
+import { PaymentEntity } from '@deliveryapp/repository';
 
-import * as _ from 'lodash';
-import { Sequelize } from 'sequelize';
+import { isNil } from 'lodash';
+import { WhereOptions } from 'sequelize';
 
-import { PaymentDto } from './dto/payment.dto';
-import { Payment } from './entities/Payment';
-
-const USER_ATTRIBUTES = [
-  'id',
-  'email',
-  'firstName',
-  'lastName',
-  'company',
-  'phone',
-];
-
-@Injectable()
 export class PaymentsService {
   constructor(
-    @Inject(Repository.PAYMENTS)
-    private readonly paymentsRepository: typeof Payment,
-    @Inject('Sequelize') private readonly sequelize: Sequelize,
+    private readonly paymentsRepository: typeof PaymentEntity,
     private readonly configService: ConfigService,
     private readonly messagesService: MessagesService,
+    private readonly logsService: LogsService,
   ) {}
 
-  async getAll(
-    query?: any,
-    userId: number = null,
+  getPayments(
+    query: BaseQuery,
+    user: Partial<User>,
   ): Promise<BaseResponse<Payment>> {
-    const where = _.transform(
-      query.filter || {},
-      (result, value, key: string) => {
-        switch (key) {
-          case 'id': {
-            return value && Object.assign(result, { [key]: value }); // destructuring not working here
-          }
-        }
-      },
-      userId ? { clientId: userId } : {},
-    );
+    const where: WhereOptions = { ...query.filter };
+    const offset = query.offset ?? 0;
+    const limit =
+      query.limit ?? parseInt(this.configService.get('DEFAULT_LIMIT'), 10);
+    const order: [string, string][] = query.order
+      ? Object.entries(query.order)
+      : [['id', 'desc']];
 
-    const order: Array<[string, string]> = _.toPairs(query.order || {});
+    const scope = ['order'];
 
-    return await this.paymentsRepository.findAndCountAll({
+    if (user.role === Role.CLIENT) {
+      where.clientId = user.id;
+    } else {
+      scope.push('client');
+    }
+
+    return this.paymentsRepository.scope(scope).findAndCountAll({
       where,
-      limit:
-        Number(query.limit) || Number(this.configService.get('DEFAULT_LIMIT')),
-      offset: Number(query.offset) || 0,
-      order: order.length ? order : [['id', 'asc']],
-      include: [
-        { model: Order },
-        { model: User, as: 'client', attributes: USER_ATTRIBUTES },
-        { model: User, as: 'creator', attributes: USER_ATTRIBUTES },
-      ],
+      limit,
+      offset,
+      order,
+      nest: true,
+      distinct: true,
+      col: `${PaymentEntity.name}.id`,
     });
   }
 
-  async getById(id: number): Promise<Payment> {
-    return await this.paymentsRepository.findByPk(id, {
-      include: [
-        { model: Order },
-        { model: User, as: 'client', attributes: USER_ATTRIBUTES },
-        { model: User, as: 'creator', attributes: USER_ATTRIBUTES },
-      ],
-    });
+  async getPayment(id: number, user: Partial<User>): Promise<Payment> {
+    const where: WhereOptions = { id };
+    const scope = ['order'];
+
+    if (user.role === Role.CLIENT) {
+      where.clientId = user.id;
+    } else {
+      scope.push('client');
+    }
+
+    const payment = await this.paymentsRepository
+      .scope(scope)
+      .findOne({ where, nest: true });
+
+    if (isNil(payment)) {
+      throw new NotFoundException();
+    }
+
+    return payment;
   }
 
-  async create(paymentDto: PaymentDto, userId: number): Promise<Payment> {
-    const savedPayment = await this.sequelize.transaction(
+  async create(
+    paymentDto: CreatePaymentDto,
+    user: Partial<User>,
+  ): Promise<{ id: number }> {
+    const { orders, ...newPayment } = paymentDto;
+
+    const createdPayment = await this.paymentsRepository.sequelize.transaction(
       async (transaction) => {
-        const { orders, ...createdPayment } = paymentDto;
-        const payment = await Payment.create(
+        const payment: PaymentEntity = await PaymentEntity.create(
           {
-            ...createdPayment,
-            creatorId: userId,
+            ...newPayment,
+            creatorId: user.id,
           },
           { transaction },
         );
 
-        if (orders && orders.length) {
-          await payment.$set('Orders', orders, { transaction });
-        }
+        await payment.$set('orders', orders, { transaction });
 
         return payment;
       },
     );
 
-    const message = {
-      text: `New invoice created # ${savedPayment.id}`,
-      // tslint:disable-next-line:no-string-literal
-      recipientId: savedPayment['clientId'],
-    };
+    await this.logsService.create(
+      new Log({
+        action: LogActions.ORDER_CREATE,
+        userId: user.id,
+        createdAt: new Date(),
+        data: {
+          id: createdPayment.id,
+        },
+      }),
+    );
 
-    try {
-      await this.messagesService.saveAndSendToUser(
-        // tslint:disable-next-line:no-string-literal
-        savedPayment['clientId'],
-        message,
-      );
-    } catch (err) {
-      // tslint:disable-next-line:no-console
-      console.error('Error while sending Push', err);
-    }
+    // const message = {
+    //   text: `New invoice created # ${savedPayment.id}`,
+    //   // tslint:disable-next-line:no-string-literal
+    //   recipientId: savedPayment['clientId'],
+    // };
 
-    // refetch with associations
-    return this.getById(savedPayment.id);
+    // try {
+    //   await this.messagesService.saveAndSendToUser(
+    //     // tslint:disable-next-line:no-string-literal
+    //     savedPayment['clientId'],
+    //     message,
+    //   );
+    // } catch (err) {
+    //   // tslint:disable-next-line:no-console
+    //   console.error('Error while sending Push', err);
+    // }
+    return { id: createdPayment.id };
   }
 
-  async update(id: number, paymentDto: PaymentDto): Promise<Payment> {
-    const payment = await this.paymentsRepository.findByPk(id);
+  async update(
+    id: number,
+    paymentDto: UpdatePaymentDto,
+    user: Partial<User>,
+  ): Promise<{ id: number }> {
+    const where: WhereOptions = { id };
 
-    if (!payment) {
+    if (user.role === Role.CLIENT) {
+      where.clientId = user.id;
+    }
+
+    const payment: PaymentEntity = await this.paymentsRepository.findOne({
+      where,
+    });
+
+    if (isNil(payment)) {
       throw new NotFoundException();
     }
 
-    await this.sequelize.transaction(async (transaction) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { orders, clientId, ...updatedPayment } = paymentDto;
-      const promises = [];
+    const updatedPayment = await this.paymentsRepository.sequelize.transaction(
+      async (transaction) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { orders, clientId, ...updatedPayment } = paymentDto;
+        const promises = [];
 
-      payment.set(updatedPayment);
-      promises.push(payment.save({ transaction }));
+        payment.set(updatedPayment);
+        promises.push(payment.save({ transaction }));
 
-      if (orders && orders.length) {
-        promises.push(payment.$set('Orders', orders, { transaction }));
-      }
+        if (!isNil(orders) && orders.length > 0) {
+          promises.push(payment.$set('orders', orders, { transaction }));
+        }
 
-      await Promise.all(promises);
-    });
+        await Promise.all(promises);
 
-    const message = {
-      text: `Invoice # ${payment.id} has been updated`,
-      // tslint:disable-next-line:no-string-literal
-      recipientId: payment['clientId'],
-    };
+        return payment;
+      },
+    );
 
-    try {
-      await this.messagesService.saveAndSendToUser(
-        // tslint:disable-next-line:no-string-literal
-        payment['clientId'],
-        message,
-      );
-    } catch (err) {
-      // tslint:disable-next-line:no-console
-      console.error('Error while sending Push', err);
-    }
+    await this.logsService.create(
+      new Log({
+        action: LogActions.PAYMENT_UPDATE,
+        userId: user.id,
+        createdAt: new Date(),
+        data: {
+          id: payment.id,
+        },
+      }),
+    );
 
-    // refetch with associations
-    return this.getById(id);
+    // const message = {
+    //   text: `Invoice # ${payment.id} has been updated`,
+    //   // tslint:disable-next-line:no-string-literal
+    //   recipientId: payment['clientId'],
+    // };
+
+    // try {
+    //   await this.messagesService.saveAndSendToUser(
+    //     // tslint:disable-next-line:no-string-literal
+    //     payment['clientId'],
+    //     message,
+    //   );
+    // } catch (err) {
+    //   // tslint:disable-next-line:no-console
+    //   console.error('Error while sending Push', err);
+    // }
+
+    return { id: updatedPayment.id };
   }
 }

@@ -33,6 +33,5 @@ import { OrderService } from './orders.service';
       inject: [ORDERS_REPOSITORY, ConfigService, MessagesService, LogsService],
     },
   ],
-  exports: [OrderService],
 })
 export class OrdersModule {}

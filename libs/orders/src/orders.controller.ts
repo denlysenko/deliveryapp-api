@@ -87,6 +87,11 @@ export class OrdersController {
     required: false,
   })
   @ApiQuery({
+    name: 'filter[clientId]',
+    description: 'Client',
+    required: false,
+  })
+  @ApiQuery({
     name: 'order[id]',
     description: 'Order by ID or Number',
     enum: ['asc', 'desc'],

@@ -1,12 +1,13 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty, PartialType, OmitType, PickType } from '@nestjs/swagger';
 
 import { BaseResponse, OrderErrors } from '@deliveryapp/common';
 
 import { Exclude, Type } from 'class-transformer';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
-import { Order, Payment } from '../interfaces';
+import { Order, Payment, User } from '../interfaces';
 import { PaymentDto } from './payment.dto';
+import { UserDto } from './user.dto';
 
 export class OrderDto implements Order {
   @ApiProperty()
@@ -70,10 +71,23 @@ export class OrderDto implements Order {
   readonly invoiceId: number;
 
   @ApiProperty({
-    type: PaymentDto,
+    type: () => PaymentDto,
   })
   @Type(() => PaymentDto)
   readonly payment: Payment;
+
+  @ApiProperty({
+    type: PickType(UserDto, [
+      'id',
+      'email',
+      'firstName',
+      'lastName',
+      'company',
+      'phone',
+    ]),
+  })
+  @Type(() => UserDto)
+  readonly client: Partial<User>;
 
   @Exclude()
   readonly clientId: number;
@@ -93,7 +107,7 @@ export class OrdersDto implements BaseResponse<Order> {
   @ApiProperty()
   readonly count: number;
 
-  @ApiProperty({ isArray: true, type: OrderDto })
+  @ApiProperty({ isArray: true, type: OmitType(OrderDto, ['payment']) })
   readonly rows: OrderDto[];
 }
 
