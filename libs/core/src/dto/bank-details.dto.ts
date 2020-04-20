@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { Exclude } from 'class-transformer';
+
 import { BankDetails } from '../interfaces';
 
 export class BankDetailsDto implements BankDetails {
@@ -14,4 +16,11 @@ export class BankDetailsDto implements BankDetails {
 
   @ApiProperty()
   readonly swift: string;
+
+  @Exclude()
+  belongsToCompany: boolean;
+
+  constructor(bankDetailsEntity: BankDetails) {
+    Object.assign(this, bankDetailsEntity);
+  }
 }

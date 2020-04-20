@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { Exclude } from 'class-transformer';
+
 import { Address } from '../interfaces';
 
 export class AddressDto implements Address {
@@ -14,4 +16,11 @@ export class AddressDto implements Address {
 
   @ApiProperty()
   readonly house: string;
+
+  @Exclude()
+  belongsToCompany: boolean;
+
+  constructor(addressEntity: Address) {
+    Object.assign(this, addressEntity);
+  }
 }

@@ -1,52 +1,45 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
-  ApiParam,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
+import { CurrentUser, Role, Roles, RolesGuard } from '@deliveryapp/common';
 import {
-  Roles,
-  Self,
-  LogActions,
-  Role,
-  RolesGuard,
+  Address,
+  AddressDto,
+  BankDetails,
+  BankDetailsDto,
   ErrorsInterceptor,
-  ValidationError,
-} from '@deliveryapp/common';
-import { LogDto, LogsService } from '@deliveryapp/logs';
-import { User } from '@deliveryapp/users';
+  JwtAuthGuard,
+  User,
+} from '@deliveryapp/core';
 
-import { CompanyAddressDto } from './dto/company-address.dto';
-import { CompanyBankDetailsDto } from './dto/company-bank-details.dto';
-import { CompanyAddress } from './entities/CompanyAddress';
-import { CompanyBankDetails } from './entities/CompanyBankDetails';
 import { SettingsService } from './settings.service';
 
 @ApiTags('settings')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(ErrorsInterceptor)
 @Controller('settings')
 export class SettingsController {
-  constructor(
-    private readonly settingsService: SettingsService,
-    private readonly logsService: LogsService,
-  ) {}
+  constructor(private readonly settingsService: SettingsService) {}
 
   /**
    * GET /settings/address
@@ -56,7 +49,7 @@ export class SettingsController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns company`s address',
-    type: CompanyAddressDto,
+    type: AddressDto,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -67,8 +60,10 @@ export class SettingsController {
     description: 'Forbidden Error',
   })
   @Roles(Role.ADMIN)
-  async getAddress(): Promise<CompanyAddress> {
-    return await this.settingsService.getAddress();
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getAddress(): Promise<Address> {
+    const address = await this.settingsService.getAddress();
+    return new AddressDto(address);
   }
 
   /**
@@ -78,8 +73,7 @@ export class SettingsController {
   @ApiOperation({ summary: 'Create company address' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Returns created company`s address',
-    type: CompanyAddressDto,
+    description: 'Returns created ID of company`s address',
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -92,25 +86,14 @@ export class SettingsController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
-    type: ValidationError,
   })
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.OK)
-  async createAddress(
-    @Self() user: User,
-    @Body() addressDto: CompanyAddressDto,
-  ): Promise<CompanyAddress> {
-    const address = await this.settingsService.createAddress(addressDto);
-
-    await this.logsService.create(
-      new LogDto({
-        action: LogActions.CREATE_COMPANY_ADDRESS,
-        userId: user.id,
-        createdAt: new Date(),
-      }),
-    );
-
-    return address;
+  createAddress(
+    @Body() addressDto: AddressDto,
+    @CurrentUser() user: Partial<User>,
+  ): Promise<{ id: number }> {
+    return this.settingsService.createAddress(addressDto, user);
   }
 
   /**
@@ -125,8 +108,7 @@ export class SettingsController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Returns updated company`s address',
-    type: CompanyAddressDto,
+    description: 'Returns ID of updated company`s address',
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -139,26 +121,15 @@ export class SettingsController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
-    type: ValidationError,
   })
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.OK)
-  async updateAddress(
-    @Self() user: User,
-    @Param('id') id: number,
-    @Body() addressDto: CompanyAddressDto,
-  ): Promise<CompanyAddress> {
-    const address = await this.settingsService.updateAddress(id, addressDto);
-
-    await this.logsService.create(
-      new LogDto({
-        action: LogActions.UPDATE_COMPANY_ADDRESS,
-        userId: user.id,
-        createdAt: new Date(),
-      }),
-    );
-
-    return address;
+  updateAddress(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() addressDto: AddressDto,
+    @CurrentUser() user: Partial<User>,
+  ): Promise<{ id: number }> {
+    return this.settingsService.updateAddress(id, addressDto, user);
   }
 
   /**
@@ -169,7 +140,7 @@ export class SettingsController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns company`s bank details',
-    type: CompanyBankDetailsDto,
+    type: BankDetailsDto,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -180,8 +151,10 @@ export class SettingsController {
     description: 'Forbidden Error',
   })
   @Roles(Role.ADMIN)
-  async getBankDetails(): Promise<CompanyBankDetails> {
-    return await this.settingsService.getBankDetails();
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getBankDetails(): Promise<BankDetails> {
+    const bankDetails = await this.settingsService.getBankDetails();
+    return new BankDetailsDto(bankDetails);
   }
 
   /**
@@ -191,8 +164,7 @@ export class SettingsController {
   @ApiOperation({ summary: 'Create company bank details' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Returns created company`s bank details',
-    type: CompanyBankDetailsDto,
+    description: 'Returns ID of created company`s bank details',
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -205,27 +177,14 @@ export class SettingsController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
-    type: ValidationError,
   })
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.OK)
-  async createBankDetails(
-    @Self() user: User,
-    @Body() bankDetailsDto: CompanyBankDetailsDto,
-  ): Promise<CompanyBankDetails> {
-    const bankDetails = await this.settingsService.createBankDetails(
-      bankDetailsDto,
-    );
-
-    await this.logsService.create(
-      new LogDto({
-        action: LogActions.CREATE_COMPANY_BANK_DETAILS,
-        userId: user.id,
-        createdAt: new Date(),
-      }),
-    );
-
-    return bankDetails;
+  createBankDetails(
+    @Body() bankDetailsDto: BankDetailsDto,
+    @CurrentUser() user: Partial<User>,
+  ): Promise<{ id: number }> {
+    return this.settingsService.createBankDetails(bankDetailsDto, user);
   }
 
   /**
@@ -240,8 +199,7 @@ export class SettingsController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Returns updated company`s bank details',
-    type: CompanyBankDetailsDto,
+    description: 'Returns ID of updated company`s bank details',
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -254,28 +212,14 @@ export class SettingsController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
-    type: ValidationError,
   })
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.OK)
-  async updateBankDetails(
-    @Self() user: User,
-    @Param('id') id: number,
-    @Body() bankDetailsDto: CompanyBankDetailsDto,
-  ): Promise<CompanyBankDetails> {
-    const bankDetails = await this.settingsService.updateBankDetails(
-      id,
-      bankDetailsDto,
-    );
-
-    await this.logsService.create(
-      new LogDto({
-        action: LogActions.UPDATE_COMPANY_BANK_DETAILS,
-        userId: user.id,
-        createdAt: new Date(),
-      }),
-    );
-
-    return bankDetails;
+  updateBankDetails(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() bankDetailsDto: BankDetailsDto,
+    @CurrentUser() user: Partial<User>,
+  ): Promise<{ id: number }> {
+    return this.settingsService.updateBankDetails(id, bankDetailsDto, user);
   }
 }

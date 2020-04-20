@@ -66,16 +66,16 @@ export class PaymentDto implements Payment {
   readonly client: Partial<User>;
 
   @Exclude()
-  readonly creator: Partial<User>;
+  creator: Partial<User>;
 
   @Exclude()
-  readonly clientId: number;
+  clientId: number;
 
   @Exclude()
-  readonly creatorId: number;
+  creatorId: number;
 
   @Exclude()
-  readonly deletedAt: Date;
+  deletedAt: Date;
 
   constructor(paymentEntity: Payment) {
     Object.assign(this, paymentEntity);

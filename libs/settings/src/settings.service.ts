@@ -1,68 +1,120 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
-import { Repository } from '@deliveryapp/common';
+import { LogActions } from '@deliveryapp/common';
+import { Address, BankDetails, Log, User } from '@deliveryapp/core';
+import { LogsService } from '@deliveryapp/logs';
+import { AddressEntity, BankDetailsEntity } from '@deliveryapp/repository';
 
-import { CompanyAddressDto } from './dto/company-address.dto';
-import { CompanyBankDetailsDto } from './dto/company-bank-details.dto';
-import { CompanyAddress } from './entities/CompanyAddress';
-import { CompanyBankDetails } from './entities/CompanyBankDetails';
-
-@Injectable()
 export class SettingsService {
   constructor(
-    @Inject(Repository.COMPANY_ADDRESS)
-    private readonly addressRepository: typeof CompanyAddress,
-    @Inject(Repository.COMPANY_BANK_DETAILS)
-    private readonly bankDetailsRepository: typeof CompanyBankDetails,
+    private readonly addressRepository: typeof AddressEntity,
+    private readonly bankDetailsRepository: typeof BankDetailsEntity,
+    private readonly logsService: LogsService,
   ) {}
 
-  async getAddress(): Promise<CompanyAddress> {
-    const address = await this.addressRepository.findAll({ raw: true });
+  async getAddress(): Promise<Address> {
+    const address = await this.addressRepository.findAll({
+      where: { belongsToCompany: true },
+      raw: true,
+    });
     return address[0];
   }
 
-  async getBankDetails(): Promise<CompanyBankDetails> {
-    const bankDetails = await this.bankDetailsRepository.findAll({ raw: true });
+  async getBankDetails(): Promise<BankDetails> {
+    const bankDetails = await this.bankDetailsRepository.findAll({
+      where: { belongsToCompany: true },
+      raw: true,
+    });
     return bankDetails[0];
   }
 
-  async createAddress(addressDto: CompanyAddressDto): Promise<CompanyAddress> {
-    return await CompanyAddress.create(addressDto);
+  async createAddress(
+    addressDto: Address,
+    user: Partial<User>,
+  ): Promise<{ id: number }> {
+    const address: AddressEntity = await AddressEntity.create({
+      ...addressDto,
+      belongsToCompany: true,
+    });
+
+    await this.logsService.create(
+      new Log({
+        action: LogActions.CREATE_COMPANY_ADDRESS,
+        userId: user.id,
+        createdAt: new Date(),
+      }),
+    );
+
+    return { id: address.id };
   }
 
   async updateAddress(
     id: number,
-    addressDto: CompanyAddressDto,
-  ): Promise<CompanyAddress> {
-    const address = await this.addressRepository.findByPk(id);
+    addressDto: Partial<Address>,
+    user: Partial<User>,
+  ): Promise<{ id: number }> {
+    const address: AddressEntity = await this.addressRepository.findByPk(id);
 
     if (!address) {
       throw new NotFoundException();
     }
 
-    address.set(addressDto);
+    await address.update(addressDto);
 
-    return await address.save();
+    await this.logsService.create(
+      new Log({
+        action: LogActions.UPDATE_COMPANY_ADDRESS,
+        userId: user.id,
+        createdAt: new Date(),
+      }),
+    );
+
+    return { id: address.id };
   }
 
   async createBankDetails(
-    bankDetailsDto: CompanyBankDetailsDto,
-  ): Promise<CompanyBankDetails> {
-    return await CompanyBankDetails.create(bankDetailsDto);
+    bankDetailsDto: BankDetails,
+    user: Partial<User>,
+  ): Promise<{ id: number }> {
+    const bankDetails: BankDetailsEntity = await BankDetailsEntity.create({
+      ...bankDetailsDto,
+      belongsToCompany: true,
+    });
+
+    await this.logsService.create(
+      new Log({
+        action: LogActions.CREATE_COMPANY_BANK_DETAILS,
+        userId: user.id,
+        createdAt: new Date(),
+      }),
+    );
+
+    return { id: bankDetails.id };
   }
 
   async updateBankDetails(
     id: number,
-    bankDetailsDto: CompanyBankDetailsDto,
-  ): Promise<CompanyBankDetails> {
-    const bankDetails = await this.bankDetailsRepository.findByPk(id);
+    bankDetailsDto: BankDetails,
+    user: Partial<User>,
+  ): Promise<{ id: number }> {
+    const bankDetails: BankDetailsEntity = await this.bankDetailsRepository.findByPk(
+      id,
+    );
 
     if (!bankDetails) {
       throw new NotFoundException();
     }
 
-    bankDetails.set(bankDetailsDto);
+    await bankDetails.update(bankDetailsDto);
 
-    return await bankDetails.save();
+    await this.logsService.create(
+      new Log({
+        action: LogActions.UPDATE_COMPANY_BANK_DETAILS,
+        userId: user.id,
+        createdAt: new Date(),
+      }),
+    );
+
+    return { id: bankDetails.id };
   }
 }

@@ -5,7 +5,7 @@ import { AuthModule } from '@deliveryapp/auth';
 import { OrdersModule } from '@deliveryapp/orders';
 import { PaymentsModule } from '@deliveryapp/payments';
 import { RepositoryModule } from '@deliveryapp/repository';
-// import { SettingsModule } from '@deliveryapp/settings';
+import { SettingsModule } from '@deliveryapp/settings';
 // import { UsersModule } from '@deliveryapp/users';
 import { LogsModule } from '@deliveryapp/logs';
 import { ConfigModule } from '@deliveryapp/config';
@@ -18,8 +18,8 @@ import { ConfigModule } from '@deliveryapp/config';
     AuthModule,
     OrdersModule,
     PaymentsModule,
+    SettingsModule,
     // UsersModule,
-    // SettingsModule,
     // MessagesModule,
   ],
 })

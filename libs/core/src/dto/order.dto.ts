@@ -90,10 +90,10 @@ export class OrderDto implements Order {
   readonly client: Partial<User>;
 
   @Exclude()
-  readonly clientId: number;
+  clientId: number;
 
   @Exclude()
-  readonly creatorId: number;
+  creatorId: number;
 
   @Exclude()
   deletedAt: Date;
