@@ -5,3 +5,4 @@ export * from './mocks/model';
 
 export * from './test-data/user';
 export * from './test-data/order';
+export * from './test-data/payment';

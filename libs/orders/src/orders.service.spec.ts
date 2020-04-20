@@ -105,38 +105,44 @@ describe('OrdersService', () => {
 
     it('should apply defaults', async () => {
       await service.getOrders({}, { role: Role.ADMIN });
-      expect(orderEntity.findAndCountAll).toBeCalledWith({
-        where: {},
-        limit: DEFAULT_LIMIT,
-        offset: 0,
-        order: [['id', 'desc']],
-        raw: true,
-        nest: true,
-      });
+      expect(orderEntity.findAndCountAll).toBeCalledWith(
+        expect.objectContaining({
+          where: {},
+          limit: DEFAULT_LIMIT,
+          offset: 0,
+          order: [['id', 'desc']],
+        }),
+      );
     });
 
     it('should apply passed filters', async () => {
       await service.getOrders(query, { role: Role.ADMIN });
-      expect(orderEntity.findAndCountAll).toBeCalledWith({
-        where: query.filter,
-        limit: query.limit,
-        offset: query.offset,
-        order: Object.entries(query.order),
-        raw: true,
-        nest: true,
-      });
+      expect(orderEntity.findAndCountAll).toBeCalledWith(
+        expect.objectContaining({
+          where: query.filter,
+          limit: query.limit,
+          offset: query.offset,
+          order: Object.entries(query.order),
+        }),
+      );
     });
 
     it('should add clientId to query for client', async () => {
       await service.getOrders(query, { id: 2, role: Role.CLIENT });
-      expect(orderEntity.findAndCountAll).toBeCalledWith({
-        where: { ...query.filter, clientId: 2 },
-        limit: query.limit,
-        offset: query.offset,
-        order: Object.entries(query.order),
-        raw: true,
-        nest: true,
-      });
+      expect(orderEntity.findAndCountAll).toBeCalledWith(
+        expect.objectContaining({
+          where: { ...query.filter, clientId: 2 },
+          limit: query.limit,
+          offset: query.offset,
+          order: Object.entries(query.order),
+        }),
+      );
+    });
+
+    it('should return base response of Order', async () => {
+      expect(
+        await service.getOrders(query, { id: 2, role: Role.CLIENT }),
+      ).toEqual({ count: 1, rows: [order] });
     });
   });
 
@@ -147,11 +153,21 @@ describe('OrdersService', () => {
 
     it('should add clientId to query for client', async () => {
       await service.getOrder(1, { role: Role.CLIENT, id: 2 });
-      expect(orderEntity.findOne).toBeCalledWith({
-        where: { id: 1, clientId: 2 },
-        raw: true,
-        nest: true,
-      });
+      expect(orderEntity.findOne).toBeCalledWith(
+        expect.objectContaining({
+          where: { id: 1, clientId: 2 },
+        }),
+      );
+    });
+
+    it('should throw 404', async () => {
+      jest.spyOn(orderEntity, 'findOne').mockResolvedValueOnce(null);
+
+      try {
+        await service.getOrder(1, { role: Role.CLIENT, id: 2 });
+      } catch (err) {
+        expect(err.status).toEqual(HttpStatus.NOT_FOUND);
+      }
     });
   });
 

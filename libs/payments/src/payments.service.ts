@@ -25,7 +25,7 @@ export class PaymentsService {
     private readonly logsService: LogsService,
   ) {}
 
-  getPayments(
+  async getPayments(
     query: BaseQuery,
     user: Partial<User>,
   ): Promise<BaseResponse<Payment>> {
@@ -45,15 +45,24 @@ export class PaymentsService {
       scope.push('client');
     }
 
-    return this.paymentsRepository.scope(scope).findAndCountAll({
-      where,
-      limit,
-      offset,
-      order,
-      nest: true,
-      distinct: true,
-      col: `${PaymentEntity.name}.id`,
-    });
+    const { count, rows } = await this.paymentsRepository
+      .scope(scope)
+      .findAndCountAll({
+        where,
+        limit,
+        offset,
+        order,
+        nest: true,
+        distinct: true,
+        col: `${PaymentEntity.name}.id`,
+      });
+
+    // this transformation to JSON is for fixing sequelize issue when using raw: true
+    // https://github.com/sequelize/sequelize/issues/10712
+    return {
+      count,
+      rows: rows.map((row: PaymentEntity) => row.toJSON()),
+    };
   }
 
   async getPayment(id: number, user: Partial<User>): Promise<Payment> {
@@ -66,7 +75,7 @@ export class PaymentsService {
       scope.push('client');
     }
 
-    const payment = await this.paymentsRepository
+    const payment: PaymentEntity = await this.paymentsRepository
       .scope(scope)
       .findOne({ where, nest: true });
 
@@ -74,7 +83,9 @@ export class PaymentsService {
       throw new NotFoundException();
     }
 
-    return payment;
+    // this transformation to JSON is for fixing sequelize issue when using raw: true
+    // https://github.com/sequelize/sequelize/issues/10712
+    return payment.toJSON() as Payment;
   }
 
   async create(
@@ -134,15 +145,7 @@ export class PaymentsService {
     paymentDto: UpdatePaymentDto,
     user: Partial<User>,
   ): Promise<{ id: number }> {
-    const where: WhereOptions = { id };
-
-    if (user.role === Role.CLIENT) {
-      where.clientId = user.id;
-    }
-
-    const payment: PaymentEntity = await this.paymentsRepository.findOne({
-      where,
-    });
+    const payment: PaymentEntity = await this.paymentsRepository.findByPk(id);
 
     if (isNil(payment)) {
       throw new NotFoundException();

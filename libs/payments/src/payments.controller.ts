@@ -113,9 +113,7 @@ export class PaymentsController {
 
     return {
       count,
-      // this transformation to JSON is for fixing sequelize issue when using raw: true
-      // https://github.com/sequelize/sequelize/issues/10712
-      rows: rows.map((row: any) => new PaymentDto(row.toJSON())),
+      rows: rows.map((row) => new PaymentDto(row)),
     };
   }
 
@@ -148,9 +146,7 @@ export class PaymentsController {
     @CurrentUser() user: Partial<User>,
   ): Promise<Payment> {
     const payment = await this.paymentsService.getPayment(id, user);
-    // this transformation to JSON is for fixing sequelize issue when using raw: true
-    // https://github.com/sequelize/sequelize/issues/10712
-    return new PaymentDto((payment as any).toJSON());
+    return new PaymentDto(payment);
   }
 
   /**
