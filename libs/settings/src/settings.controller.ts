@@ -20,7 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { CurrentUser, Role, Roles, RolesGuard } from '@deliveryapp/common';
+import { CurrentUser, Role, Roles } from '@deliveryapp/common';
 import {
   Address,
   AddressDto,
@@ -28,6 +28,7 @@ import {
   BankDetailsDto,
   ErrorsInterceptor,
   JwtAuthGuard,
+  RolesGuard,
   User,
 } from '@deliveryapp/core';
 
