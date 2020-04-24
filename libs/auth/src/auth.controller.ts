@@ -19,11 +19,11 @@ import { CurrentUser } from '@deliveryapp/common';
 import {
   AuthPayload,
   AuthPayloadDto,
-  CreateUserDto,
   ErrorsInterceptor,
   JwtAuthGuard,
   LoginDto,
   LoginErrorDto,
+  RegisterUserDto,
   User,
   ValidationError,
   ValidationErrorPipe,
@@ -53,6 +53,7 @@ export class AuthController {
     description: 'Authorization Error',
     type: LoginErrorDto,
   })
+  @UsePipes(ValidationErrorPipe)
   @HttpCode(HttpStatus.OK)
   authenticate(@Body() loginDto: LoginDto): Promise<AuthPayload> {
     const { email, password } = loginDto;
@@ -74,8 +75,9 @@ export class AuthController {
     description: 'Validation Error',
     type: ValidationError,
   })
+  @UsePipes(ValidationErrorPipe)
   @HttpCode(HttpStatus.OK)
-  register(@Body() createUserDto: CreateUserDto): Promise<AuthPayload> {
+  register(@Body() createUserDto: RegisterUserDto): Promise<AuthPayload> {
     return this.authService.register(createUserDto);
   }
 

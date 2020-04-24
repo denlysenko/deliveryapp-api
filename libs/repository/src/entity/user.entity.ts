@@ -6,10 +6,10 @@ import {
   AllowNull,
   BeforeCreate,
   BeforeUpdate,
-  BelongsTo,
   Column,
   DataType,
   Default,
+  HasOne,
   Scopes,
   Table,
 } from 'sequelize-typescript';
@@ -87,10 +87,10 @@ export class UserEntity extends BaseEntity<UserEntity> implements User {
   @Column
   salt: string;
 
-  @BelongsTo(() => AddressEntity, 'addressId')
+  @HasOne(() => AddressEntity, 'userId')
   address: AddressEntity;
 
-  @BelongsTo(() => BankDetailsEntity, 'bankDetailsId')
+  @HasOne(() => BankDetailsEntity, 'userId')
   bankDetails: BankDetailsEntity;
 
   @BeforeCreate

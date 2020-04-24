@@ -1,8 +1,9 @@
 import { BankDetails } from '@deliveryapp/core';
 
-import { Column, Default, Table } from 'sequelize-typescript';
+import { Column, Default, Table, BelongsTo } from 'sequelize-typescript';
 
 import { BaseEntity } from './base-entity';
+import { UserEntity } from './user.entity';
 
 @Table({
   timestamps: true,
@@ -25,4 +26,7 @@ export class BankDetailsEntity extends BaseEntity<BankDetailsEntity>
   @Default(false)
   @Column
   belongsToCompany: boolean;
+
+  @BelongsTo(() => UserEntity, 'userId')
+  user?: UserEntity;
 }

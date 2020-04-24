@@ -5,3 +5,4 @@ export * from './login.dto';
 export * from './log.dto';
 export * from './order.dto';
 export * from './payment.dto';
+export * from './password.dto';

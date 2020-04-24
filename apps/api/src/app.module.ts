@@ -6,7 +6,7 @@ import { OrdersModule } from '@deliveryapp/orders';
 import { PaymentsModule } from '@deliveryapp/payments';
 import { RepositoryModule } from '@deliveryapp/repository';
 import { SettingsModule } from '@deliveryapp/settings';
-// import { UsersModule } from '@deliveryapp/users';
+import { UsersModule } from '@deliveryapp/users';
 import { LogsModule } from '@deliveryapp/logs';
 import { ConfigModule } from '@deliveryapp/config';
 
@@ -19,7 +19,7 @@ import { ConfigModule } from '@deliveryapp/config';
     OrdersModule,
     PaymentsModule,
     SettingsModule,
-    // UsersModule,
+    UsersModule,
     // MessagesModule,
   ],
 })

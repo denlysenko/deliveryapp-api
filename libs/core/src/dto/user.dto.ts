@@ -1,11 +1,11 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty, PartialType, OmitType } from '@nestjs/swagger';
 
 import { UserErrors } from '@deliveryapp/common';
-import { UserEntity } from '@deliveryapp/repository';
 
+import { Type } from 'class-transformer';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
-import { User } from '../interfaces';
+import { BaseResponse, User } from '../interfaces';
 import { AddressDto } from './address.dto';
 import { BankDetailsDto } from './bank-details.dto';
 
@@ -29,14 +29,36 @@ export class UserDto implements User {
   readonly phone: string;
 
   @ApiProperty()
+  readonly role: number;
+
+  @Type(() => AddressDto)
+  @ApiProperty()
   address?: AddressDto;
 
+  @Type(() => BankDetailsDto)
   @ApiProperty()
   bankDetails?: BankDetailsDto;
 
-  constructor(userEntity: UserEntity) {
+  @ApiProperty()
+  readonly createdAt: Date;
+
+  @ApiProperty()
+  readonly updatedAt: Date;
+
+  constructor(userEntity: User) {
     Object.assign(this, userEntity);
   }
+}
+
+export class UsersDto implements BaseResponse<User> {
+  @ApiProperty()
+  readonly count: number;
+
+  @ApiProperty({
+    isArray: true,
+    type: OmitType(UserDto, ['address', 'bankDetails']),
+  })
+  readonly rows: UserDto[];
 }
 
 export class CreateUserDto implements User {
@@ -49,13 +71,13 @@ export class CreateUserDto implements User {
       message: UserErrors.INVALID_EMAIL_ERR,
     },
   )
-  @ApiProperty(/*{ required: true }*/)
+  @ApiProperty()
   readonly email: string;
 
   @IsNotEmpty({
     message: UserErrors.PASSWORD_REQUIRED_ERR,
   })
-  @ApiProperty(/*{ required: true }*/)
+  @ApiProperty()
   readonly password: string;
 
   @ApiProperty()
@@ -69,9 +91,16 @@ export class CreateUserDto implements User {
 
   @ApiProperty()
   readonly phone: string;
+
+  @IsNotEmpty({
+    message: UserErrors.ROLE_REQUIRED_ERR,
+  })
+  @ApiProperty()
+  readonly role: number;
 }
 
-export class UpdateUserDto extends PartialType(CreateUserDto)
+export class UpdateProfileDto
+  extends OmitType(PartialType(CreateUserDto), ['password'])
   implements Partial<User> {
   @ApiProperty()
   address?: AddressDto;
@@ -79,3 +108,10 @@ export class UpdateUserDto extends PartialType(CreateUserDto)
   @ApiProperty()
   bankDetails?: BankDetailsDto;
 }
+
+export class UpdateUserDto
+  extends OmitType(PartialType(CreateUserDto), ['password'])
+  implements Partial<User> {}
+
+export class RegisterUserDto extends OmitType(CreateUserDto, ['role'])
+  implements Partial<User> {}

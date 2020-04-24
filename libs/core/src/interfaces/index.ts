@@ -8,3 +8,4 @@ export * from './jwt-payload.interface';
 export * from './log.interface';
 export * from './base-response.interface';
 export * from './base-query.interface';
+export * from './change-password-payload.interface';
