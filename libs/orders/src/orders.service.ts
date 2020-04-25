@@ -3,13 +3,14 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   BaseResponse,
   LogActions,
+  MessageTypes,
   OrderErrors,
   Role,
 } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
 import { BaseQuery, Log, Order, User } from '@deliveryapp/core';
 import { LogsService } from '@deliveryapp/logs';
-import { MessagesService } from '@deliveryapp/messages';
+import { createMessage, NotificationService } from '@deliveryapp/messages';
 import { OrderEntity } from '@deliveryapp/repository';
 
 import { isNil } from 'lodash';
@@ -35,7 +36,7 @@ export class OrderService {
   constructor(
     private readonly ordersRepository: typeof OrderEntity,
     private readonly configService: ConfigService,
-    private readonly messagesService: MessagesService,
+    private readonly notificationService: NotificationService,
     private readonly logsService: LogsService,
   ) {}
 
@@ -102,27 +103,23 @@ export class OrderService {
     const order = OrderEntity.build(newOrder);
 
     await order.save();
-    await this.logsService.create(
-      new Log({
-        action: LogActions.ORDER_CREATE,
-        userId: user.id,
-        createdAt: new Date(),
-        data: {
-          id: order.id,
-        },
-      }),
-    );
-    // const message = {
-    //   text: `New order # ${order.id} created by client ${orderDto.clientId}`,
-    //   forEmployee: true,
-    // };
 
-    // try {
-    //   await this.messagesService.saveAndSendToEmployees(message);
-    // } catch (err) {
-    //   // tslint:disable-next-line:no-console
-    //   console.error('Error while sending Push', err);
-    // }
+    Promise.all([
+      this.logsService.create(
+        new Log({
+          action: LogActions.ORDER_CREATE,
+          userId: user.id,
+          data: {
+            id: order.id,
+          },
+        }),
+      ),
+      this.notificationService.sendNotification(
+        createMessage(MessageTypes.ORDER_CREATE, { id: order.id }),
+      ),
+    ]).catch((err) => {
+      console.error(err);
+    });
 
     return { id: order.id };
   }
@@ -151,36 +148,26 @@ export class OrderService {
         : {},
     );
 
-    await this.logsService.create(
-      new Log({
-        action: LogActions.ORDER_UPDATE,
-        userId: user.id,
-        createdAt: new Date(),
-        data: {
+    Promise.all([
+      this.logsService.create(
+        new Log({
+          action: LogActions.ORDER_UPDATE,
+          userId: user.id,
+          data: {
+            id: order.id,
+          },
+        }),
+      ),
+      this.notificationService.sendNotification(
+        createMessage(MessageTypes.ORDER_UPDATE, {
           id: order.id,
-        },
-      }),
-    );
+          recipientId: user.role === Role.CLIENT ? undefined : user.id,
+        }),
+      ),
+    ]).catch((err) => {
+      console.error(err);
+    });
 
-    // const message = {
-    //   text: `Order # ${order.id} has been updated`,
-    //   // tslint:disable-next-line:no-string-literal
-    //   recipientId: userRole === Role.CLIENT ? null : order['clientId'],
-    //   forEmployee: userRole === Role.CLIENT,
-    // };
-
-    // try {
-    //   (await (userRole !== Role.CLIENT))
-    //     ? this.messagesService.saveAndSendToUser(
-    //         // tslint:disable-next-line:no-string-literal
-    //         order['clientId'],
-    //         message,
-    //       )
-    //     : this.messagesService.saveAndSendToEmployees(message);
-    // } catch (err) {
-    //   // tslint:disable-next-line:no-console
-    //   console.error('Error while sending Push', err);
-    // }
     return { id: order.id };
   }
 }

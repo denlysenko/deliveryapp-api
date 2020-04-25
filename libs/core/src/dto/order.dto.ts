@@ -182,4 +182,7 @@ export class CreateOrderDto implements Order {
   readonly senderPhone: string;
 }
 
-export class UpdateOrderDto extends PartialType(OrderDto) {}
+export class UpdateOrderDto extends OmitType(PartialType(OrderDto), [
+  'payment',
+  'client',
+]) {}

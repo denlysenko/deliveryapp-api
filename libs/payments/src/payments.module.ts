@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ConfigService } from '@deliveryapp/config';
 import { LogsService } from '@deliveryapp/logs';
-import { MessagesModule, MessagesService } from '@deliveryapp/messages';
+import { MessagesModule, NotificationService } from '@deliveryapp/messages';
 import { PaymentEntity, PAYMENTS_REPOSITORY } from '@deliveryapp/repository';
 
 import { PaymentsController } from './payments.controller';
@@ -21,19 +21,19 @@ import { PaymentsService } from './payments.service';
       useFactory: (
         paymentsRepository,
         configService: ConfigService,
-        messagesService: MessagesService,
+        notificationService: NotificationService,
         logsService: LogsService,
       ) =>
         new PaymentsService(
           paymentsRepository,
           configService,
-          messagesService,
+          notificationService,
           logsService,
         ),
       inject: [
         PAYMENTS_REPOSITORY,
         ConfigService,
-        MessagesService,
+        NotificationService,
         LogsService,
       ],
     },

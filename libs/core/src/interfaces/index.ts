@@ -9,3 +9,5 @@ export * from './log.interface';
 export * from './base-response.interface';
 export * from './base-query.interface';
 export * from './change-password-payload.interface';
+export * from './message.interface';
+export * from './session.interface';

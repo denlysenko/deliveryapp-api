@@ -1,6 +1,6 @@
 export interface ILog {
   action: number;
   userId: number;
-  createdAt: Date;
+  createdAt?: Date;
   data?: any;
 }

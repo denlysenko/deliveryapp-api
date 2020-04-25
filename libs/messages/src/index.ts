@@ -1,4 +1,3 @@
 export * from './messages.module';
-export * from './messages.service';
-export * from './interfaces';
-export * from './responses';
+export * from './notification.service';
+export * from './message.factory';

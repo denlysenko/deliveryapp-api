@@ -6,3 +6,5 @@ export * from './log.dto';
 export * from './order.dto';
 export * from './payment.dto';
 export * from './password.dto';
+export * from './session.dto';
+export * from './message.dto';

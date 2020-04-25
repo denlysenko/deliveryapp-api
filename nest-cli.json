@@ -6,9 +6,7 @@
   "compilerOptions": {
     "webpack": true,
     "tsConfigPath": "apps/api/tsconfig.app.json",
-    "assets": [
-      "../../../libs/**/*.env"
-    ]
+    "assets": [".env", "firebase-adminsdk.json"]
   },
   "projects": {
     "api": {

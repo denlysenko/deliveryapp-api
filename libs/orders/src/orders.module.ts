@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ConfigService } from '@deliveryapp/config';
 import { LogsService } from '@deliveryapp/logs';
-import { MessagesModule, MessagesService } from '@deliveryapp/messages';
+import { MessagesModule, NotificationService } from '@deliveryapp/messages';
 import { OrderEntity, ORDERS_REPOSITORY } from '@deliveryapp/repository';
 
 import { OrdersController } from './orders.controller';
@@ -21,16 +21,21 @@ import { OrderService } from './orders.service';
       useFactory: (
         ordersRepository,
         configService: ConfigService,
-        messagesService: MessagesService,
+        notificationService: NotificationService,
         logsService: LogsService,
       ) =>
         new OrderService(
           ordersRepository,
           configService,
-          messagesService,
+          notificationService,
           logsService,
         ),
-      inject: [ORDERS_REPOSITORY, ConfigService, MessagesService, LogsService],
+      inject: [
+        ORDERS_REPOSITORY,
+        ConfigService,
+        NotificationService,
+        LogsService,
+      ],
     },
   ],
 })

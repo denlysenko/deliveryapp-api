@@ -1,6 +1,11 @@
 import { NotFoundException } from '@nestjs/common';
 
-import { BaseResponse, LogActions, Role } from '@deliveryapp/common';
+import {
+  BaseResponse,
+  LogActions,
+  MessageTypes,
+  Role,
+} from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
 import {
   BaseQuery,
@@ -11,7 +16,7 @@ import {
   User,
 } from '@deliveryapp/core';
 import { LogsService } from '@deliveryapp/logs';
-import { MessagesService } from '@deliveryapp/messages';
+import { createMessage, NotificationService } from '@deliveryapp/messages';
 import { PaymentEntity } from '@deliveryapp/repository';
 
 import { isNil } from 'lodash';
@@ -21,7 +26,7 @@ export class PaymentsService {
   constructor(
     private readonly paymentsRepository: typeof PaymentEntity,
     private readonly configService: ConfigService,
-    private readonly messagesService: MessagesService,
+    private readonly notificationService: NotificationService,
     private readonly logsService: LogsService,
   ) {}
 
@@ -94,7 +99,7 @@ export class PaymentsService {
   ): Promise<{ id: number }> {
     const { orders, ...newPayment } = paymentDto;
 
-    const createdPayment = await this.paymentsRepository.sequelize.transaction(
+    const createdPayment: PaymentEntity = await this.paymentsRepository.sequelize.transaction(
       async (transaction) => {
         const payment: PaymentEntity = await PaymentEntity.create(
           {
@@ -110,33 +115,27 @@ export class PaymentsService {
       },
     );
 
-    await this.logsService.create(
-      new Log({
-        action: LogActions.ORDER_CREATE,
-        userId: user.id,
-        createdAt: new Date(),
-        data: {
+    Promise.all([
+      this.logsService.create(
+        new Log({
+          action: LogActions.ORDER_CREATE,
+          userId: user.id,
+          createdAt: new Date(),
+          data: {
+            id: createdPayment.id,
+          },
+        }),
+      ),
+      this.notificationService.sendNotification(
+        createMessage(MessageTypes.PAYMENT_CREATE, {
           id: createdPayment.id,
-        },
-      }),
-    );
+          recipientId: createdPayment.clientId,
+        }),
+      ),
+    ]).catch((err) => {
+      console.error(err);
+    });
 
-    // const message = {
-    //   text: `New invoice created # ${savedPayment.id}`,
-    //   // tslint:disable-next-line:no-string-literal
-    //   recipientId: savedPayment['clientId'],
-    // };
-
-    // try {
-    //   await this.messagesService.saveAndSendToUser(
-    //     // tslint:disable-next-line:no-string-literal
-    //     savedPayment['clientId'],
-    //     message,
-    //   );
-    // } catch (err) {
-    //   // tslint:disable-next-line:no-console
-    //   console.error('Error while sending Push', err);
-    // }
     return { id: createdPayment.id };
   }
 
@@ -151,7 +150,7 @@ export class PaymentsService {
       throw new NotFoundException();
     }
 
-    const updatedPayment = await this.paymentsRepository.sequelize.transaction(
+    const updatedPayment: PaymentEntity = await this.paymentsRepository.sequelize.transaction(
       async (transaction) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { orders, clientId, ...updatedPayment } = paymentDto;
@@ -170,33 +169,26 @@ export class PaymentsService {
       },
     );
 
-    await this.logsService.create(
-      new Log({
-        action: LogActions.PAYMENT_UPDATE,
-        userId: user.id,
-        createdAt: new Date(),
-        data: {
-          id: payment.id,
-        },
-      }),
-    );
-
-    // const message = {
-    //   text: `Invoice # ${payment.id} has been updated`,
-    //   // tslint:disable-next-line:no-string-literal
-    //   recipientId: payment['clientId'],
-    // };
-
-    // try {
-    //   await this.messagesService.saveAndSendToUser(
-    //     // tslint:disable-next-line:no-string-literal
-    //     payment['clientId'],
-    //     message,
-    //   );
-    // } catch (err) {
-    //   // tslint:disable-next-line:no-console
-    //   console.error('Error while sending Push', err);
-    // }
+    Promise.all([
+      this.logsService.create(
+        new Log({
+          action: LogActions.PAYMENT_UPDATE,
+          userId: user.id,
+          createdAt: new Date(),
+          data: {
+            id: payment.id,
+          },
+        }),
+      ),
+      this.notificationService.sendNotification(
+        createMessage(MessageTypes.PAYMENT_UPDATE, {
+          id: updatedPayment.id,
+          recipientId: updatedPayment.clientId,
+        }),
+      ),
+    ]).catch((err) => {
+      console.log(err);
+    });
 
     return { id: updatedPayment.id };
   }

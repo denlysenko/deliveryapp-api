@@ -1,163 +1,98 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { NotFoundException } from '@nestjs/common';
 
-import { BaseResponse } from '@deliveryapp/common';
+import { Role } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
+import { BaseQuery, Message, Session, User } from '@deliveryapp/core';
 
-import * as admin from 'firebase-admin';
-import * as _ from 'lodash';
-import { Model } from 'mongoose';
+import { assignIn, isNil } from 'lodash';
+import { Document, FilterQuery, Model } from 'mongoose';
 
-import { MessageDto } from './dto/message.dto';
-import { Message } from './interfaces/message.interface';
-import { Session } from './interfaces/session.interface';
+import { MessagingService } from './messaging.service';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const serviceAccount = require('../../../firebase-adminsdk.json');
+interface MessageModel extends Message, Document {
+  _id: any;
+}
+interface SessionModel extends Session, Document {}
 
-const TOPIC_NAME = process.env.FIREBASE_TOPIC_NAME;
-const MESSAGE_TITLE = 'Delivery App';
 const SORT_FIELD = 'createdAt';
 
-@Injectable()
 export class MessagesService {
   constructor(
-    @InjectModel('Session') private readonly sessionModel: Model<Session>,
-    @InjectModel('Message') private readonly messageModel: Model<Message>,
+    private readonly sessionModel: Model<SessionModel>,
+    private readonly messageModel: Model<MessageModel>,
     private readonly configService: ConfigService,
-  ) {
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      databaseURL: process.env.FIREBASE_DATABASE_URL,
-    });
-  }
+    private readonly messagingService: MessagingService,
+  ) {}
 
-  async createSession(session: Partial<Session>): Promise<Session> {
+  async subscribe(
+    session: Partial<Session>,
+    user: Partial<User>,
+  ): Promise<void> {
     const createdSession = new this.sessionModel(session);
-    return await createdSession.save();
+
+    await createdSession.save();
+
+    if (user.role !== Role.CLIENT) {
+      await this.messagingService.subscribeToTopic(session.socketId);
+    }
   }
 
-  async removeSession(socketId: string) {
+  async unsubscribe(socketId: string, user: Partial<User>): Promise<void> {
     await this.sessionModel.deleteOne({ socketId }).exec();
+
+    if (user.role !== Role.CLIENT) {
+      await this.messagingService.unsubscribeFromTopic(socketId);
+    }
   }
 
-  async subscribeToEmployees(
-    socketId: string,
-  ): Promise<admin.messaging.MessagingTopicManagementResponse> {
-    return await admin.messaging().subscribeToTopic(socketId, TOPIC_NAME);
-  }
-
-  async unsubscribeFromEmployees(
-    socketId: string,
-  ): Promise<admin.messaging.MessagingTopicManagementResponse> {
-    return await admin.messaging().unsubscribeFromTopic(socketId, TOPIC_NAME);
-  }
-
-  async markAsRead(messageId: string) {
+  async markAsRead(messageId: string): Promise<void> {
     const message = await this.messageModel.findById(messageId);
-    _.assignIn(message, { read: true });
-    return await message.save();
-  }
 
-  async getByUserId(id: number, query?: any): Promise<BaseResponse<Message>> {
-    const conditions = { recipientId: id };
-    const offset = (query && Number(query.offset)) || 0;
-    const limit =
-      (query && Number(query.limit)) ||
-      Number(this.configService.get('DEFAULT_LIMIT'));
-
-    const count = await this.messageModel.countDocuments(conditions);
-
-    const rows = await this.messageModel
-      .find(conditions)
-      .skip(offset)
-      .limit(limit)
-      .sort({ [SORT_FIELD]: 'desc' })
-      .exec();
-
-    return {
-      count,
-      rows,
-    };
-  }
-
-  async getForEmployees(query?: any): Promise<BaseResponse<Message>> {
-    const conditions = { forEmployee: true };
-    const offset = (query && Number(query.offset)) || 0;
-    const limit =
-      (query && Number(query.limit)) ||
-      Number(this.configService.get('DEFAULT_LIMIT'));
-
-    const count = await this.messageModel.countDocuments(conditions);
-
-    const rows = await this.messageModel
-      .find(conditions)
-      .skip(offset)
-      .limit(limit)
-      .sort({ [SORT_FIELD]: 'desc' })
-      .exec();
-
-    return {
-      count,
-      rows,
-    };
-  }
-
-  async saveAndSendToEmployees(
-    messageDto: MessageDto,
-  ): Promise<admin.messaging.MessagingTopicResponse> {
-    const message = await this.createMessage(messageDto);
-    const payload = {
-      notification: {
-        title: MESSAGE_TITLE,
-        body: message.text,
-      },
-      data: {
-        _id: message._id.toString(),
-        text: message.text,
-        createdAt: message.createdAt.toISOString(),
-        forEmployee: message.forEmployee.toString(),
-        read: message.toString(),
-      },
-    };
-
-    return await admin.messaging().sendToTopic(TOPIC_NAME, payload);
-  }
-
-  async saveAndSendToUser(
-    userId: number,
-    messageDto: MessageDto,
-  ): Promise<Array<admin.messaging.MessagingDevicesResponse>> | null {
-    const session = await this.sessionModel.find({ userId }).exec();
-    const message = await this.createMessage(messageDto);
-    const payload = {
-      notification: {
-        title: MESSAGE_TITLE,
-        body: message.text,
-      },
-      data: {
-        _id: message._id.toString(),
-        recipientId: message.recipientId.toString(),
-        text: message.text,
-        createdAt: message.createdAt.toISOString(),
-        forEmployee: message.forEmployee.toString(),
-        read: message.toString(),
-      },
-    };
-
-    if (session && session.length) {
-      const promises = session.map((item) =>
-        admin.messaging().sendToDevice(item.socketId, payload),
-      );
-
-      return await Promise.all(promises);
+    if (isNil(message)) {
+      throw new NotFoundException();
     }
 
-    return null;
+    assignIn(message, { read: true });
+
+    await message.save();
   }
 
-  private async createMessage(messageDto: MessageDto): Promise<Message> {
+  async getMessages(query: BaseQuery, user: Partial<User>) {
+    const where: FilterQuery<Message> = {};
+
+    if (user.role === Role.CLIENT) {
+      where.recipientId = user.id;
+    } else {
+      where.forEmployee = true;
+    }
+
+    const offset = query.offset ?? 0;
+    const limit =
+      query.limit ?? parseInt(this.configService.get('DEFAULT_LIMIT'), 10);
+
+    const cursor = this.messageModel
+      .find(where)
+      .skip(offset)
+      .limit(limit)
+      .sort({ [SORT_FIELD]: 'desc' });
+
+    const [count, rows] = await Promise.all([
+      this.messageModel.countDocuments(where),
+      cursor.exec(),
+    ]);
+
+    return {
+      count,
+      rows,
+    };
+  }
+
+  saveMessage(messageDto: Message) {
     const createdMessage = new this.messageModel(messageDto);
-    return await createdMessage.save();
+    return createdMessage.save();
+  }
+
+  getSessions(userId: number): Promise<Session[]> {
+    return this.sessionModel.find({ userId }).exec();
   }
 }

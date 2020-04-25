@@ -9,6 +9,7 @@ import {
   HasMany,
   Scopes,
   Table,
+  ForeignKey,
 } from 'sequelize-typescript';
 
 import { BaseEntity } from './base-entity';
@@ -98,7 +99,11 @@ export class PaymentEntity extends BaseEntity<PaymentEntity>
   })
   description: string;
 
-  @BelongsTo(() => UserEntity, 'clientId')
+  @ForeignKey(() => UserEntity)
+  @Column
+  clientId: number;
+
+  @BelongsTo(() => UserEntity)
   client: UserEntity;
 
   @BelongsTo(() => UserEntity, 'creatorId')

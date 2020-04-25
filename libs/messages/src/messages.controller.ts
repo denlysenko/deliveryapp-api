@@ -1,37 +1,81 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
+  UsePipes,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import {
-  ApiParam,
+  ApiBearerAuth,
   ApiOperation,
+  ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
-  ApiBearerAuth,
 } from '@nestjs/swagger';
 
-import { Self, Role, ErrorsInterceptor } from '@deliveryapp/common';
-import { User } from '@deliveryapp/users';
+import { BaseResponse, CurrentUser } from '@deliveryapp/common';
+import {
+  ErrorsInterceptor,
+  JwtAuthGuard,
+  Message,
+  MessagesDto,
+  SessionDto,
+  TransformPipe,
+  User,
+} from '@deliveryapp/core';
 
-import { SessionDto } from './dto/session.dto';
-import { Message } from './interfaces';
+import { MessagesQuery } from './messages.query';
 import { MessagesService } from './messages.service';
 
 @ApiTags('messages')
 @ApiBearerAuth()
 @Controller('messages')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @UseInterceptors(ErrorsInterceptor)
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
+
+  /**
+   * GET /messages
+   */
+  @Get()
+  @ApiOperation({ summary: 'Gets all messages for authenticated user' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns messages',
+    type: MessagesDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Authorization Error',
+  })
+  @ApiQuery({
+    name: 'offset',
+    type: Number,
+    description: 'Offset',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: Number,
+    description: 'Limit',
+    required: false,
+  })
+  @UsePipes(TransformPipe)
+  getMessages(
+    @Query() query: MessagesQuery,
+    @CurrentUser() user: Partial<User>,
+  ): Promise<BaseResponse<Message>> {
+    return this.messagesService.getMessages(query, user);
+  }
 
   /**
    * PATCH /messages/{id}
@@ -51,8 +95,8 @@ export class MessagesController {
     description: 'Authorization Error',
   })
   @HttpCode(HttpStatus.OK)
-  async markAsRead(@Param('id') id: string): Promise<Message> {
-    return await this.messagesService.markAsRead(id);
+  markAsRead(@Param('id') id: string): Promise<void> {
+    return this.messagesService.markAsRead(id);
   }
 
   /**
@@ -70,22 +114,9 @@ export class MessagesController {
   @HttpCode(HttpStatus.OK)
   async subscribeToMessages(
     @Body() sessionDto: SessionDto,
-    @Self() user: User,
+    @CurrentUser() user: Partial<User>,
   ) {
-    const { socketId } = sessionDto;
-
-    try {
-      await this.messagesService.createSession({
-        socketId,
-        userId: user.id,
-      });
-
-      if (user.role !== Role.CLIENT) {
-        await this.messagesService.subscribeToEmployees(socketId);
-      }
-    } catch (err) {
-      return err;
-    }
+    return this.messagesService.subscribe(sessionDto, user);
   }
 
   /**
@@ -103,18 +134,9 @@ export class MessagesController {
   @HttpCode(HttpStatus.OK)
   async unsubscribeFromMessages(
     @Body() sessionDto: SessionDto,
-    @Self() user: User,
+    @CurrentUser() user: User,
   ) {
     const { socketId } = sessionDto;
-
-    try {
-      await this.messagesService.removeSession(socketId);
-
-      if (user.role !== Role.CLIENT) {
-        await this.messagesService.unsubscribeFromEmployees(socketId);
-      }
-    } catch (err) {
-      return err;
-    }
+    return this.messagesService.unsubscribe(socketId, user);
   }
 }
