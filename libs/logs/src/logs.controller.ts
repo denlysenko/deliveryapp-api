@@ -17,7 +17,7 @@ import {
 import { Role, Roles } from '@deliveryapp/common';
 import {
   BaseResponse,
-  ILog,
+  Log,
   JwtAuthGuard,
   LogDto,
   RolesGuard,
@@ -85,7 +85,7 @@ export class LogsController {
   @Get()
   @Roles(Role.ADMIN)
   @UsePipes(TransformPipe)
-  getLogs(@Query() query: LogsQuery): Promise<BaseResponse<ILog>> {
+  getLogs(@Query() query: LogsQuery): Promise<BaseResponse<Log>> {
     return this.logsService.get(query);
   }
 }

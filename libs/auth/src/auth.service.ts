@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 
 import { AuthErrors, LogActions } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
-import { AuthPayload, JwtPayload, Log, User } from '@deliveryapp/core';
+import { AuthPayload, JwtPayload, User } from '@deliveryapp/core';
 import { LogsService } from '@deliveryapp/logs';
 import { UserEntity } from '@deliveryapp/repository';
 
@@ -32,13 +32,15 @@ export class AuthService {
     const user = UserEntity.build(createUserDto);
 
     await user.save();
-    await this.logsService.create(
-      new Log({
+
+    this.logsService
+      .create({
         action: LogActions.REGISTRATION,
         userId: user.id,
-        createdAt: new Date(),
-      }),
-    );
+      })
+      .catch((err) => {
+        console.error(err);
+      });
 
     return { token: this.createToken(user.id) };
   }

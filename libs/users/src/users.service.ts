@@ -9,7 +9,6 @@ import {
   BaseQuery,
   BaseResponse,
   ChangePasswordPayload,
-  Log,
   User,
   ValidationError,
   ValidationErrorItem,
@@ -42,16 +41,17 @@ export class UsersService {
   async create(userDto: User, user: Partial<User>): Promise<{ id: number }> {
     const createdUser: UserEntity = await UserEntity.create(userDto);
 
-    await this.logsService.create(
-      new Log({
+    this.logsService
+      .create({
         action: LogActions.CREATE_USER,
         userId: user.id,
-        createdAt: new Date(),
         data: {
           id: createdUser.id,
         },
-      }),
-    );
+      })
+      .catch((err) => {
+        console.error(err);
+      });
 
     return { id: createdUser.id };
   }
@@ -98,13 +98,14 @@ export class UsersService {
       },
     );
 
-    await this.logsService.create(
-      new Log({
+    this.logsService
+      .create({
         action: LogActions.UPDATE_PROFILE,
         userId: updatedUser.id,
-        createdAt: new Date(),
-      }),
-    );
+      })
+      .catch((err) => {
+        console.error(err);
+      });
 
     return { id: updatedUser.id };
   }
@@ -127,16 +128,17 @@ export class UsersService {
 
     await updatedUser.update(rest);
 
-    await this.logsService.create(
-      new Log({
+    this.logsService
+      .create({
         action: LogActions.UPDATE_USER,
         userId: user.id,
-        createdAt: new Date(),
         data: {
           id: updatedUser.id,
         },
-      }),
-    );
+      })
+      .catch((err) => {
+        console.error(err);
+      });
 
     return { id: updatedUser.id };
   }
@@ -169,13 +171,14 @@ export class UsersService {
 
     await user.save();
 
-    await this.logsService.create(
-      new Log({
+    this.logsService
+      .create({
         action: LogActions.CHANGE_PASSWORD,
         userId: user.id,
-        createdAt: new Date(),
-      }),
-    );
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 
   findUsers(

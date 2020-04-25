@@ -6,7 +6,6 @@ import {
   BaseResponse,
   BaseQuery,
   CreatePaymentDto,
-  Log,
   Payment,
   UpdatePaymentDto,
   User,
@@ -112,16 +111,13 @@ export class PaymentsService {
     );
 
     Promise.all([
-      this.logsService.create(
-        new Log({
-          action: LogActions.ORDER_CREATE,
-          userId: user.id,
-          createdAt: new Date(),
-          data: {
-            id: createdPayment.id,
-          },
-        }),
-      ),
+      this.logsService.create({
+        action: LogActions.ORDER_CREATE,
+        userId: user.id,
+        data: {
+          id: createdPayment.id,
+        },
+      }),
       this.notificationService.sendNotification(
         createMessage(MessageTypes.PAYMENT_CREATE, {
           id: createdPayment.id,
@@ -166,16 +162,13 @@ export class PaymentsService {
     );
 
     Promise.all([
-      this.logsService.create(
-        new Log({
-          action: LogActions.PAYMENT_UPDATE,
-          userId: user.id,
-          createdAt: new Date(),
-          data: {
-            id: payment.id,
-          },
-        }),
-      ),
+      this.logsService.create({
+        action: LogActions.PAYMENT_UPDATE,
+        userId: user.id,
+        data: {
+          id: payment.id,
+        },
+      }),
       this.notificationService.sendNotification(
         createMessage(MessageTypes.PAYMENT_UPDATE, {
           id: updatedPayment.id,

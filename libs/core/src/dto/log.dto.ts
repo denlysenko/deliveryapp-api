@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { ILog } from '../interfaces';
+import { Log } from '../interfaces';
 
-export class LogDto implements ILog {
+export class LogDto implements Log {
   @ApiProperty()
   readonly action: number;
 

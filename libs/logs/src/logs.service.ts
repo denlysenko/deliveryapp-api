@@ -1,9 +1,9 @@
 import { ConfigService } from '@deliveryapp/config';
-import { BaseResponse, ILog, BaseQuery } from '@deliveryapp/core';
+import { BaseResponse, Log, BaseQuery } from '@deliveryapp/core';
 
 import { Model, Document } from 'mongoose';
 
-interface LogModel extends ILog, Document {}
+interface LogModel extends Log, Document {}
 
 export class LogsService {
   constructor(
@@ -11,11 +11,11 @@ export class LogsService {
     private readonly configService: ConfigService,
   ) {}
 
-  create(log: ILog): Promise<ILog> {
+  create(log: Log): Promise<Log> {
     return this.logModel.create(log);
   }
 
-  async get(query: BaseQuery): Promise<BaseResponse<ILog>> {
+  async get(query: BaseQuery): Promise<BaseResponse<Log>> {
     const where = query.filter ?? {};
     const offset = query.offset ?? 0;
     const limit =

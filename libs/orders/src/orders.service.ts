@@ -7,7 +7,7 @@ import {
   Role,
 } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
-import { BaseResponse, BaseQuery, Log, Order, User } from '@deliveryapp/core';
+import { BaseResponse, BaseQuery, Order, User } from '@deliveryapp/core';
 import { LogsService } from '@deliveryapp/logs';
 import { createMessage, NotificationService } from '@deliveryapp/messages';
 import { OrderEntity } from '@deliveryapp/repository';
@@ -104,15 +104,13 @@ export class OrderService {
     await order.save();
 
     Promise.all([
-      this.logsService.create(
-        new Log({
-          action: LogActions.ORDER_CREATE,
-          userId: user.id,
-          data: {
-            id: order.id,
-          },
-        }),
-      ),
+      this.logsService.create({
+        action: LogActions.ORDER_CREATE,
+        userId: user.id,
+        data: {
+          id: order.id,
+        },
+      }),
       this.notificationService.sendNotification(
         createMessage(MessageTypes.ORDER_CREATE, { id: order.id }),
       ),
@@ -148,15 +146,13 @@ export class OrderService {
     );
 
     Promise.all([
-      this.logsService.create(
-        new Log({
-          action: LogActions.ORDER_UPDATE,
-          userId: user.id,
-          data: {
-            id: order.id,
-          },
-        }),
-      ),
+      this.logsService.create({
+        action: LogActions.ORDER_UPDATE,
+        userId: user.id,
+        data: {
+          id: order.id,
+        },
+      }),
       this.notificationService.sendNotification(
         createMessage(MessageTypes.ORDER_UPDATE, {
           id: order.id,

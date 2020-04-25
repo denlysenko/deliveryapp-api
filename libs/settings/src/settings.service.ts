@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 
 import { LogActions } from '@deliveryapp/common';
-import { Address, BankDetails, Log, User } from '@deliveryapp/core';
+import { Address, BankDetails, User } from '@deliveryapp/core';
 import { LogsService } from '@deliveryapp/logs';
 import { AddressEntity, BankDetailsEntity } from '@deliveryapp/repository';
 
@@ -37,13 +37,14 @@ export class SettingsService {
       belongsToCompany: true,
     });
 
-    await this.logsService.create(
-      new Log({
+    this.logsService
+      .create({
         action: LogActions.CREATE_COMPANY_ADDRESS,
         userId: user.id,
-        createdAt: new Date(),
-      }),
-    );
+      })
+      .catch((err) => {
+        console.error(err);
+      });
 
     return { id: address.id };
   }
@@ -61,13 +62,14 @@ export class SettingsService {
 
     await address.update(addressDto);
 
-    await this.logsService.create(
-      new Log({
+    await this.logsService
+      .create({
         action: LogActions.UPDATE_COMPANY_ADDRESS,
         userId: user.id,
-        createdAt: new Date(),
-      }),
-    );
+      })
+      .catch((err) => {
+        console.error(err);
+      });
 
     return { id: address.id };
   }
@@ -81,13 +83,14 @@ export class SettingsService {
       belongsToCompany: true,
     });
 
-    await this.logsService.create(
-      new Log({
+    await this.logsService
+      .create({
         action: LogActions.CREATE_COMPANY_BANK_DETAILS,
         userId: user.id,
-        createdAt: new Date(),
-      }),
-    );
+      })
+      .catch((err) => {
+        console.error(err);
+      });
 
     return { id: bankDetails.id };
   }
@@ -107,13 +110,14 @@ export class SettingsService {
 
     await bankDetails.update(bankDetailsDto);
 
-    await this.logsService.create(
-      new Log({
+    await this.logsService
+      .create({
         action: LogActions.UPDATE_COMPANY_BANK_DETAILS,
         userId: user.id,
-        createdAt: new Date(),
-      }),
-    );
+      })
+      .catch((err) => {
+        console.error(err);
+      });
 
     return { id: bankDetails.id };
   }
