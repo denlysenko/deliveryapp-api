@@ -23,8 +23,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { BaseResponse, CurrentUser, Role, Roles } from '@deliveryapp/common';
+import { CurrentUser, Role, Roles } from '@deliveryapp/common';
 import {
+  BaseResponse,
   BaseResponseSerializerInterceptor,
   CreatePaymentDto,
   ErrorsInterceptor,

@@ -14,8 +14,15 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { BaseResponse, Role, Roles, RolesGuard } from '@deliveryapp/common';
-import { ILog, JwtAuthGuard, LogDto, TransformPipe } from '@deliveryapp/core';
+import { Role, Roles } from '@deliveryapp/common';
+import {
+  BaseResponse,
+  ILog,
+  JwtAuthGuard,
+  LogDto,
+  RolesGuard,
+  TransformPipe,
+} from '@deliveryapp/core';
 
 import { LogsQuery } from './logs.query';
 import { LogsService } from './logs.service';

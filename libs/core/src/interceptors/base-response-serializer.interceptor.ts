@@ -5,11 +5,11 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 
-import { BaseResponse } from '@deliveryapp/common';
-
 import { classToPlain } from 'class-transformer';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
+import { BaseResponse } from '../interfaces';
 
 export class BaseResponseSerializerInterceptor
   extends ClassSerializerInterceptor

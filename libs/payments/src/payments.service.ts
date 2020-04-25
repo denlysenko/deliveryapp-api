@@ -1,13 +1,9 @@
 import { NotFoundException } from '@nestjs/common';
 
-import {
-  BaseResponse,
-  LogActions,
-  MessageTypes,
-  Role,
-} from '@deliveryapp/common';
+import { LogActions, MessageTypes, Role } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
 import {
+  BaseResponse,
   BaseQuery,
   CreatePaymentDto,
   Log,

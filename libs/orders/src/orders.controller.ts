@@ -23,8 +23,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { BaseResponse, CurrentUser } from '@deliveryapp/common';
+import { CurrentUser } from '@deliveryapp/common';
 import {
+  BaseResponse,
   BaseResponseSerializerInterceptor,
   CreateOrderDto,
   ErrorsInterceptor,

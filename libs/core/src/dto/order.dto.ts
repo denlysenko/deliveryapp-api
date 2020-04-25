@@ -1,11 +1,11 @@
-import { ApiProperty, PartialType, OmitType, PickType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger';
 
-import { BaseResponse, OrderErrors } from '@deliveryapp/common';
+import { OrderErrors } from '@deliveryapp/common';
 
 import { Exclude, Type } from 'class-transformer';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
-import { Order, Payment, User } from '../interfaces';
+import { BaseResponse, Order, Payment, User } from '../interfaces';
 import { PaymentDto } from './payment.dto';
 import { UserDto } from './user.dto';
 
