@@ -30,6 +30,7 @@ import {
   JwtAuthGuard,
   RolesGuard,
   User,
+  ValidationError,
 } from '@deliveryapp/core';
 
 import { SettingsService } from './settings.service';
@@ -87,6 +88,7 @@ export class SettingsController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
+    type: ValidationError,
   })
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.OK)
@@ -122,6 +124,7 @@ export class SettingsController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
+    type: ValidationError,
   })
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.OK)
@@ -178,6 +181,7 @@ export class SettingsController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
+    type: ValidationError,
   })
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.OK)
@@ -213,6 +217,7 @@ export class SettingsController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
+    type: ValidationError,
   })
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.OK)

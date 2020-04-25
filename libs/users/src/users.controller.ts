@@ -40,6 +40,7 @@ import {
   User,
   UserDto,
   UsersDto,
+  ValidationError,
   ValidationErrorPipe,
 } from '@deliveryapp/core';
 
@@ -90,6 +91,7 @@ export class UsersController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
+    type: ValidationError,
   })
   @UsePipes(ValidationErrorPipe)
   @HttpCode(HttpStatus.OK)
@@ -116,6 +118,7 @@ export class UsersController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
+    type: ValidationError,
   })
   @UsePipes(ValidationErrorPipe)
   @HttpCode(HttpStatus.OK)
@@ -269,6 +272,7 @@ export class UsersController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
+    type: ValidationError,
   })
   @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
@@ -306,6 +310,7 @@ export class UsersController {
   @ApiResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     description: 'Validation Error',
+    type: ValidationError,
   })
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
