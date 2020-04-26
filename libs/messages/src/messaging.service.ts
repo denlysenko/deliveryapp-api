@@ -3,16 +3,15 @@ import { Message } from '@deliveryapp/core';
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const serviceAccount = JSON.parse(
-  fs.readFileSync(`${__dirname}/firebase-adminsdk.json`, 'utf-8'),
-);
-
 const TOPIC_NAME = process.env.FIREBASE_TOPIC_NAME!;
 const MESSAGE_TITLE = 'Delivery App';
 
 export class MessagingService {
   constructor() {
+    const serviceAccount = JSON.parse(
+      fs.readFileSync(`${__dirname}/firebase-adminsdk.json`, 'utf-8'),
+    );
+
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       databaseURL: process.env.FIREBASE_DATABASE_URL,

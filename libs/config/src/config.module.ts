@@ -7,7 +7,7 @@ import { ConfigService } from './config.service';
   providers: [
     {
       provide: ConfigService,
-      useValue: new ConfigService(`${__dirname}/.env`),
+      useFactory: () => new ConfigService(`${__dirname}/.env`),
     },
   ],
   exports: [ConfigService],

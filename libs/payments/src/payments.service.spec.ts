@@ -10,6 +10,7 @@ import {
   createEntity,
   MockConfigService,
   MockLogsService,
+  MockNotificationService,
   payment,
 } from '@deliveryapp/testing';
 
@@ -35,6 +36,7 @@ describe('PaymentsService', () => {
   let service: PaymentsService;
   let configService: ConfigService;
   let logsService: LogsService;
+  let notificationService: NotificationService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -66,7 +68,7 @@ describe('PaymentsService', () => {
         },
         {
           provide: NotificationService,
-          useValue: {},
+          useValue: MockNotificationService,
         },
         {
           provide: LogsService,
@@ -82,6 +84,7 @@ describe('PaymentsService', () => {
     service = module.get<PaymentsService>(PaymentsService);
     configService = module.get<ConfigService>(ConfigService);
     logsService = module.get<LogsService>(LogsService);
+    notificationService = module.get<NotificationService>(NotificationService);
 
     jest.spyOn(configService, 'get').mockReturnValue(DEFAULT_LIMIT.toString());
   });
@@ -222,6 +225,11 @@ describe('PaymentsService', () => {
       expect(logsService.create).toBeCalledTimes(1);
     });
 
+    it('should send notification', async () => {
+      await service.create(paymentDto, admin);
+      expect(notificationService.sendNotification).toBeCalledTimes(1);
+    });
+
     it('should return id of created payment', async () => {
       expect(await service.create(paymentDto, admin)).toEqual({
         id: 3,
@@ -276,6 +284,11 @@ describe('PaymentsService', () => {
     it('should create log', async () => {
       await service.update(payment.id, { paymentAmount: 5 }, admin);
       expect(logsService.create).toBeCalledTimes(1);
+    });
+
+    it('should send notification', async () => {
+      await service.update(payment.id, { paymentAmount: 5 }, admin);
+      expect(notificationService.sendNotification).toBeCalledTimes(1);
     });
 
     it('should return id of updated payment', async () => {

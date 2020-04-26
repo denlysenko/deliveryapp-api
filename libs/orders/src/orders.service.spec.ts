@@ -10,6 +10,7 @@ import {
   createEntity,
   MockConfigService,
   MockLogsService,
+  MockNotificationService,
   order,
 } from '@deliveryapp/testing';
 
@@ -42,6 +43,7 @@ describe('OrdersService', () => {
   let service: OrderService;
   let configService: ConfigService;
   let logsService: LogsService;
+  let notificationService: NotificationService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -73,7 +75,7 @@ describe('OrdersService', () => {
         },
         {
           provide: NotificationService,
-          useValue: {},
+          useValue: MockNotificationService,
         },
         {
           provide: LogsService,
@@ -89,6 +91,7 @@ describe('OrdersService', () => {
     service = module.get<OrderService>(OrderService);
     configService = module.get<ConfigService>(ConfigService);
     logsService = module.get<LogsService>(LogsService);
+    notificationService = module.get<NotificationService>(NotificationService);
 
     jest.spyOn(configService, 'get').mockReturnValue(DEFAULT_LIMIT.toString());
   });
@@ -141,7 +144,7 @@ describe('OrdersService', () => {
       await service.getOrders(query, client);
       expect(orderEntity.findAndCountAll).toBeCalledWith(
         expect.objectContaining({
-          where: { ...query.filter, clientId: 2 },
+          where: { ...query.filter, clientId: client.id },
           limit: query.limit,
           offset: query.offset,
           order: Object.entries(query.order),
@@ -166,7 +169,7 @@ describe('OrdersService', () => {
       await service.getOrder(1, client);
       expect(orderEntity.findOne).toBeCalledWith(
         expect.objectContaining({
-          where: { id: 1, clientId: 2 },
+          where: { id: 1, clientId: client.id },
         }),
       );
     });
@@ -201,8 +204,8 @@ describe('OrdersService', () => {
       await service.create(orderDto, client);
       expect(OrderEntity.build).toBeCalledWith({
         ...orderDto,
-        creatorId: 2,
-        clientId: 2,
+        creatorId: client.id,
+        clientId: client.id,
       });
     });
 
@@ -214,6 +217,11 @@ describe('OrdersService', () => {
     it('should create log', async () => {
       await service.create(orderDto, client);
       expect(logsService.create).toBeCalledTimes(1);
+    });
+
+    it('should send notification', async () => {
+      await service.create(orderDto, client);
+      expect(notificationService.sendNotification).toBeCalledTimes(1);
     });
 
     it('should return id of created order', async () => {
@@ -239,7 +247,7 @@ describe('OrdersService', () => {
     it('should find order for client', async () => {
       await service.update(order.id, { cargoName: 'Updated' }, client);
       expect(orderEntity.findOne).toBeCalledWith({
-        where: { id: order.id, clientId: 2 },
+        where: { id: order.id, clientId: client.id },
       });
     });
 
@@ -261,6 +269,11 @@ describe('OrdersService', () => {
     it('should create log', async () => {
       await service.update(order.id, { cargoName: 'Updated' }, admin);
       expect(logsService.create).toBeCalledTimes(1);
+    });
+
+    it('should send notification', async () => {
+      await service.update(order.id, { cargoName: 'Updated' }, admin);
+      expect(notificationService.sendNotification).toBeCalledTimes(1);
     });
 
     it('should return id of updated order', async () => {
