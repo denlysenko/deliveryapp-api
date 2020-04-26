@@ -29,6 +29,7 @@ import {
   BaseResponseSerializerInterceptor,
   CreateOrderDto,
   ErrorsInterceptor,
+  ICurrentUser,
   JwtAuthGuard,
   Order,
   OrderDto,
@@ -36,7 +37,6 @@ import {
   SequelizeQueryPipe,
   TransformPipe,
   UpdateOrderDto,
-  User,
   ValidationError,
   ValidationErrorPipe,
 } from '@deliveryapp/core';
@@ -133,7 +133,7 @@ export class OrdersController {
   @UseInterceptors(BaseResponseSerializerInterceptor)
   async getAll(
     @Query() query: OrdersQuery,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<BaseResponse<Order>> {
     const { rows, count } = await this.orderService.getOrders(query, user);
     return {
@@ -168,7 +168,7 @@ export class OrdersController {
   @UseInterceptors(ClassSerializerInterceptor)
   async getById(
     @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<Order> {
     const order = await this.orderService.getOrder(id, user);
     return new OrderDto(order);
@@ -200,7 +200,7 @@ export class OrdersController {
   @UsePipes(ValidationErrorPipe)
   create(
     @Body() orderDto: CreateOrderDto,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<{ id: number }> {
     return this.orderService.create(orderDto, user);
   }
@@ -233,7 +233,7 @@ export class OrdersController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() orderDto: UpdateOrderDto,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<{ id: number }> {
     return this.orderService.update(id, orderDto, user);
   }

@@ -9,6 +9,7 @@ import {
   BaseQuery,
   BaseResponse,
   ChangePasswordPayload,
+  ICurrentUser,
   User,
   ValidationError,
   ValidationErrorItem,
@@ -38,13 +39,16 @@ export class UsersService {
     private readonly logsService: LogsService,
   ) {}
 
-  async create(userDto: User, user: Partial<User>): Promise<{ id: number }> {
+  async create(
+    userDto: Omit<User, 'id'>,
+    user: ICurrentUser,
+  ): Promise<{ id: number }> {
     const createdUser = await UserEntity.create(userDto);
 
     this.logsService
       .create({
         action: LogActions.CREATE_USER,
-        userId: user.id!,
+        userId: user.id,
         data: {
           id: createdUser.id,
         },
@@ -57,7 +61,7 @@ export class UsersService {
   }
 
   async updateProfile(
-    { id, role }: Partial<User>,
+    { id, role }: ICurrentUser,
     userDto: Partial<User>,
   ): Promise<{ id: number }> {
     const user = await this.usersRepository
@@ -104,7 +108,7 @@ export class UsersService {
     this.logsService
       .create({
         action: LogActions.UPDATE_PROFILE,
-        userId: id!,
+        userId: id,
       })
       .catch((err: unknown) => {
         console.error(err);
@@ -116,7 +120,7 @@ export class UsersService {
   async updateUser(
     id: number,
     userDto: Partial<User>,
-    user: Partial<User>,
+    user: ICurrentUser,
   ): Promise<{ id: number }> {
     const updatedUser = await this.usersRepository.findOne({
       where: { id, role: { [Op.in]: [Role.MANAGER, Role.ADMIN] } },
@@ -134,7 +138,7 @@ export class UsersService {
     this.logsService
       .create({
         action: LogActions.UPDATE_USER,
-        userId: user.id!,
+        userId: user.id,
         data: {
           id: updatedUser.id,
         },
@@ -184,10 +188,7 @@ export class UsersService {
       });
   }
 
-  findUsers(
-    query: BaseQuery,
-    user: Partial<User>,
-  ): Promise<BaseResponse<User>> {
+  findUsers(query: BaseQuery, user: ICurrentUser): Promise<BaseResponse<User>> {
     if (query.filter && query.filter.id && query.filter.id === user.id) {
       return Promise.resolve({
         count: 0,
@@ -218,7 +219,7 @@ export class UsersService {
     });
   }
 
-  async findUser(id: number, user: Partial<User>): Promise<User> {
+  async findUser(id: number, user: ICurrentUser): Promise<User> {
     if (id === user.id) {
       throw new NotFoundException(UserErrors.USER_NOT_FOUND_ERR);
     }
@@ -236,7 +237,7 @@ export class UsersService {
     return foundUser;
   }
 
-  async findProfile(user: Partial<User>): Promise<User> {
+  async findProfile(user: ICurrentUser): Promise<User> {
     const { id, role } = user;
     const scope = role === Role.CLIENT ? ['address', 'bankDetails'] : undefined;
 

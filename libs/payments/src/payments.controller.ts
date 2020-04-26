@@ -29,6 +29,7 @@ import {
   BaseResponseSerializerInterceptor,
   CreatePaymentDto,
   ErrorsInterceptor,
+  ICurrentUser,
   JwtAuthGuard,
   Payment,
   PaymentDto,
@@ -37,7 +38,6 @@ import {
   SequelizeQueryPipe,
   TransformPipe,
   UpdatePaymentDto,
-  User,
   ValidationError,
   ValidationErrorPipe,
 } from '@deliveryapp/core';
@@ -108,7 +108,7 @@ export class PaymentsController {
   @UseInterceptors(BaseResponseSerializerInterceptor)
   async getAll(
     @Query() query: PaymentsQuery,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<BaseResponse<Payment>> {
     const { count, rows } = await this.paymentsService.getPayments(query, user);
 
@@ -144,7 +144,7 @@ export class PaymentsController {
   @UseInterceptors(ClassSerializerInterceptor)
   async getById(
     @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<Payment> {
     const payment = await this.paymentsService.getPayment(id, user);
     return new PaymentDto(payment);
@@ -178,7 +178,7 @@ export class PaymentsController {
   @HttpCode(HttpStatus.OK)
   create(
     @Body() paymentDto: CreatePaymentDto,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ) {
     return this.paymentsService.create(paymentDto, user);
   }
@@ -217,7 +217,7 @@ export class PaymentsController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() paymentDto: UpdatePaymentDto,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ) {
     return this.paymentsService.update(id, paymentDto, user);
   }

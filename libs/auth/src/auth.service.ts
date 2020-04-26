@@ -28,7 +28,9 @@ export class AuthService {
     return { token: this.createToken(user.id) };
   }
 
-  async register(createUserDto: User): Promise<AuthPayload> {
+  async register(
+    createUserDto: Omit<User, 'id' | 'role'>,
+  ): Promise<AuthPayload> {
     const user = UserEntity.build(createUserDto);
 
     await user.save();

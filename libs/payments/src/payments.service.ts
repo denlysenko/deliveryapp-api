@@ -11,9 +11,9 @@ import {
   BaseQuery,
   BaseResponse,
   CreatePaymentDto,
+  ICurrentUser,
   Payment,
   UpdatePaymentDto,
-  User,
 } from '@deliveryapp/core';
 import { LogsService } from '@deliveryapp/logs';
 import { createMessage, NotificationService } from '@deliveryapp/messages';
@@ -32,7 +32,7 @@ export class PaymentsService {
 
   async getPayments(
     query: BaseQuery,
-    user: Partial<User>,
+    user: ICurrentUser,
   ): Promise<BaseResponse<Payment>> {
     const where: WhereAttributeHash = { ...query.filter };
     const offset = query.offset ?? 0;
@@ -45,7 +45,7 @@ export class PaymentsService {
     const scope = ['order'];
 
     if (user.role === Role.CLIENT) {
-      where.clientId = user.id!;
+      where.clientId = user.id;
     } else {
       scope.push('client');
     }
@@ -70,12 +70,12 @@ export class PaymentsService {
     };
   }
 
-  async getPayment(id: number, user: Partial<User>): Promise<Payment> {
+  async getPayment(id: number, user: ICurrentUser): Promise<Payment> {
     const where: WhereAttributeHash = { id };
     const scope = ['order'];
 
     if (user.role === Role.CLIENT) {
-      where.clientId = user.id!;
+      where.clientId = user.id;
     } else {
       scope.push('client');
     }
@@ -95,7 +95,7 @@ export class PaymentsService {
 
   async create(
     paymentDto: CreatePaymentDto,
-    user: Partial<User>,
+    user: ICurrentUser,
   ): Promise<{ id: number }> {
     const { orders, ...newPayment } = paymentDto;
 
@@ -118,7 +118,7 @@ export class PaymentsService {
     Promise.all([
       this.logsService.create({
         action: LogActions.ORDER_CREATE,
-        userId: user.id!,
+        userId: user.id,
         data: {
           id: createdPayment.id,
         },
@@ -139,7 +139,7 @@ export class PaymentsService {
   async update(
     id: number,
     paymentDto: UpdatePaymentDto,
-    user: Partial<User>,
+    user: ICurrentUser,
   ): Promise<{ id: number }> {
     const payment = await this.paymentsRepository.findByPk(id);
 
@@ -169,7 +169,7 @@ export class PaymentsService {
     Promise.all([
       this.logsService.create({
         action: LogActions.PAYMENT_UPDATE,
-        userId: user.id!,
+        userId: user.id,
         data: {
           id: payment.id,
         },
@@ -180,7 +180,7 @@ export class PaymentsService {
           recipientId: updatedPayment.clientId,
         }),
       ),
-    ]).catch((err) => {
+    ]).catch((err: unknown) => {
       console.log(err);
     });
 

@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 
 import { LogActions, SettingsErrors } from '@deliveryapp/common';
-import { Address, BankDetails, User } from '@deliveryapp/core';
+import { Address, BankDetails, ICurrentUser } from '@deliveryapp/core';
 import { LogsService } from '@deliveryapp/logs';
 import { AddressEntity, BankDetailsEntity } from '@deliveryapp/repository';
 
@@ -30,9 +30,9 @@ export class SettingsService {
 
   async createAddress(
     addressDto: Address,
-    user: Partial<User>,
+    user: ICurrentUser,
   ): Promise<{ id: number }> {
-    const address: AddressEntity = await AddressEntity.create({
+    const address = await AddressEntity.create({
       ...addressDto,
       belongsToCompany: true,
     });
@@ -40,7 +40,7 @@ export class SettingsService {
     this.logsService
       .create({
         action: LogActions.CREATE_COMPANY_ADDRESS,
-        userId: user.id!,
+        userId: user.id,
       })
       .catch((err: unknown) => {
         console.error(err);
@@ -52,7 +52,7 @@ export class SettingsService {
   async updateAddress(
     id: number,
     addressDto: Partial<Address>,
-    user: Partial<User>,
+    user: ICurrentUser,
   ): Promise<{ id: number }> {
     const address = await this.addressRepository.findByPk(id);
 
@@ -65,7 +65,7 @@ export class SettingsService {
     this.logsService
       .create({
         action: LogActions.UPDATE_COMPANY_ADDRESS,
-        userId: user.id!,
+        userId: user.id,
       })
       .catch((err: unknown) => {
         console.error(err);
@@ -76,9 +76,9 @@ export class SettingsService {
 
   async createBankDetails(
     bankDetailsDto: BankDetails,
-    user: Partial<User>,
+    user: ICurrentUser,
   ): Promise<{ id: number }> {
-    const bankDetails: BankDetailsEntity = await BankDetailsEntity.create({
+    const bankDetails = await BankDetailsEntity.create({
       ...bankDetailsDto,
       belongsToCompany: true,
     });
@@ -86,7 +86,7 @@ export class SettingsService {
     this.logsService
       .create({
         action: LogActions.CREATE_COMPANY_BANK_DETAILS,
-        userId: user.id!,
+        userId: user.id,
       })
       .catch((err: unknown) => {
         console.error(err);
@@ -98,7 +98,7 @@ export class SettingsService {
   async updateBankDetails(
     id: number,
     bankDetailsDto: BankDetails,
-    user: Partial<User>,
+    user: ICurrentUser,
   ): Promise<{ id: number }> {
     const bankDetails = await this.bankDetailsRepository.findByPk(id);
 
@@ -111,7 +111,7 @@ export class SettingsService {
     this.logsService
       .create({
         action: LogActions.UPDATE_COMPANY_BANK_DETAILS,
-        userId: user.id!,
+        userId: user.id,
       })
       .catch((err: unknown) => {
         console.error(err);

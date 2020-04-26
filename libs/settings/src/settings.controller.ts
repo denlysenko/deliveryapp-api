@@ -27,9 +27,9 @@ import {
   BankDetails,
   BankDetailsDto,
   ErrorsInterceptor,
+  ICurrentUser,
   JwtAuthGuard,
   RolesGuard,
-  User,
   ValidationError,
 } from '@deliveryapp/core';
 
@@ -94,7 +94,7 @@ export class SettingsController {
   @HttpCode(HttpStatus.OK)
   createAddress(
     @Body() addressDto: AddressDto,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<{ id: number }> {
     return this.settingsService.createAddress(addressDto, user);
   }
@@ -131,7 +131,7 @@ export class SettingsController {
   updateAddress(
     @Param('id', ParseIntPipe) id: number,
     @Body() addressDto: AddressDto,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<{ id: number }> {
     return this.settingsService.updateAddress(id, addressDto, user);
   }
@@ -187,7 +187,7 @@ export class SettingsController {
   @HttpCode(HttpStatus.OK)
   createBankDetails(
     @Body() bankDetailsDto: BankDetailsDto,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<{ id: number }> {
     return this.settingsService.createBankDetails(bankDetailsDto, user);
   }
@@ -224,7 +224,7 @@ export class SettingsController {
   updateBankDetails(
     @Param('id', ParseIntPipe) id: number,
     @Body() bankDetailsDto: BankDetailsDto,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<{ id: number }> {
     return this.settingsService.updateBankDetails(id, bankDetailsDto, user);
   }

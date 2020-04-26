@@ -2,11 +2,10 @@ import { NotFoundException } from '@nestjs/common';
 
 import { MessagesErrors, Role } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
-import { BaseQuery, Message, Session, User } from '@deliveryapp/core';
+import { BaseQuery, ICurrentUser, Message, Session } from '@deliveryapp/core';
 
 import { assignIn, isNil } from 'lodash';
 import { Document, FilterQuery, Model } from 'mongoose';
-
 import { MessagingService } from './messaging.service';
 
 interface MessageModel extends Message, Document {
@@ -24,7 +23,7 @@ export class MessagesService {
     private readonly messagingService: MessagingService,
   ) {}
 
-  async subscribe(session: Session, user: Partial<User>): Promise<void> {
+  async subscribe(session: Session, user: ICurrentUser): Promise<void> {
     const createdSession = new this.sessionModel(session);
 
     await createdSession.save();
@@ -34,7 +33,7 @@ export class MessagesService {
     }
   }
 
-  async unsubscribe(socketId: string, user: Partial<User>): Promise<void> {
+  async unsubscribe(socketId: string, user: ICurrentUser): Promise<void> {
     await this.sessionModel.deleteOne({ socketId }).exec();
 
     if (user.role !== Role.CLIENT) {
@@ -54,7 +53,7 @@ export class MessagesService {
     await message.save();
   }
 
-  async getMessages(query: BaseQuery, user: Partial<User>) {
+  async getMessages(query: BaseQuery, user: ICurrentUser) {
     const where: FilterQuery<Message> = {};
 
     if (user.role === Role.CLIENT) {

@@ -61,7 +61,7 @@ export class UsersDto implements BaseResponse<User> {
   readonly rows: UserDto[];
 }
 
-export class CreateUserDto implements User {
+export class CreateUserDto implements Omit<User, 'id'> {
   @IsNotEmpty({
     message: UserErrors.EMAIL_REQUIRED_ERR,
   })
@@ -114,4 +114,4 @@ export class UpdateUserDto
   implements Partial<User> {}
 
 export class RegisterUserDto extends OmitType(CreateUserDto, ['role'])
-  implements Partial<User> {}
+  implements Omit<User, 'id' | 'role'> {}

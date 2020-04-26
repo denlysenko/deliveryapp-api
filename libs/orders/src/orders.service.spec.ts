@@ -28,6 +28,16 @@ const orderDto = {
   senderPhone: order.senderPhone,
 };
 
+const client = {
+  id: 1,
+  role: Role.CLIENT,
+};
+
+const admin = {
+  id: 2,
+  role: Role.ADMIN,
+};
+
 describe('OrdersService', () => {
   let service: OrderService;
   let configService: ConfigService;
@@ -104,7 +114,7 @@ describe('OrdersService', () => {
     });
 
     it('should apply defaults', async () => {
-      await service.getOrders({}, { role: Role.ADMIN });
+      await service.getOrders({}, admin);
       expect(orderEntity.findAndCountAll).toBeCalledWith(
         expect.objectContaining({
           where: {},
@@ -116,7 +126,7 @@ describe('OrdersService', () => {
     });
 
     it('should apply passed filters', async () => {
-      await service.getOrders(query, { role: Role.ADMIN });
+      await service.getOrders(query, admin);
       expect(orderEntity.findAndCountAll).toBeCalledWith(
         expect.objectContaining({
           where: query.filter,
@@ -128,7 +138,7 @@ describe('OrdersService', () => {
     });
 
     it('should add clientId to query for client', async () => {
-      await service.getOrders(query, { id: 2, role: Role.CLIENT });
+      await service.getOrders(query, client);
       expect(orderEntity.findAndCountAll).toBeCalledWith(
         expect.objectContaining({
           where: { ...query.filter, clientId: 2 },
@@ -140,19 +150,20 @@ describe('OrdersService', () => {
     });
 
     it('should return base response of Order', async () => {
-      expect(
-        await service.getOrders(query, { id: 2, role: Role.CLIENT }),
-      ).toEqual({ count: 1, rows: [order] });
+      expect(await service.getOrders(query, client)).toEqual({
+        count: 1,
+        rows: [order],
+      });
     });
   });
 
   describe('getOrder', () => {
     it('should return order', async () => {
-      expect(await service.getOrder(1, { role: Role.ADMIN })).toEqual(order);
+      expect(await service.getOrder(1, admin)).toEqual(order);
     });
 
     it('should add clientId to query for client', async () => {
-      await service.getOrder(1, { role: Role.CLIENT, id: 2 });
+      await service.getOrder(1, client);
       expect(orderEntity.findOne).toBeCalledWith(
         expect.objectContaining({
           where: { id: 1, clientId: 2 },
@@ -164,7 +175,7 @@ describe('OrdersService', () => {
       jest.spyOn(orderEntity, 'findOne').mockResolvedValueOnce(null);
 
       try {
-        await service.getOrder(1, { role: Role.CLIENT, id: 2 });
+        await service.getOrder(1, client);
       } catch (err) {
         expect(err.status).toEqual(HttpStatus.NOT_FOUND);
       }
@@ -180,14 +191,14 @@ describe('OrdersService', () => {
 
     it('should throw Bad Request if clientId is not passed', async () => {
       try {
-        await service.create(orderDto, { role: Role.ADMIN });
+        await service.create(orderDto, admin);
       } catch (err) {
         expect(err.message).toEqual(OrderErrors.CLIENT_REQUIRED_ERR);
       }
     });
 
     it('should build order', async () => {
-      await service.create(orderDto, { role: Role.CLIENT, id: 2 });
+      await service.create(orderDto, client);
       expect(OrderEntity.build).toBeCalledWith({
         ...orderDto,
         creatorId: 2,
@@ -196,17 +207,17 @@ describe('OrdersService', () => {
     });
 
     it('should save order to DB', async () => {
-      await service.create(orderDto, { role: Role.CLIENT });
+      await service.create(orderDto, client);
       expect(orderEntity.save).toBeCalledTimes(1);
     });
 
     it('should create log', async () => {
-      await service.create(orderDto, { role: Role.CLIENT });
+      await service.create(orderDto, client);
       expect(logsService.create).toBeCalledTimes(1);
     });
 
     it('should return id of created order', async () => {
-      expect(await service.create(orderDto, { role: Role.CLIENT })).toEqual({
+      expect(await service.create(orderDto, client)).toEqual({
         id: 3,
       });
     });
@@ -221,20 +232,12 @@ describe('OrdersService', () => {
     });
 
     it('should find order', async () => {
-      await service.update(
-        order.id,
-        { cargoName: 'Updated' },
-        { role: Role.ADMIN },
-      );
+      await service.update(order.id, { cargoName: 'Updated' }, admin);
       expect(orderEntity.findOne).toBeCalledWith({ where: { id: order.id } });
     });
 
     it('should find order for client', async () => {
-      await service.update(
-        order.id,
-        { cargoName: 'Updated' },
-        { role: Role.CLIENT, id: 2 },
-      );
+      await service.update(order.id, { cargoName: 'Updated' }, client);
       expect(orderEntity.findOne).toBeCalledWith({
         where: { id: order.id, clientId: 2 },
       });
@@ -244,41 +247,25 @@ describe('OrdersService', () => {
       jest.spyOn(orderEntity, 'findOne').mockResolvedValueOnce(null);
 
       try {
-        await service.update(
-          order.id,
-          { cargoName: 'Updated' },
-          { role: Role.ADMIN },
-        );
+        await service.update(order.id, { cargoName: 'Updated' }, admin);
       } catch (err) {
         expect(err.status).toEqual(HttpStatus.NOT_FOUND);
       }
     });
 
     it('should update', async () => {
-      await service.update(
-        order.id,
-        { cargoName: 'Updated' },
-        { role: Role.ADMIN },
-      );
+      await service.update(order.id, { cargoName: 'Updated' }, admin);
       expect(orderEntity.update).toBeCalledTimes(1);
     });
 
     it('should create log', async () => {
-      await service.update(
-        order.id,
-        { cargoName: 'Updated' },
-        { role: Role.ADMIN },
-      );
+      await service.update(order.id, { cargoName: 'Updated' }, admin);
       expect(logsService.create).toBeCalledTimes(1);
     });
 
     it('should return id of updated order', async () => {
       expect(
-        await service.update(
-          order.id,
-          { cargoName: 'Updated' },
-          { role: Role.ADMIN },
-        ),
+        await service.update(order.id, { cargoName: 'Updated' }, admin),
       ).toEqual({
         id: order.id,
       });

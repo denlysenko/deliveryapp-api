@@ -7,7 +7,12 @@ import {
   Role,
 } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
-import { BaseResponse, BaseQuery, Order, User } from '@deliveryapp/core';
+import {
+  BaseQuery,
+  BaseResponse,
+  ICurrentUser,
+  Order,
+} from '@deliveryapp/core';
 import { LogsService } from '@deliveryapp/logs';
 import { createMessage, NotificationService } from '@deliveryapp/messages';
 import { OrderEntity } from '@deliveryapp/repository';
@@ -41,7 +46,7 @@ export class OrderService {
 
   getOrders(
     query: BaseQuery,
-    user: Partial<User>,
+    user: ICurrentUser,
   ): Promise<BaseResponse<Order>> {
     const where: WhereAttributeHash = { ...query.filter };
     const offset = query.offset ?? 0;
@@ -54,7 +59,7 @@ export class OrderService {
     const scope = user.role === Role.CLIENT ? undefined : 'client';
 
     if (user.role === Role.CLIENT) {
-      where.clientId = user.id!;
+      where.clientId = user.id;
     }
 
     return this.ordersRepository.scope(scope).findAndCountAll({
@@ -67,12 +72,12 @@ export class OrderService {
     });
   }
 
-  async getOrder(id: number, user: Partial<User>): Promise<Order> {
+  async getOrder(id: number, user: ICurrentUser): Promise<Order> {
     const where: WhereAttributeHash = { id };
     const scope = ['payment'];
 
     if (user.role === Role.CLIENT) {
-      where.clientId = user.id!;
+      where.clientId = user.id;
     } else {
       scope.push('client');
     }
@@ -88,7 +93,7 @@ export class OrderService {
     return order;
   }
 
-  async create(orderDto: Order, user: Partial<User>): Promise<{ id: number }> {
+  async create(orderDto: Order, user: ICurrentUser): Promise<{ id: number }> {
     if (user.role !== Role.CLIENT && !orderDto.clientId) {
       throw new BadRequestException(OrderErrors.CLIENT_REQUIRED_ERR);
     }
@@ -106,7 +111,7 @@ export class OrderService {
     Promise.all([
       this.logsService.create({
         action: LogActions.ORDER_CREATE,
-        userId: user.id!,
+        userId: user.id,
         data: {
           id: order.id,
         },
@@ -114,7 +119,7 @@ export class OrderService {
       this.notificationService.sendNotification(
         createMessage(MessageTypes.ORDER_CREATE, { id: order.id }),
       ),
-    ]).catch((err) => {
+    ]).catch((err: unknown) => {
       console.error(err);
     });
 
@@ -124,12 +129,12 @@ export class OrderService {
   async update(
     id: number,
     orderDto: Partial<Order>,
-    user: Partial<User>,
+    user: ICurrentUser,
   ): Promise<{ id: number }> {
     const where: WhereAttributeHash = { id };
 
     if (user.role === Role.CLIENT) {
-      where.clientId = user.id!;
+      where.clientId = user.id;
     }
 
     const order = await this.ordersRepository.findOne({ where });
@@ -148,7 +153,7 @@ export class OrderService {
     Promise.all([
       this.logsService.create({
         action: LogActions.ORDER_UPDATE,
-        userId: user.id!,
+        userId: user.id,
         data: {
           id: order.id,
         },
@@ -159,7 +164,7 @@ export class OrderService {
           recipientId: user.role === Role.CLIENT ? undefined : user.id,
         }),
       ),
-    ]).catch((err) => {
+    ]).catch((err: unknown) => {
       console.error(err);
     });
 

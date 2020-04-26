@@ -21,6 +21,16 @@ const paymentEntity = createEntity({
 });
 const DEFAULT_LIMIT = 20;
 
+const admin = {
+  id: 2,
+  role: Role.ADMIN,
+};
+
+const client = {
+  id: 1,
+  role: Role.CLIENT,
+};
+
 describe('PaymentsService', () => {
   let service: PaymentsService;
   let configService: ConfigService;
@@ -97,7 +107,7 @@ describe('PaymentsService', () => {
     });
 
     it('should apply defaults', async () => {
-      await service.getPayments({}, { role: Role.ADMIN });
+      await service.getPayments({}, admin);
       expect(paymentEntity.findAndCountAll).toBeCalledWith(
         expect.objectContaining({
           where: {},
@@ -109,7 +119,7 @@ describe('PaymentsService', () => {
     });
 
     it('should apply passed filters', async () => {
-      await service.getPayments(query, { role: Role.ADMIN });
+      await service.getPayments(query, admin);
       expect(paymentEntity.findAndCountAll).toBeCalledWith(
         expect.objectContaining({
           where: query.filter,
@@ -121,10 +131,10 @@ describe('PaymentsService', () => {
     });
 
     it('should add clientId to query for client', async () => {
-      await service.getPayments(query, { id: 2, role: Role.CLIENT });
+      await service.getPayments(query, client);
       expect(paymentEntity.findAndCountAll).toBeCalledWith(
         expect.objectContaining({
-          where: { ...query.filter, clientId: 2 },
+          where: { ...query.filter, clientId: client.id },
           limit: query.limit,
           offset: query.offset,
           order: Object.entries(query.order),
@@ -133,24 +143,23 @@ describe('PaymentsService', () => {
     });
 
     it('should return base response of Payment', async () => {
-      expect(
-        await service.getPayments(query, { id: 2, role: Role.CLIENT }),
-      ).toEqual({ count: 1, rows: [payment] });
+      expect(await service.getPayments(query, client)).toEqual({
+        count: 1,
+        rows: [payment],
+      });
     });
   });
 
   describe('getPayment', () => {
     it('should return order', async () => {
-      expect(await service.getPayment(1, { role: Role.ADMIN })).toEqual(
-        payment,
-      );
+      expect(await service.getPayment(1, admin)).toEqual(payment);
     });
 
     it('should add clientId to query for client', async () => {
-      await service.getPayment(1, { role: Role.CLIENT, id: 2 });
+      await service.getPayment(1, client);
       expect(paymentEntity.findOne).toBeCalledWith(
         expect.objectContaining({
-          where: { id: 1, clientId: 2 },
+          where: { id: 1, clientId: client.id },
         }),
       );
     });
@@ -159,7 +168,7 @@ describe('PaymentsService', () => {
       jest.spyOn(paymentEntity, 'findOne').mockResolvedValueOnce(null);
 
       try {
-        await service.getPayment(1, { role: Role.CLIENT, id: 2 });
+        await service.getPayment(1, client);
       } catch (err) {
         expect(err.status).toEqual(HttpStatus.NOT_FOUND);
       }
@@ -188,7 +197,7 @@ describe('PaymentsService', () => {
     });
 
     it('should create payment', async () => {
-      await service.create(paymentDto, { id: 2 });
+      await service.create(paymentDto, admin);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { orders, ...rest } = paymentDto;
       expect(PaymentEntity.create).toBeCalledWith(
@@ -201,7 +210,7 @@ describe('PaymentsService', () => {
     });
 
     it('should associate orders', async () => {
-      await service.create(paymentDto, { id: 2 });
+      await service.create(paymentDto, admin);
       const { orders } = paymentDto;
       expect(paymentEntity.$set).toBeCalledWith('orders', orders, {
         transaction: undefined,
@@ -209,12 +218,12 @@ describe('PaymentsService', () => {
     });
 
     it('should create log', async () => {
-      await service.create(paymentDto, { id: 2 });
+      await service.create(paymentDto, admin);
       expect(logsService.create).toBeCalledTimes(1);
     });
 
     it('should return id of created payment', async () => {
-      expect(await service.create(paymentDto, { id: 2 })).toEqual({
+      expect(await service.create(paymentDto, admin)).toEqual({
         id: 3,
       });
     });
@@ -229,7 +238,7 @@ describe('PaymentsService', () => {
     });
 
     it('should find payment', async () => {
-      await service.update(payment.id, { paymentAmount: 5 }, { id: 2 });
+      await service.update(payment.id, { paymentAmount: 5 }, admin);
       expect(paymentEntity.findByPk).toBeCalledWith(payment.id);
     });
 
@@ -237,7 +246,7 @@ describe('PaymentsService', () => {
       jest.spyOn(paymentEntity, 'findByPk').mockResolvedValueOnce(null);
 
       try {
-        await service.update(payment.id, { paymentAmount: 5 }, { id: 2 });
+        await service.update(payment.id, { paymentAmount: 5 }, admin);
       } catch (err) {
         expect(err.status).toEqual(HttpStatus.NOT_FOUND);
       }
@@ -247,7 +256,7 @@ describe('PaymentsService', () => {
       const updatedPaymentId = await service.update(
         payment.id,
         { paymentAmount: 5 },
-        { id: 2 },
+        admin,
       );
       expect(paymentEntity.set).toBeCalledTimes(1);
       expect(updatedPaymentId).toEqual({ id: payment.id });
@@ -257,7 +266,7 @@ describe('PaymentsService', () => {
       await service.update(
         payment.id,
         { paymentAmount: 5, orders: [3] },
-        { id: 2 },
+        admin,
       );
       expect(paymentEntity.$set).toBeCalledWith('orders', [3], {
         transaction: undefined,
@@ -265,13 +274,13 @@ describe('PaymentsService', () => {
     });
 
     it('should create log', async () => {
-      await service.update(payment.id, { paymentAmount: 5 }, { id: 2 });
+      await service.update(payment.id, { paymentAmount: 5 }, admin);
       expect(logsService.create).toBeCalledTimes(1);
     });
 
     it('should return id of updated payment', async () => {
       expect(
-        await service.update(payment.id, { paymentAmount: 5 }, { id: 2 }),
+        await service.update(payment.id, { paymentAmount: 5 }, admin),
       ).toEqual({
         id: payment.id,
       });

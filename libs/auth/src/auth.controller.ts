@@ -20,11 +20,11 @@ import {
   AuthPayload,
   AuthPayloadDto,
   ErrorsInterceptor,
+  ICurrentUser,
   JwtAuthGuard,
   LoginDto,
   LoginErrorDto,
   RegisterUserDto,
-  User,
   ValidationError,
   ValidationErrorPipe,
 } from '@deliveryapp/core';
@@ -99,7 +99,7 @@ export class AuthController {
   })
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  refreshToken(@CurrentUser() user: User): AuthPayload {
-    return { token: this.authService.createToken(user.id!) };
+  refreshToken(@CurrentUser() user: ICurrentUser): AuthPayload {
+    return { token: this.authService.createToken(user.id) };
   }
 }

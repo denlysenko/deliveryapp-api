@@ -1,6 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { Role } from '@deliveryapp/common';
 import { LogsService } from '@deliveryapp/logs';
 import {
   AddressEntity,
@@ -19,6 +20,8 @@ import { SettingsService } from './settings.service';
 
 const addressEntity = createEntity(address);
 const bankDetailsEntity = createEntity(bankDetails);
+
+const currentUser = { id: 2, role: Role.ADMIN };
 
 describe('SettingsService', () => {
   let service: SettingsService;
@@ -108,7 +111,7 @@ describe('SettingsService', () => {
     });
 
     it('should create address', async () => {
-      await service.createAddress(address, { id: 2 });
+      await service.createAddress(address, currentUser);
       expect(AddressEntity.create).toBeCalledWith({
         ...address,
         belongsToCompany: true,
@@ -116,12 +119,12 @@ describe('SettingsService', () => {
     });
 
     it('should create log', async () => {
-      await service.createAddress(address, { id: 2 });
+      await service.createAddress(address, currentUser);
       expect(logsService.create).toBeCalledTimes(1);
     });
 
     it('should return created address id', async () => {
-      expect(await service.createAddress(address, { id: 2 })).toEqual({
+      expect(await service.createAddress(address, currentUser)).toEqual({
         id: addressId,
       });
     });
@@ -137,7 +140,7 @@ describe('SettingsService', () => {
     });
 
     it('should create bank details', async () => {
-      await service.createBankDetails(bankDetails, { id: 2 });
+      await service.createBankDetails(bankDetails, currentUser);
       expect(BankDetailsEntity.create).toBeCalledWith({
         ...bankDetails,
         belongsToCompany: true,
@@ -145,14 +148,16 @@ describe('SettingsService', () => {
     });
 
     it('should create log', async () => {
-      await service.createBankDetails(bankDetails, { id: 2 });
+      await service.createBankDetails(bankDetails, currentUser);
       expect(logsService.create).toBeCalledTimes(1);
     });
 
     it('should return created bank details id', async () => {
-      expect(await service.createBankDetails(bankDetails, { id: 2 })).toEqual({
-        id: bankDetailsId,
-      });
+      expect(await service.createBankDetails(bankDetails, currentUser)).toEqual(
+        {
+          id: bankDetailsId,
+        },
+      );
     });
   });
 
@@ -166,7 +171,7 @@ describe('SettingsService', () => {
     });
 
     it('should find address', async () => {
-      await service.updateAddress(1, address, { id: 2 });
+      await service.updateAddress(1, address, currentUser);
       expect(addressEntity.findByPk).toBeCalledWith(1);
     });
 
@@ -174,24 +179,24 @@ describe('SettingsService', () => {
       jest.spyOn(addressEntity, 'findByPk').mockResolvedValueOnce(null);
 
       try {
-        await service.updateAddress(1, address, { id: 2 });
+        await service.updateAddress(1, address, currentUser);
       } catch (err) {
         expect(err.status).toEqual(HttpStatus.NOT_FOUND);
       }
     });
 
     it('should update address', async () => {
-      await service.updateAddress(1, address, { id: 2 });
+      await service.updateAddress(1, address, currentUser);
       expect(addressEntity.update).toBeCalledTimes(1);
     });
 
     it('should create log', async () => {
-      await service.updateAddress(1, address, { id: 2 });
+      await service.updateAddress(1, address, currentUser);
       expect(logsService.create).toBeCalledTimes(1);
     });
 
     it('should return updated address id', async () => {
-      expect(await service.updateAddress(1, address, { id: 2 })).toEqual({
+      expect(await service.updateAddress(1, address, currentUser)).toEqual({
         id: 1,
       });
     });
@@ -207,7 +212,7 @@ describe('SettingsService', () => {
     });
 
     it('should find bank details', async () => {
-      await service.updateBankDetails(1, bankDetails, { id: 2 });
+      await service.updateBankDetails(1, bankDetails, currentUser);
       expect(bankDetailsEntity.findByPk).toBeCalledWith(1);
     });
 
@@ -215,25 +220,25 @@ describe('SettingsService', () => {
       jest.spyOn(bankDetailsEntity, 'findByPk').mockResolvedValueOnce(null);
 
       try {
-        await service.updateBankDetails(1, bankDetails, { id: 2 });
+        await service.updateBankDetails(1, bankDetails, currentUser);
       } catch (err) {
         expect(err.status).toEqual(HttpStatus.NOT_FOUND);
       }
     });
 
     it('should update bank details', async () => {
-      await service.updateBankDetails(1, bankDetails, { id: 2 });
+      await service.updateBankDetails(1, bankDetails, currentUser);
       expect(bankDetailsEntity.update).toBeCalledTimes(1);
     });
 
     it('should create log', async () => {
-      await service.updateBankDetails(1, bankDetails, { id: 2 });
+      await service.updateBankDetails(1, bankDetails, currentUser);
       expect(logsService.create).toBeCalledTimes(1);
     });
 
     it('should return updated address id', async () => {
       expect(
-        await service.updateBankDetails(1, bankDetails, { id: 2 }),
+        await service.updateBankDetails(1, bankDetails, currentUser),
       ).toEqual({
         id: 1,
       });

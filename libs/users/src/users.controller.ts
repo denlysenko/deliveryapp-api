@@ -30,6 +30,7 @@ import {
   BaseResponseSerializerInterceptor,
   CreateUserDto,
   ErrorsInterceptor,
+  ICurrentUser,
   JwtAuthGuard,
   PasswordDto,
   RolesGuard,
@@ -70,7 +71,7 @@ export class UsersController {
     description: 'Authorization Error',
   })
   @UseInterceptors(ClassSerializerInterceptor)
-  async getProfile(@CurrentUser() user: Partial<User>): Promise<User> {
+  async getProfile(@CurrentUser() user: ICurrentUser): Promise<User> {
     const profile = await this.usersService.findProfile(user);
     return new UserDto(profile);
   }
@@ -97,7 +98,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   updateProfile(
     @Body() userDto: UpdateProfileDto,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<{ id: number }> {
     return this.usersService.updateProfile(user, userDto);
   }
@@ -124,9 +125,9 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   changePassword(
     @Body() passwordDto: PasswordDto,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<void> {
-    return this.usersService.changePassword(user.id!, passwordDto);
+    return this.usersService.changePassword(user.id, passwordDto);
   }
 
   /**
@@ -212,7 +213,7 @@ export class UsersController {
   @UseInterceptors(BaseResponseSerializerInterceptor)
   async findAll(
     @Query() query: UsersQuery,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<BaseResponse<User>> {
     const { count, rows } = await this.usersService.findUsers(query, user);
     return {
@@ -253,7 +254,7 @@ export class UsersController {
   @UseInterceptors(ClassSerializerInterceptor)
   async findById(
     @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<User> {
     const foundUser = await this.usersService.findUser(id, user);
     return new UserDto(foundUser);
@@ -280,7 +281,7 @@ export class UsersController {
   @UsePipes(ValidationErrorPipe)
   create(
     @Body() userDto: CreateUserDto,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<{ id: number }> {
     return this.usersService.create(userDto, user);
   }
@@ -319,7 +320,7 @@ export class UsersController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() userDto: UpdateUserDto,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<{ id: number }> {
     return this.usersService.updateUser(id, userDto, user);
   }

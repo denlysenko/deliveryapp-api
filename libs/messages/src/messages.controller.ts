@@ -25,12 +25,12 @@ import { CurrentUser } from '@deliveryapp/common';
 import {
   BaseResponse,
   ErrorsInterceptor,
+  ICurrentUser,
   JwtAuthGuard,
   Message,
   MessagesDto,
   SessionDto,
   TransformPipe,
-  User,
 } from '@deliveryapp/core';
 
 import { MessagesQuery } from './messages.query';
@@ -73,7 +73,7 @@ export class MessagesController {
   @UsePipes(TransformPipe)
   getMessages(
     @Query() query: MessagesQuery,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ): Promise<BaseResponse<Message>> {
     return this.messagesService.getMessages(query, user);
   }
@@ -115,7 +115,7 @@ export class MessagesController {
   @HttpCode(HttpStatus.OK)
   async subscribeToMessages(
     @Body() sessionDto: SessionDto,
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: ICurrentUser,
   ) {
     return this.messagesService.subscribe(sessionDto, user);
   }
@@ -135,7 +135,7 @@ export class MessagesController {
   @HttpCode(HttpStatus.OK)
   async unsubscribeFromMessages(
     @Body() sessionDto: SessionDto,
-    @CurrentUser() user: User,
+    @CurrentUser() user: ICurrentUser,
   ) {
     const { socketId } = sessionDto;
     return this.messagesService.unsubscribe(socketId, user);
