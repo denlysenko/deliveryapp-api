@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 
-import { LogActions } from '@deliveryapp/common';
+import { LogActions, SettingsErrors } from '@deliveryapp/common';
 import { Address, BankDetails, User } from '@deliveryapp/core';
 import { LogsService } from '@deliveryapp/logs';
 import { AddressEntity, BankDetailsEntity } from '@deliveryapp/repository';
@@ -57,12 +57,12 @@ export class SettingsService {
     const address: AddressEntity = await this.addressRepository.findByPk(id);
 
     if (!address) {
-      throw new NotFoundException();
+      throw new NotFoundException(SettingsErrors.ADDRESS_NOT_FOUND_ERR);
     }
 
     await address.update(addressDto);
 
-    await this.logsService
+    this.logsService
       .create({
         action: LogActions.UPDATE_COMPANY_ADDRESS,
         userId: user.id,
@@ -83,7 +83,7 @@ export class SettingsService {
       belongsToCompany: true,
     });
 
-    await this.logsService
+    this.logsService
       .create({
         action: LogActions.CREATE_COMPANY_BANK_DETAILS,
         userId: user.id,
@@ -105,12 +105,12 @@ export class SettingsService {
     );
 
     if (!bankDetails) {
-      throw new NotFoundException();
+      throw new NotFoundException(SettingsErrors.BANK_DETAILS_NOT_FOUND_ERR);
     }
 
     await bankDetails.update(bankDetailsDto);
 
-    await this.logsService
+    this.logsService
       .create({
         action: LogActions.UPDATE_COMPANY_BANK_DETAILS,
         userId: user.id,

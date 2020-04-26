@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 
-import { Role } from '@deliveryapp/common';
+import { MessagesErrors, Role } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
 import { BaseQuery, Message, Session, User } from '@deliveryapp/core';
 
@@ -49,7 +49,7 @@ export class MessagesService {
     const message = await this.messageModel.findById(messageId);
 
     if (isNil(message)) {
-      throw new NotFoundException();
+      throw new NotFoundException(MessagesErrors.MESSAGE_NOT_FOUND_ERR);
     }
 
     assignIn(message, { read: true });

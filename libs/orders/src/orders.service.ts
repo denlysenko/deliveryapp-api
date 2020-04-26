@@ -82,7 +82,7 @@ export class OrderService {
       .findOne({ where, raw: true, nest: true });
 
     if (isNil(order)) {
-      throw new NotFoundException();
+      throw new NotFoundException(OrderErrors.ORDER_NOT_FOUND_ERR);
     }
 
     return order;
@@ -135,7 +135,7 @@ export class OrderService {
     const order: OrderEntity = await this.ordersRepository.findOne({ where });
 
     if (isNil(order)) {
-      throw new NotFoundException();
+      throw new NotFoundException(OrderErrors.ORDER_NOT_FOUND_ERR);
     }
 
     await order.update(

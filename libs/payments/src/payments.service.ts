@@ -1,10 +1,15 @@
 import { NotFoundException } from '@nestjs/common';
 
-import { LogActions, MessageTypes, Role } from '@deliveryapp/common';
+import {
+  LogActions,
+  MessageTypes,
+  PaymentErrors,
+  Role,
+} from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
 import {
-  BaseResponse,
   BaseQuery,
+  BaseResponse,
   CreatePaymentDto,
   Payment,
   UpdatePaymentDto,
@@ -80,7 +85,7 @@ export class PaymentsService {
       .findOne({ where, nest: true });
 
     if (isNil(payment)) {
-      throw new NotFoundException();
+      throw new NotFoundException(PaymentErrors.PAYMENT_NOT_FOUND_ERR);
     }
 
     // this transformation to JSON is for fixing sequelize issue when using raw: true
@@ -139,7 +144,7 @@ export class PaymentsService {
     const payment: PaymentEntity = await this.paymentsRepository.findByPk(id);
 
     if (isNil(payment)) {
-      throw new NotFoundException();
+      throw new NotFoundException(PaymentErrors.PAYMENT_NOT_FOUND_ERR);
     }
 
     const updatedPayment: PaymentEntity = await this.paymentsRepository.sequelize.transaction(
