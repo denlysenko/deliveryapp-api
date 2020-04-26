@@ -19,7 +19,7 @@ export class NotificationService {
       return this.sendToEmployees(savedMessage);
     }
 
-    return this.sendToUser(savedMessage, savedMessage.recipientId);
+    return this.sendToUser(savedMessage, savedMessage.recipientId!);
   }
 
   private async sendToUser(message: Message, userId: number) {

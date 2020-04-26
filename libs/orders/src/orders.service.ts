@@ -13,7 +13,7 @@ import { createMessage, NotificationService } from '@deliveryapp/messages';
 import { OrderEntity } from '@deliveryapp/repository';
 
 import { isNil } from 'lodash';
-import { WhereOptions } from 'sequelize';
+import { WhereAttributeHash } from 'sequelize';
 
 const ROLE_CLIENT_UPDATE_ALLOWED_FIELDS = [
   'cityFrom',
@@ -43,7 +43,7 @@ export class OrderService {
     query: BaseQuery,
     user: Partial<User>,
   ): Promise<BaseResponse<Order>> {
-    const where: WhereOptions = { ...query.filter };
+    const where: WhereAttributeHash = { ...query.filter };
     const offset = query.offset ?? 0;
     const limit =
       query.limit ?? parseInt(this.configService.get('DEFAULT_LIMIT'), 10);
@@ -51,10 +51,10 @@ export class OrderService {
       ? Object.entries(query.order)
       : [['id', 'desc']];
 
-    const scope = user.role === Role.CLIENT ? null : 'client';
+    const scope = user.role === Role.CLIENT ? undefined : 'client';
 
     if (user.role === Role.CLIENT) {
-      where.clientId = user.id;
+      where.clientId = user.id!;
     }
 
     return this.ordersRepository.scope(scope).findAndCountAll({
@@ -68,11 +68,11 @@ export class OrderService {
   }
 
   async getOrder(id: number, user: Partial<User>): Promise<Order> {
-    const where: WhereOptions = { id };
+    const where: WhereAttributeHash = { id };
     const scope = ['payment'];
 
     if (user.role === Role.CLIENT) {
-      where.clientId = user.id;
+      where.clientId = user.id!;
     } else {
       scope.push('client');
     }
@@ -106,7 +106,7 @@ export class OrderService {
     Promise.all([
       this.logsService.create({
         action: LogActions.ORDER_CREATE,
-        userId: user.id,
+        userId: user.id!,
         data: {
           id: order.id,
         },
@@ -126,13 +126,13 @@ export class OrderService {
     orderDto: Partial<Order>,
     user: Partial<User>,
   ): Promise<{ id: number }> {
-    const where: WhereOptions = { id };
+    const where: WhereAttributeHash = { id };
 
     if (user.role === Role.CLIENT) {
-      where.clientId = user.id;
+      where.clientId = user.id!;
     }
 
-    const order: OrderEntity = await this.ordersRepository.findOne({ where });
+    const order = await this.ordersRepository.findOne({ where });
 
     if (isNil(order)) {
       throw new NotFoundException(OrderErrors.ORDER_NOT_FOUND_ERR);
@@ -148,7 +148,7 @@ export class OrderService {
     Promise.all([
       this.logsService.create({
         action: LogActions.ORDER_UPDATE,
-        userId: user.id,
+        userId: user.id!,
         data: {
           id: order.id,
         },

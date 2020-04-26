@@ -99,7 +99,7 @@ export class UsersController {
     @Body() userDto: UpdateProfileDto,
     @CurrentUser() user: Partial<User>,
   ): Promise<{ id: number }> {
-    return this.usersService.updateProfile(user.id, userDto, user);
+    return this.usersService.updateProfile(user, userDto);
   }
 
   /**
@@ -126,7 +126,7 @@ export class UsersController {
     @Body() passwordDto: PasswordDto,
     @CurrentUser() user: Partial<User>,
   ): Promise<void> {
-    return this.usersService.changePassword(user.id, passwordDto);
+    return this.usersService.changePassword(user.id!, passwordDto);
   }
 
   /**

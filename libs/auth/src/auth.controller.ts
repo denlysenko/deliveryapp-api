@@ -100,6 +100,6 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   refreshToken(@CurrentUser() user: User): AuthPayload {
-    return { token: this.authService.createToken(user.id) };
+    return { token: this.authService.createToken(user.id!) };
   }
 }

@@ -17,7 +17,7 @@ set('debug', process.env.NODE_ENV === 'development');
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGO_URL, {
+    MongooseModule.forRoot(process.env.MONGO_URL!, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     }),
@@ -29,7 +29,7 @@ set('debug', process.env.NODE_ENV === 'development');
         const sequelize = new Sequelize({
           dialect: 'postgres',
           host: process.env.PG_HOST,
-          port: parseInt(process.env.PG_PORT, 10),
+          port: parseInt(process.env.PG_PORT!, 10),
           username: process.env.PG_USER,
           password: process.env.PG_PASSWORD,
           database: process.env.PG_DB,

@@ -8,7 +8,7 @@ import { ValidationError, ValidationErrorItem } from '../models';
 
 export class ValidationErrorPipe extends ValidationPipe {
   createExceptionFactory() {
-    return (errors: Error[]) =>
+    return (errors: Error[] = []) =>
       new UnprocessableEntityException(
         new ValidationError(
           'ValidationError',

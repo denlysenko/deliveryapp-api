@@ -40,9 +40,9 @@ export class SettingsService {
     this.logsService
       .create({
         action: LogActions.CREATE_COMPANY_ADDRESS,
-        userId: user.id,
+        userId: user.id!,
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error(err);
       });
 
@@ -54,7 +54,7 @@ export class SettingsService {
     addressDto: Partial<Address>,
     user: Partial<User>,
   ): Promise<{ id: number }> {
-    const address: AddressEntity = await this.addressRepository.findByPk(id);
+    const address = await this.addressRepository.findByPk(id);
 
     if (!address) {
       throw new NotFoundException(SettingsErrors.ADDRESS_NOT_FOUND_ERR);
@@ -65,9 +65,9 @@ export class SettingsService {
     this.logsService
       .create({
         action: LogActions.UPDATE_COMPANY_ADDRESS,
-        userId: user.id,
+        userId: user.id!,
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error(err);
       });
 
@@ -86,9 +86,9 @@ export class SettingsService {
     this.logsService
       .create({
         action: LogActions.CREATE_COMPANY_BANK_DETAILS,
-        userId: user.id,
+        userId: user.id!,
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error(err);
       });
 
@@ -100,9 +100,7 @@ export class SettingsService {
     bankDetailsDto: BankDetails,
     user: Partial<User>,
   ): Promise<{ id: number }> {
-    const bankDetails: BankDetailsEntity = await this.bankDetailsRepository.findByPk(
-      id,
-    );
+    const bankDetails = await this.bankDetailsRepository.findByPk(id);
 
     if (!bankDetails) {
       throw new NotFoundException(SettingsErrors.BANK_DETAILS_NOT_FOUND_ERR);
@@ -113,9 +111,9 @@ export class SettingsService {
     this.logsService
       .create({
         action: LogActions.UPDATE_COMPANY_BANK_DETAILS,
-        userId: user.id,
+        userId: user.id!,
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error(err);
       });
 

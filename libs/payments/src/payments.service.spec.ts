@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
 import { LogsService } from '@deliveryapp/logs';
-import { MessagesService } from '@deliveryapp/messages';
+import { NotificationService } from '@deliveryapp/messages';
 import { PaymentEntity, PAYMENTS_REPOSITORY } from '@deliveryapp/repository';
 import {
   createEntity,
@@ -34,19 +34,19 @@ describe('PaymentsService', () => {
           useFactory: (
             paymentsRepository,
             configService: ConfigService,
-            messagesService: MessagesService,
+            notificationService: NotificationService,
             logsService: LogsService,
           ) =>
             new PaymentsService(
               paymentsRepository,
               configService,
-              messagesService,
+              notificationService,
               logsService,
             ),
           inject: [
             PAYMENTS_REPOSITORY,
             ConfigService,
-            MessagesService,
+            NotificationService,
             LogsService,
           ],
         },
@@ -55,7 +55,7 @@ describe('PaymentsService', () => {
           useValue: MockConfigService,
         },
         {
-          provide: MessagesService,
+          provide: NotificationService,
           useValue: {},
         },
         {
@@ -184,7 +184,7 @@ describe('PaymentsService', () => {
       jest.spyOn(PaymentEntity, 'create').mockResolvedValue({
         ...paymentEntity,
         id: 3,
-      });
+      } as any);
     });
 
     it('should create payment', async () => {

@@ -38,15 +38,15 @@ export class AuthService {
         action: LogActions.REGISTRATION,
         userId: user.id,
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error(err);
       });
 
     return { token: this.createToken(user.id) };
   }
 
-  async validate({ id }: JwtPayload): Promise<User> {
-    return await this.usersRepository.findByPk(id, {
+  validate({ id }: JwtPayload): Promise<User | null> {
+    return this.usersRepository.findByPk(id, {
       attributes: ['id', 'role'],
       raw: true,
     });

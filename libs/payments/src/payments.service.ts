@@ -20,7 +20,7 @@ import { createMessage, NotificationService } from '@deliveryapp/messages';
 import { PaymentEntity } from '@deliveryapp/repository';
 
 import { isNil } from 'lodash';
-import { WhereOptions } from 'sequelize';
+import { WhereAttributeHash } from 'sequelize';
 
 export class PaymentsService {
   constructor(
@@ -34,7 +34,7 @@ export class PaymentsService {
     query: BaseQuery,
     user: Partial<User>,
   ): Promise<BaseResponse<Payment>> {
-    const where: WhereOptions = { ...query.filter };
+    const where: WhereAttributeHash = { ...query.filter };
     const offset = query.offset ?? 0;
     const limit =
       query.limit ?? parseInt(this.configService.get('DEFAULT_LIMIT'), 10);
@@ -45,7 +45,7 @@ export class PaymentsService {
     const scope = ['order'];
 
     if (user.role === Role.CLIENT) {
-      where.clientId = user.id;
+      where.clientId = user.id!;
     } else {
       scope.push('client');
     }
@@ -66,21 +66,21 @@ export class PaymentsService {
     // https://github.com/sequelize/sequelize/issues/10712
     return {
       count,
-      rows: rows.map((row: PaymentEntity) => row.toJSON()),
+      rows: rows.map((row) => row.toJSON() as Payment),
     };
   }
 
   async getPayment(id: number, user: Partial<User>): Promise<Payment> {
-    const where: WhereOptions = { id };
+    const where: WhereAttributeHash = { id };
     const scope = ['order'];
 
     if (user.role === Role.CLIENT) {
-      where.clientId = user.id;
+      where.clientId = user.id!;
     } else {
       scope.push('client');
     }
 
-    const payment: PaymentEntity = await this.paymentsRepository
+    const payment = await this.paymentsRepository
       .scope(scope)
       .findOne({ where, nest: true });
 
@@ -99,7 +99,7 @@ export class PaymentsService {
   ): Promise<{ id: number }> {
     const { orders, ...newPayment } = paymentDto;
 
-    const createdPayment: PaymentEntity = await this.paymentsRepository.sequelize.transaction(
+    const createdPayment = await this.paymentsRepository.sequelize!.transaction(
       async (transaction) => {
         const payment: PaymentEntity = await PaymentEntity.create(
           {
@@ -118,7 +118,7 @@ export class PaymentsService {
     Promise.all([
       this.logsService.create({
         action: LogActions.ORDER_CREATE,
-        userId: user.id,
+        userId: user.id!,
         data: {
           id: createdPayment.id,
         },
@@ -129,7 +129,7 @@ export class PaymentsService {
           recipientId: createdPayment.clientId,
         }),
       ),
-    ]).catch((err) => {
+    ]).catch((err: unknown) => {
       console.error(err);
     });
 
@@ -141,13 +141,13 @@ export class PaymentsService {
     paymentDto: UpdatePaymentDto,
     user: Partial<User>,
   ): Promise<{ id: number }> {
-    const payment: PaymentEntity = await this.paymentsRepository.findByPk(id);
+    const payment = await this.paymentsRepository.findByPk(id);
 
     if (isNil(payment)) {
       throw new NotFoundException(PaymentErrors.PAYMENT_NOT_FOUND_ERR);
     }
 
-    const updatedPayment: PaymentEntity = await this.paymentsRepository.sequelize.transaction(
+    const updatedPayment = await this.paymentsRepository.sequelize!.transaction(
       async (transaction) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { orders, clientId, ...updatedPayment } = paymentDto;
@@ -169,7 +169,7 @@ export class PaymentsService {
     Promise.all([
       this.logsService.create({
         action: LogActions.PAYMENT_UPDATE,
-        userId: user.id,
+        userId: user.id!,
         data: {
           id: payment.id,
         },

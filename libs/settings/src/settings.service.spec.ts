@@ -104,7 +104,7 @@ describe('SettingsService', () => {
     beforeEach(() => {
       jest
         .spyOn(AddressEntity, 'create')
-        .mockResolvedValue({ ...address, id: addressId });
+        .mockResolvedValue({ ...address, id: addressId } as any);
     });
 
     it('should create address', async () => {
@@ -133,7 +133,7 @@ describe('SettingsService', () => {
     beforeEach(() => {
       jest
         .spyOn(BankDetailsEntity, 'create')
-        .mockResolvedValue({ ...bankDetails, id: bankDetailsId });
+        .mockResolvedValue({ ...bankDetails, id: bankDetailsId } as any);
     });
 
     it('should create bank details', async () => {

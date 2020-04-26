@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrderErrors, Role } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
 import { LogsService } from '@deliveryapp/logs';
-import { MessagesService } from '@deliveryapp/messages';
+import { NotificationService } from '@deliveryapp/messages';
 import { OrderEntity, ORDERS_REPOSITORY } from '@deliveryapp/repository';
 import {
   createEntity,
@@ -41,19 +41,19 @@ describe('OrdersService', () => {
           useFactory: (
             ordersRepository,
             configService: ConfigService,
-            messagesService: MessagesService,
+            notificationService: NotificationService,
             logsService: LogsService,
           ) =>
             new OrderService(
               ordersRepository,
               configService,
-              messagesService,
+              notificationService,
               logsService,
             ),
           inject: [
             ORDERS_REPOSITORY,
             ConfigService,
-            MessagesService,
+            NotificationService,
             LogsService,
           ],
         },
@@ -62,7 +62,7 @@ describe('OrdersService', () => {
           useValue: MockConfigService,
         },
         {
-          provide: MessagesService,
+          provide: NotificationService,
           useValue: {},
         },
         {

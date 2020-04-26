@@ -8,7 +8,7 @@ const serviceAccount = JSON.parse(
   fs.readFileSync(`${__dirname}/firebase-adminsdk.json`, 'utf-8'),
 );
 
-const TOPIC_NAME = process.env.FIREBASE_TOPIC_NAME;
+const TOPIC_NAME = process.env.FIREBASE_TOPIC_NAME!;
 const MESSAGE_TITLE = 'Delivery App';
 
 export class MessagingService {
@@ -42,9 +42,9 @@ export class MessagingService {
       data: {
         _id: message._id.toString(),
         text: message.text,
-        createdAt: message.createdAt.toISOString(),
-        forEmployee: message.forEmployee.toString(),
-        read: message.read.toString(),
+        createdAt: message.createdAt!.toISOString(),
+        forEmployee: message.forEmployee!.toString(),
+        read: message.read!.toString(),
       },
     };
 
@@ -62,11 +62,11 @@ export class MessagingService {
       },
       data: {
         _id: message._id.toString(),
-        recipientId: message.recipientId.toString(),
+        recipientId: message.recipientId!.toString(),
         text: message.text,
-        createdAt: message.createdAt.toISOString(),
-        forEmployee: message.forEmployee.toString(),
-        read: message.read.toString(),
+        createdAt: message.createdAt!.toISOString(),
+        forEmployee: message.forEmployee!.toString(),
+        read: message.read!.toString(),
       },
     };
 

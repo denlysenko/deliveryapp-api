@@ -1,5 +1,5 @@
 export interface BaseQuery {
-  filter?: object;
+  filter?: any;
   offset?: number;
   limit?: number;
   order?: object;

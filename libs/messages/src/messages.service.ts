@@ -24,10 +24,7 @@ export class MessagesService {
     private readonly messagingService: MessagingService,
   ) {}
 
-  async subscribe(
-    session: Partial<Session>,
-    user: Partial<User>,
-  ): Promise<void> {
+  async subscribe(session: Session, user: Partial<User>): Promise<void> {
     const createdSession = new this.sessionModel(session);
 
     await createdSession.save();

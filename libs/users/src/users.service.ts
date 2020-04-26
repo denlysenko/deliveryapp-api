@@ -39,17 +39,17 @@ export class UsersService {
   ) {}
 
   async create(userDto: User, user: Partial<User>): Promise<{ id: number }> {
-    const createdUser: UserEntity = await UserEntity.create(userDto);
+    const createdUser = await UserEntity.create(userDto);
 
     this.logsService
       .create({
         action: LogActions.CREATE_USER,
-        userId: user.id,
+        userId: user.id!,
         data: {
           id: createdUser.id,
         },
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error(err);
       });
 
@@ -57,11 +57,10 @@ export class UsersService {
   }
 
   async updateProfile(
-    id: number,
+    { id, role }: Partial<User>,
     userDto: Partial<User>,
-    { role }: Partial<User>,
   ): Promise<{ id: number }> {
-    const user: UserEntity = await this.usersRepository
+    const user = await this.usersRepository
       .scope(['address', 'bankDetails'])
       .findByPk(id);
 
@@ -69,14 +68,14 @@ export class UsersService {
       throw new NotFoundException(UserErrors.USER_NOT_FOUND_ERR);
     }
 
-    const updatedUser = await this.usersRepository.sequelize.transaction(
+    const updatedUser = await this.usersRepository.sequelize!.transaction(
       async (transaction) => {
         const { address, bankDetails, ...updatedUser } = userDto;
         const promises = [];
 
         promises.push(user.update(updatedUser, { transaction }));
 
-        if (role === Role.CLIENT && !isEmpty(address)) {
+        if (role === Role.CLIENT && !isNil(address) && !isEmpty(address)) {
           promises.push(
             user.address && user.address.id
               ? user.address.update(address, { transaction })
@@ -84,7 +83,11 @@ export class UsersService {
           );
         }
 
-        if (role === Role.CLIENT && !isEmpty(bankDetails)) {
+        if (
+          role === Role.CLIENT &&
+          !isNil(bankDetails) &&
+          !isEmpty(bankDetails)
+        ) {
           promises.push(
             user.bankDetails && user.bankDetails.id
               ? user.bankDetails.update(bankDetails, { transaction })
@@ -101,9 +104,9 @@ export class UsersService {
     this.logsService
       .create({
         action: LogActions.UPDATE_PROFILE,
-        userId: updatedUser.id,
+        userId: id!,
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error(err);
       });
 
@@ -115,7 +118,7 @@ export class UsersService {
     userDto: Partial<User>,
     user: Partial<User>,
   ): Promise<{ id: number }> {
-    const updatedUser: UserEntity = await this.usersRepository.findOne({
+    const updatedUser = await this.usersRepository.findOne({
       where: { id, role: { [Op.in]: [Role.MANAGER, Role.ADMIN] } },
     });
 
@@ -131,12 +134,12 @@ export class UsersService {
     this.logsService
       .create({
         action: LogActions.UPDATE_USER,
-        userId: user.id,
+        userId: user.id!,
         data: {
           id: updatedUser.id,
         },
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error(err);
       });
 
@@ -147,7 +150,7 @@ export class UsersService {
     id: number,
     passwordDto: ChangePasswordPayload,
   ): Promise<void> {
-    const user: UserEntity = await this.usersRepository.findByPk(id);
+    const user = await this.usersRepository.findByPk(id);
 
     const { oldPassword, newPassword } = passwordDto;
 
@@ -176,7 +179,7 @@ export class UsersService {
         action: LogActions.CHANGE_PASSWORD,
         userId: user.id,
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error(err);
       });
   }
@@ -185,7 +188,7 @@ export class UsersService {
     query: BaseQuery,
     user: Partial<User>,
   ): Promise<BaseResponse<User>> {
-    if (query.filter && query.filter['id'] && query.filter['id'] === user.id) {
+    if (query.filter && query.filter.id && query.filter.id === user.id) {
       return Promise.resolve({
         count: 0,
         rows: [],
@@ -220,7 +223,7 @@ export class UsersService {
       throw new NotFoundException(UserErrors.USER_NOT_FOUND_ERR);
     }
 
-    const foundUser: UserEntity = await this.usersRepository.findOne({
+    const foundUser = await this.usersRepository.findOne({
       where: { id, role: { [Op.in]: [Role.MANAGER, Role.ADMIN] } },
       attributes: USER_ATTRIBUTES,
       raw: true,
@@ -235,13 +238,11 @@ export class UsersService {
 
   async findProfile(user: Partial<User>): Promise<User> {
     const { id, role } = user;
-    const scope = role === Role.CLIENT ? ['address', 'bankDetails'] : null;
+    const scope = role === Role.CLIENT ? ['address', 'bankDetails'] : undefined;
 
-    const profile: UserEntity = await this.usersRepository
-      .scope(scope)
-      .findByPk(id, {
-        attributes: USER_ATTRIBUTES,
-      });
+    const profile = await this.usersRepository.scope(scope).findByPk(id, {
+      attributes: USER_ATTRIBUTES,
+    });
 
     if (isNil(profile)) {
       throw new NotFoundException(UserErrors.USER_NOT_FOUND_ERR);
