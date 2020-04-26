@@ -4,6 +4,10 @@
 
 Deliveryapp API using NestJS, Sequelize, Mongoose
 
+[Angular Client](https://github.com/denlysenko/deliveryapp-angular)
+
+[React Client](https://github.com/denlysenko/deliveryapp-react)
+
 ## Installation
 
 ```bash
@@ -18,10 +22,6 @@ $ npm run start
 
 # watch mode
 $ npm run start:dev
-
-# incremental rebuild (webpack)
-$ npm run webpack
-$ npm run start:hmr
 
 # production mode
 $ npm run start:prod
