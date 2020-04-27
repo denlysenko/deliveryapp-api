@@ -6,6 +6,7 @@ import { BaseQuery, ICurrentUser, Message, Session } from '@deliveryapp/core';
 
 import { assignIn, isNil } from 'lodash';
 import { Document, FilterQuery, Model } from 'mongoose';
+
 import { MessagingService } from './messaging.service';
 
 interface MessageModel extends Message, Document {
@@ -24,9 +25,7 @@ export class MessagesService {
   ) {}
 
   async subscribe(session: Session, user: ICurrentUser): Promise<void> {
-    const createdSession = new this.sessionModel(session);
-
-    await createdSession.save();
+    await this.sessionModel.create(session);
 
     if (user.role !== Role.CLIENT) {
       await this.messagingService.subscribeToTopic(session.socketId);
@@ -42,7 +41,7 @@ export class MessagesService {
   }
 
   async markAsRead(messageId: string): Promise<void> {
-    const message = await this.messageModel.findById(messageId);
+    const message = await this.messageModel.findById(messageId).exec();
 
     if (isNil(message)) {
       throw new NotFoundException(MessagesErrors.MESSAGE_NOT_FOUND_ERR);
@@ -83,9 +82,9 @@ export class MessagesService {
     };
   }
 
-  saveMessage(messageDto: Message) {
-    const createdMessage = new this.messageModel(messageDto);
-    return createdMessage.save();
+  async saveMessage(messageDto: Message): Promise<Message> {
+    const createdMessage = await this.messageModel.create(messageDto);
+    return createdMessage.toJSON() as Message;
   }
 
   getSessions(userId: number): Promise<Session[]> {
