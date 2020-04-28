@@ -31,9 +31,7 @@ export class AuthService {
   async register(
     registerUserDto: Omit<User, 'id' | 'role'>,
   ): Promise<AuthPayload> {
-    const user = UserEntity.build(registerUserDto);
-
-    await user.save();
+    const user = await UserEntity.create(registerUserDto);
 
     this.logsService
       .create({

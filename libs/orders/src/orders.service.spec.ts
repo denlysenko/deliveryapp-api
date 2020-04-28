@@ -188,8 +188,8 @@ describe('OrdersService', () => {
   describe('create', () => {
     beforeEach(() => {
       jest
-        .spyOn(OrderEntity, 'build')
-        .mockReturnValue({ ...orderEntity, id: 3 } as any);
+        .spyOn(OrderEntity, 'create')
+        .mockResolvedValue({ ...orderEntity, id: 3 } as any);
     });
 
     it('should throw Bad Request if clientId is not passed', async () => {
@@ -200,18 +200,13 @@ describe('OrdersService', () => {
       }
     });
 
-    it('should build order', async () => {
+    it('should create order', async () => {
       await service.create(orderDto, client);
-      expect(OrderEntity.build).toBeCalledWith({
+      expect(OrderEntity.create).toBeCalledWith({
         ...orderDto,
         creatorId: client.id,
         clientId: client.id,
       });
-    });
-
-    it('should save order to DB', async () => {
-      await service.create(orderDto, client);
-      expect(orderEntity.save).toBeCalledTimes(1);
     });
 
     it('should create log', async () => {

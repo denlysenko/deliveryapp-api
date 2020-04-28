@@ -106,7 +106,7 @@ describe('AuthService', () => {
     let createUserDto: any;
 
     beforeEach(() => {
-      jest.spyOn(UserEntity, 'build').mockReturnValue(currentUser as any);
+      jest.spyOn(UserEntity, 'create').mockResolvedValue(currentUser as any);
 
       createUserDto = {
         email,
@@ -114,14 +114,9 @@ describe('AuthService', () => {
       };
     });
 
-    it('should build user', async () => {
+    it('should create user', async () => {
       await service.register(createUserDto);
-      expect(UserEntity.build).toBeCalledTimes(1);
-    });
-
-    it('should save user to DB', async () => {
-      await service.register(createUserDto);
-      expect(currentUser.save).toBeCalledTimes(1);
+      expect(UserEntity.create).toBeCalledTimes(1);
     });
 
     it('should create log', async () => {

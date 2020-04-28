@@ -107,9 +107,7 @@ export class OrderService {
       newOrder.clientId = currentUser.id;
     }
 
-    const order = OrderEntity.build(newOrder);
-
-    await order.save();
+    const order = await OrderEntity.create(newOrder);
 
     Promise.all([
       this.logsService.create({
