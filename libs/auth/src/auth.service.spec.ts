@@ -72,7 +72,9 @@ describe('AuthService', () => {
   describe('login', () => {
     it('should get user from repository', async () => {
       await service.login(email, password);
-      expect(userEntity.findOne).toBeCalledTimes(1);
+      expect(userEntity.findOne).toBeCalledWith(
+        expect.objectContaining({ where: { email } }),
+      );
     });
 
     it('should throw BadRequest if user was not found', async () => {

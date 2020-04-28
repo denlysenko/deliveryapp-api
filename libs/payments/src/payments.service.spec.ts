@@ -208,7 +208,7 @@ describe('PaymentsService', () => {
           ...rest,
           creatorId: 2,
         },
-        { transaction: undefined },
+        expect.anything(),
       );
     });
 
@@ -238,11 +238,17 @@ describe('PaymentsService', () => {
   });
 
   describe('update', () => {
+    let findByPkSpy: jest.SpyInstance;
+
     beforeEach(() => {
-      jest.spyOn(paymentEntity, 'findByPk').mockResolvedValue({
+      findByPkSpy = jest.spyOn(paymentEntity, 'findByPk').mockResolvedValue({
         ...paymentEntity,
         ...payment,
       });
+    });
+
+    afterEach(() => {
+      findByPkSpy.mockRestore();
     });
 
     it('should find payment', async () => {
@@ -251,7 +257,7 @@ describe('PaymentsService', () => {
     });
 
     it('should throw 404', async () => {
-      jest.spyOn(paymentEntity, 'findByPk').mockResolvedValueOnce(null);
+      findByPkSpy.mockResolvedValueOnce(null);
 
       try {
         await service.update(payment.id, { paymentAmount: 5 }, admin);
@@ -276,9 +282,11 @@ describe('PaymentsService', () => {
         { paymentAmount: 5, orders: [3] },
         admin,
       );
-      expect(paymentEntity.$set).toBeCalledWith('orders', [3], {
-        transaction: undefined,
-      });
+      expect(paymentEntity.$set).toBeCalledWith(
+        'orders',
+        [3],
+        expect.anything(),
+      );
     });
 
     it('should create log', async () => {

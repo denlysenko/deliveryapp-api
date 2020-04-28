@@ -232,11 +232,17 @@ describe('OrdersService', () => {
   });
 
   describe('update', () => {
+    let findOneSpy: jest.SpyInstance;
+
     beforeEach(() => {
-      jest.spyOn(orderEntity, 'findOne').mockResolvedValue({
+      findOneSpy = jest.spyOn(orderEntity, 'findOne').mockResolvedValue({
         ...orderEntity,
         ...order,
       });
+    });
+
+    afterEach(() => {
+      findOneSpy.mockRestore();
     });
 
     it('should find order', async () => {
@@ -252,7 +258,7 @@ describe('OrdersService', () => {
     });
 
     it('should throw 404', async () => {
-      jest.spyOn(orderEntity, 'findOne').mockResolvedValueOnce(null);
+      findOneSpy.mockResolvedValueOnce(null);
 
       try {
         await service.update(order.id, { cargoName: 'Updated' }, admin);

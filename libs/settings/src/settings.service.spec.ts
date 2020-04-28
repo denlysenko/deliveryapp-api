@@ -162,12 +162,18 @@ describe('SettingsService', () => {
   });
 
   describe('updateAddress', () => {
+    let findByPkSpy: jest.SpyInstance;
+
     beforeEach(() => {
-      jest.spyOn(addressEntity, 'findByPk').mockResolvedValue({
+      findByPkSpy = jest.spyOn(addressEntity, 'findByPk').mockResolvedValue({
         ...addressEntity,
         ...address,
         id: 1,
       });
+    });
+
+    afterEach(() => {
+      findByPkSpy.mockRestore();
     });
 
     it('should find address', async () => {
@@ -176,7 +182,7 @@ describe('SettingsService', () => {
     });
 
     it('should throw 404 if address is not found', async () => {
-      jest.spyOn(addressEntity, 'findByPk').mockResolvedValueOnce(null);
+      findByPkSpy.mockResolvedValueOnce(null);
 
       try {
         await service.updateAddress(1, address, currentUser);
@@ -203,12 +209,20 @@ describe('SettingsService', () => {
   });
 
   describe('updateBankDetails', () => {
+    let findByPkSpy: jest.SpyInstance;
+
     beforeEach(() => {
-      jest.spyOn(bankDetailsEntity, 'findByPk').mockResolvedValue({
-        ...bankDetailsEntity,
-        ...bankDetails,
-        id: 1,
-      });
+      findByPkSpy = jest
+        .spyOn(bankDetailsEntity, 'findByPk')
+        .mockResolvedValue({
+          ...bankDetailsEntity,
+          ...bankDetails,
+          id: 1,
+        });
+    });
+
+    afterEach(() => {
+      findByPkSpy.mockRestore();
     });
 
     it('should find bank details', async () => {
@@ -217,7 +231,7 @@ describe('SettingsService', () => {
     });
 
     it('should throw 404 if bank details is not found', async () => {
-      jest.spyOn(bankDetailsEntity, 'findByPk').mockResolvedValueOnce(null);
+      findByPkSpy.mockResolvedValueOnce(null);
 
       try {
         await service.updateBankDetails(1, bankDetails, currentUser);

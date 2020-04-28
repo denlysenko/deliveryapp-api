@@ -117,17 +117,25 @@ describe('MessagesService', () => {
   });
 
   describe('markAsRead', () => {
-    it('should find message', async () => {
-      jest
-        .spyOn(messageModel, 'exec')
-        .mockResolvedValueOnce(messageModel as any);
+    let execSpy: jest.SpyInstance;
 
+    beforeEach(() => {
+      execSpy = jest
+        .spyOn(messageModel, 'exec')
+        .mockResolvedValue(messageModel as any);
+    });
+
+    afterEach(() => {
+      execSpy.mockRestore();
+    });
+
+    it('should find message', async () => {
       await service.markAsRead(message._id);
       expect(messageModel.findById).toBeCalledWith(message._id);
     });
 
     it('should throw 404', async () => {
-      jest.spyOn(messageModel, 'exec').mockResolvedValueOnce(null as any);
+      execSpy.mockResolvedValueOnce(null as any);
 
       try {
         await service.markAsRead(message._id);
@@ -137,16 +145,22 @@ describe('MessagesService', () => {
     });
 
     it('should update and save', async () => {
-      jest
-        .spyOn(messageModel, 'exec')
-        .mockResolvedValueOnce(messageModel as any);
-
       await service.markAsRead(message._id);
       expect(messageModel.save).toBeCalledTimes(1);
     });
   });
 
   describe('getMessages', () => {
+    let execSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      execSpy = jest.spyOn(messageModel, 'exec').mockResolvedValue([message]);
+    });
+
+    afterEach(() => {
+      execSpy.mockRestore();
+    });
+
     it('should build cursor for client', async () => {
       await service.getMessages(messagesQuery, client);
       expect(messageModel.find).toBeCalledWith({ recipientId: client.id });

@@ -4,6 +4,7 @@ import {
   MockMessagesService,
   MockMessagingService,
   message,
+  session,
 } from '@deliveryapp/testing';
 
 import { MessagesService } from './messages.service';
@@ -52,26 +53,42 @@ describe('NotificationService', () => {
     });
 
     describe('forEmployee is true', () => {
+      let saveMessageSpy: jest.SpyInstance;
+
       beforeEach(() => {
-        jest.spyOn(messagesService, 'saveMessage').mockResolvedValue({
-          ...message,
-          forEmployee: true,
-        });
+        saveMessageSpy = jest
+          .spyOn(messagesService, 'saveMessage')
+          .mockResolvedValue({
+            ...message,
+            forEmployee: true,
+          });
+      });
+
+      afterEach(() => {
+        saveMessageSpy.mockRestore();
       });
 
       it('should send to topic if forEmployee is true', async () => {
         await service.sendNotification(message);
-        expect(messagingService.sendToTopic).toBeCalledTimes(1);
+        expect(messagingService.sendToTopic).toBeCalledWith(message);
       });
     });
 
     describe('forEmployee is false', () => {
+      let saveMessageSpy: jest.SpyInstance;
+
       beforeEach(() => {
-        jest.spyOn(messagesService, 'saveMessage').mockResolvedValue({
-          ...message,
-          forEmployee: false,
-          recipientId,
-        });
+        saveMessageSpy = jest
+          .spyOn(messagesService, 'saveMessage')
+          .mockResolvedValue({
+            ...message,
+            forEmployee: false,
+            recipientId,
+          });
+      });
+
+      afterEach(() => {
+        saveMessageSpy.mockRestore();
       });
 
       it('should get sessions', async () => {
@@ -81,7 +98,11 @@ describe('NotificationService', () => {
 
       it('should send to device if there are sessions', async () => {
         await service.sendNotification(message);
-        expect(messagingService.sendToDevice).toBeCalledTimes(1);
+        expect(messagingService.sendToDevice).toBeCalledWith(session.socketId, {
+          ...message,
+          forEmployee: false,
+          recipientId,
+        });
       });
 
       it('should not send to device if there are no sessions', async () => {
