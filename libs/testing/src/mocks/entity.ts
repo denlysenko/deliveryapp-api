@@ -6,6 +6,7 @@ export const createEntity = (data: unknown) => {
     findAll: jest.fn().mockResolvedValue([data]),
     scope: jest.fn().mockReturnThis(),
     save: jest.fn().mockResolvedValue({}),
+    create: jest.fn().mockResolvedValue(data),
     update: jest.fn().mockResolvedValue({}),
     sequelize: {
       transaction: jest.fn((cb) => cb()),

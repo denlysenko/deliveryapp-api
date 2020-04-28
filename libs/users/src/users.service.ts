@@ -18,7 +18,7 @@ import { LogsService } from '@deliveryapp/logs';
 import { UserEntity } from '@deliveryapp/repository';
 
 import { isEmpty, isNil } from 'lodash';
-import { Op, WhereOptions } from 'sequelize';
+import { Op, WhereAttributeHash } from 'sequelize';
 
 const USER_ATTRIBUTES = [
   'id',
@@ -196,7 +196,7 @@ export class UsersService {
       });
     }
 
-    const where: WhereOptions = {
+    const where: WhereAttributeHash = {
       role: { [Op.in]: [Role.MANAGER, Role.ADMIN] },
       id: { [Op.notIn]: [user.id] },
       ...query.filter,
