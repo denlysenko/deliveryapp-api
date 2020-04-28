@@ -93,7 +93,7 @@ describe('NotificationService', () => {
 
       it('should get sessions', async () => {
         await service.sendNotification(message);
-        expect(messagesService.getSessions).toBeCalledWith(recipientId);
+        expect(messagesService.findSessions).toBeCalledWith(recipientId);
       });
 
       it('should send to device if there are sessions', async () => {
@@ -106,7 +106,7 @@ describe('NotificationService', () => {
       });
 
       it('should not send to device if there are no sessions', async () => {
-        jest.spyOn(messagesService, 'getSessions').mockResolvedValueOnce([]);
+        jest.spyOn(messagesService, 'findSessions').mockResolvedValueOnce([]);
         await service.sendNotification(message);
         expect(messagingService.sendToDevice).toBeCalledTimes(0);
       });

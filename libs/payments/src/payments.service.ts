@@ -30,7 +30,7 @@ export class PaymentsService {
     private readonly logsService: LogsService,
   ) {}
 
-  async getPayments(
+  async findAll(
     query: BaseQuery,
     currentUser: ICurrentUser,
   ): Promise<BaseResponse<Payment>> {
@@ -70,7 +70,7 @@ export class PaymentsService {
     };
   }
 
-  async getPayment(id: number, currentUser: ICurrentUser): Promise<Payment> {
+  async findOne(id: number, currentUser: ICurrentUser): Promise<Payment> {
     const where: WhereAttributeHash = { id };
     const scope = ['order'];
 

@@ -71,9 +71,9 @@ describe('SettingsService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('getAddress', () => {
+  describe('findAddress', () => {
     it('should find all company address', async () => {
-      await service.getAddress();
+      await service.findAddress();
       expect(addressEntity.findAll).toBeCalledWith(
         expect.objectContaining({
           where: { belongsToCompany: true },
@@ -82,13 +82,13 @@ describe('SettingsService', () => {
     });
 
     it('should return first address', async () => {
-      expect(await service.getAddress()).toEqual(address);
+      expect(await service.findAddress()).toEqual(address);
     });
   });
 
-  describe('getBankDetails', () => {
+  describe('findBankDetails', () => {
     it('should find all company bank details', async () => {
-      await service.getBankDetails();
+      await service.findBankDetails();
       expect(bankDetailsEntity.findAll).toBeCalledWith(
         expect.objectContaining({
           where: { belongsToCompany: true },
@@ -97,7 +97,7 @@ describe('SettingsService', () => {
     });
 
     it('should return first bank details', async () => {
-      expect(await service.getBankDetails()).toEqual(bankDetails);
+      expect(await service.findBankDetails()).toEqual(bankDetails);
     });
   });
 

@@ -110,7 +110,7 @@ export class PaymentsController {
     @Query() query: PaymentsQuery,
     @CurrentUser() user: ICurrentUser,
   ): Promise<BaseResponse<Payment>> {
-    const { count, rows } = await this.paymentsService.getPayments(query, user);
+    const { count, rows } = await this.paymentsService.findAll(query, user);
 
     return {
       count,
@@ -146,7 +146,7 @@ export class PaymentsController {
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: ICurrentUser,
   ): Promise<Payment> {
-    const payment = await this.paymentsService.getPayment(id, user);
+    const payment = await this.paymentsService.findOne(id, user);
     return new PaymentDto(payment);
   }
 

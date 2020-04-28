@@ -15,7 +15,7 @@ export class LogsService {
     return this.logModel.create(log);
   }
 
-  async get(query: BaseQuery): Promise<BaseResponse<Log>> {
+  async findAll(query: BaseQuery): Promise<BaseResponse<Log>> {
     const where = query.filter ?? {};
     const offset = query.offset ?? 0;
     const limit =

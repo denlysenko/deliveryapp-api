@@ -23,7 +23,7 @@ export class NotificationService {
   }
 
   private async sendToUser(message: Message, userId: number) {
-    const sessions = await this.messagesService.getSessions(userId);
+    const sessions = await this.messagesService.findSessions(userId);
 
     if (sessions && sessions.length) {
       const promises = sessions.map((item) =>

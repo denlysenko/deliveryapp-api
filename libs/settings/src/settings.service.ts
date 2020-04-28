@@ -12,7 +12,7 @@ export class SettingsService {
     private readonly logsService: LogsService,
   ) {}
 
-  async getAddress(): Promise<Address> {
+  async findAddress(): Promise<Address> {
     const address = await this.addressRepository.findAll({
       where: { belongsToCompany: true },
       raw: true,
@@ -20,7 +20,7 @@ export class SettingsService {
     return address[0];
   }
 
-  async getBankDetails(): Promise<BankDetails> {
+  async findBankDetails(): Promise<BankDetails> {
     const bankDetails = await this.bankDetailsRepository.findAll({
       where: { belongsToCompany: true },
       raw: true,

@@ -104,7 +104,7 @@ describe('OrdersService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('getOrders', () => {
+  describe('findAll', () => {
     let query: any;
 
     beforeEach(() => {
@@ -117,7 +117,7 @@ describe('OrdersService', () => {
     });
 
     it('should apply defaults', async () => {
-      await service.getOrders({}, admin);
+      await service.findAll({}, admin);
       expect(orderEntity.findAndCountAll).toBeCalledWith(
         expect.objectContaining({
           where: {},
@@ -129,7 +129,7 @@ describe('OrdersService', () => {
     });
 
     it('should apply passed filters', async () => {
-      await service.getOrders(query, admin);
+      await service.findAll(query, admin);
       expect(orderEntity.findAndCountAll).toBeCalledWith(
         expect.objectContaining({
           where: query.filter,
@@ -141,7 +141,7 @@ describe('OrdersService', () => {
     });
 
     it('should add clientId to query for client', async () => {
-      await service.getOrders(query, client);
+      await service.findAll(query, client);
       expect(orderEntity.findAndCountAll).toBeCalledWith(
         expect.objectContaining({
           where: { ...query.filter, clientId: client.id },
@@ -153,20 +153,20 @@ describe('OrdersService', () => {
     });
 
     it('should return base response of Order', async () => {
-      expect(await service.getOrders(query, client)).toEqual({
+      expect(await service.findAll(query, client)).toEqual({
         count: 1,
         rows: [order],
       });
     });
   });
 
-  describe('getOrder', () => {
+  describe('findOne', () => {
     it('should return order', async () => {
-      expect(await service.getOrder(1, admin)).toEqual(order);
+      expect(await service.findOne(1, admin)).toEqual(order);
     });
 
     it('should add clientId to query for client', async () => {
-      await service.getOrder(1, client);
+      await service.findOne(1, client);
       expect(orderEntity.findOne).toBeCalledWith(
         expect.objectContaining({
           where: { id: 1, clientId: client.id },
@@ -178,7 +178,7 @@ describe('OrdersService', () => {
       jest.spyOn(orderEntity, 'findOne').mockResolvedValueOnce(null);
 
       try {
-        await service.getOrder(1, client);
+        await service.findOne(1, client);
       } catch (err) {
         expect(err.status).toEqual(HttpStatus.NOT_FOUND);
       }

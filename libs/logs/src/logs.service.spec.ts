@@ -60,9 +60,9 @@ describe('LogsService', () => {
     });
   });
 
-  describe('get', () => {
+  describe('findAll', () => {
     it('should build cursor', async () => {
-      await service.get(logsQuery);
+      await service.findAll(logsQuery);
       expect(logModel.find).toBeCalledWith(logsQuery.filter);
       expect(logModel.skip).toBeCalledWith(logsQuery.offset);
       expect(logModel.limit).toBeCalledWith(logsQuery.limit);
@@ -70,7 +70,7 @@ describe('LogsService', () => {
     });
 
     it('should return logs response', async () => {
-      expect(await service.get(logsQuery)).toEqual({
+      expect(await service.findAll(logsQuery)).toEqual({
         count: 1,
         rows: [log],
       });

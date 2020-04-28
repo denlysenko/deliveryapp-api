@@ -97,7 +97,7 @@ describe('PaymentsService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('getPayments', () => {
+  describe('findAll', () => {
     let query: any;
 
     beforeEach(() => {
@@ -110,7 +110,7 @@ describe('PaymentsService', () => {
     });
 
     it('should apply defaults', async () => {
-      await service.getPayments({}, admin);
+      await service.findAll({}, admin);
       expect(paymentEntity.findAndCountAll).toBeCalledWith(
         expect.objectContaining({
           where: {},
@@ -122,7 +122,7 @@ describe('PaymentsService', () => {
     });
 
     it('should apply passed filters', async () => {
-      await service.getPayments(query, admin);
+      await service.findAll(query, admin);
       expect(paymentEntity.findAndCountAll).toBeCalledWith(
         expect.objectContaining({
           where: query.filter,
@@ -134,7 +134,7 @@ describe('PaymentsService', () => {
     });
 
     it('should add clientId to query for client', async () => {
-      await service.getPayments(query, client);
+      await service.findAll(query, client);
       expect(paymentEntity.findAndCountAll).toBeCalledWith(
         expect.objectContaining({
           where: { ...query.filter, clientId: client.id },
@@ -146,20 +146,20 @@ describe('PaymentsService', () => {
     });
 
     it('should return base response of Payment', async () => {
-      expect(await service.getPayments(query, client)).toEqual({
+      expect(await service.findAll(query, client)).toEqual({
         count: 1,
         rows: [payment],
       });
     });
   });
 
-  describe('getPayment', () => {
+  describe('findOne', () => {
     it('should return order', async () => {
-      expect(await service.getPayment(1, admin)).toEqual(payment);
+      expect(await service.findOne(1, admin)).toEqual(payment);
     });
 
     it('should add clientId to query for client', async () => {
-      await service.getPayment(1, client);
+      await service.findOne(1, client);
       expect(paymentEntity.findOne).toBeCalledWith(
         expect.objectContaining({
           where: { id: 1, clientId: client.id },
@@ -171,7 +171,7 @@ describe('PaymentsService', () => {
       jest.spyOn(paymentEntity, 'findOne').mockResolvedValueOnce(null);
 
       try {
-        await service.getPayment(1, client);
+        await service.findOne(1, client);
       } catch (err) {
         expect(err.status).toEqual(HttpStatus.NOT_FOUND);
       }

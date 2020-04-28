@@ -44,7 +44,7 @@ export class OrderService {
     private readonly logsService: LogsService,
   ) {}
 
-  getOrders(
+  findAll(
     query: BaseQuery,
     currentUser: ICurrentUser,
   ): Promise<BaseResponse<Order>> {
@@ -72,7 +72,7 @@ export class OrderService {
     });
   }
 
-  async getOrder(id: number, currentUser: ICurrentUser): Promise<Order> {
+  async findOne(id: number, currentUser: ICurrentUser): Promise<Order> {
     const where: WhereAttributeHash = { id };
     const scope = ['payment'];
 

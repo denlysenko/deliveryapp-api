@@ -75,7 +75,7 @@ export class MessagesController {
     @Query() query: MessagesQuery,
     @CurrentUser() user: ICurrentUser,
   ): Promise<BaseResponse<Message>> {
-    return this.messagesService.getMessages(query, user);
+    return this.messagesService.findMessages(query, user);
   }
 
   /**

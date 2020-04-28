@@ -61,7 +61,7 @@ export class MessagesService {
     await message.save();
   }
 
-  async getMessages(
+  async findMessages(
     query: BaseQuery,
     currentUser: ICurrentUser,
   ): Promise<BaseResponse<Message>> {
@@ -99,7 +99,7 @@ export class MessagesService {
     return createdMessage.toJSON() as Message;
   }
 
-  getSessions(userId: number): Promise<Session[]> {
+  findSessions(userId: number): Promise<Session[]> {
     return this.sessionModel.find({ userId }).exec();
   }
 }

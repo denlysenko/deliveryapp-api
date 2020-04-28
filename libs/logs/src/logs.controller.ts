@@ -85,7 +85,7 @@ export class LogsController {
   @Get()
   @Roles(Role.ADMIN)
   @UsePipes(TransformPipe)
-  getLogs(@Query() query: LogsQuery): Promise<BaseResponse<Log>> {
-    return this.logsService.get(query);
+  findLogs(@Query() query: LogsQuery): Promise<BaseResponse<Log>> {
+    return this.logsService.findAll(query);
   }
 }

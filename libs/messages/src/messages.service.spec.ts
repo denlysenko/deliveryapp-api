@@ -150,7 +150,7 @@ describe('MessagesService', () => {
     });
   });
 
-  describe('getMessages', () => {
+  describe('findMessages', () => {
     let execSpy: jest.SpyInstance;
 
     beforeEach(() => {
@@ -162,21 +162,21 @@ describe('MessagesService', () => {
     });
 
     it('should build cursor for client', async () => {
-      await service.getMessages(messagesQuery, client);
+      await service.findMessages(messagesQuery, client);
       expect(messageModel.find).toBeCalledWith({ recipientId: client.id });
       expect(messageModel.skip).toBeCalledWith(messagesQuery.offset);
       expect(messageModel.limit).toBeCalledWith(messagesQuery.limit);
     });
 
     it('should build cursor for admin', async () => {
-      await service.getMessages(messagesQuery, admin);
+      await service.findMessages(messagesQuery, admin);
       expect(messageModel.find).toBeCalledWith({ forEmployee: true });
       expect(messageModel.skip).toBeCalledWith(messagesQuery.offset);
       expect(messageModel.limit).toBeCalledWith(messagesQuery.limit);
     });
 
     it('should return messages', async () => {
-      expect(await service.getMessages(messagesQuery, admin)).toEqual({
+      expect(await service.findMessages(messagesQuery, admin)).toEqual({
         count: 1,
         rows: [message],
       });
@@ -194,9 +194,9 @@ describe('MessagesService', () => {
     });
   });
 
-  describe('getSessions', () => {
+  describe('findSessions', () => {
     it('should find sessions', async () => {
-      await service.getSessions(client.id);
+      await service.findSessions(client.id);
       expect(sessionModel.find).toBeCalledWith({ userId: client.id });
     });
   });

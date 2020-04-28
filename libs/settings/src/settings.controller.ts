@@ -64,7 +64,7 @@ export class SettingsController {
   @Roles(Role.ADMIN)
   @UseInterceptors(ClassSerializerInterceptor)
   async getAddress(): Promise<Address> {
-    const address = await this.settingsService.getAddress();
+    const address = await this.settingsService.findAddress();
     return new AddressDto(address);
   }
 
@@ -157,7 +157,7 @@ export class SettingsController {
   @Roles(Role.ADMIN)
   @UseInterceptors(ClassSerializerInterceptor)
   async getBankDetails(): Promise<BankDetails> {
-    const bankDetails = await this.settingsService.getBankDetails();
+    const bankDetails = await this.settingsService.findBankDetails();
     return new BankDetailsDto(bankDetails);
   }
 

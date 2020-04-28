@@ -135,7 +135,7 @@ export class OrdersController {
     @Query() query: OrdersQuery,
     @CurrentUser() user: ICurrentUser,
   ): Promise<BaseResponse<Order>> {
-    const { rows, count } = await this.orderService.getOrders(query, user);
+    const { rows, count } = await this.orderService.findAll(query, user);
     return {
       count,
       rows: rows.map((row) => new OrderDto(row)),
@@ -170,7 +170,7 @@ export class OrdersController {
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: ICurrentUser,
   ): Promise<Order> {
-    const order = await this.orderService.getOrder(id, user);
+    const order = await this.orderService.findOne(id, user);
     return new OrderDto(order);
   }
 
