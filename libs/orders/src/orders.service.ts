@@ -94,7 +94,7 @@ export class OrderService {
   }
 
   async create(
-    orderDto: Order,
+    orderDto: Omit<Order, 'id'>,
     currentUser: ICurrentUser,
   ): Promise<{ id: number }> {
     if (currentUser.role !== Role.CLIENT && !orderDto.clientId) {

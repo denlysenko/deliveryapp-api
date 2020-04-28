@@ -1,7 +1,7 @@
 import { User } from './user.interface';
 
 export interface Order {
-  id?: number;
+  id: number;
   cityFrom: string;
   cityTo: string;
   addressFrom: string;

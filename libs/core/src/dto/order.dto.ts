@@ -111,7 +111,7 @@ export class OrdersDto implements BaseResponse<Order> {
   readonly rows: OrderDto[];
 }
 
-export class CreateOrderDto implements Order {
+export class CreateOrderDto implements Omit<Order, 'id'> {
   @IsNotEmpty({
     message: OrderErrors.CITY_FROM_REQUIRED_ERR,
   })

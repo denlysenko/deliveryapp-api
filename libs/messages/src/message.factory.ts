@@ -14,7 +14,7 @@ const messageText = {
 export const createMessage = (
   type: keyof typeof MessageTypes,
   data: { id: number; recipientId?: number },
-): Message => {
+): Omit<Message, '_id'> => {
   const { id, recipientId } = data;
 
   return {
