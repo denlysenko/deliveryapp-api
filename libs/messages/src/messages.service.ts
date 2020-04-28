@@ -2,7 +2,13 @@ import { NotFoundException } from '@nestjs/common';
 
 import { MessagesErrors, Role } from '@deliveryapp/common';
 import { ConfigService } from '@deliveryapp/config';
-import { BaseQuery, ICurrentUser, Message, Session } from '@deliveryapp/core';
+import {
+  BaseQuery,
+  BaseResponse,
+  ICurrentUser,
+  Message,
+  Session,
+} from '@deliveryapp/core';
 
 import { assignIn, isNil } from 'lodash';
 import { Document, FilterQuery, Model } from 'mongoose';
@@ -24,18 +30,21 @@ export class MessagesService {
     private readonly messagingService: MessagingService,
   ) {}
 
-  async subscribe(session: Session, user: ICurrentUser): Promise<void> {
+  async subscribe(session: Session, currentUser: ICurrentUser): Promise<void> {
     await this.sessionModel.create(session);
 
-    if (user.role !== Role.CLIENT) {
+    if (currentUser.role !== Role.CLIENT) {
       await this.messagingService.subscribeToTopic(session.socketId);
     }
   }
 
-  async unsubscribe(socketId: string, user: ICurrentUser): Promise<void> {
+  async unsubscribe(
+    socketId: string,
+    currentUser: ICurrentUser,
+  ): Promise<void> {
     await this.sessionModel.deleteOne({ socketId }).exec();
 
-    if (user.role !== Role.CLIENT) {
+    if (currentUser.role !== Role.CLIENT) {
       await this.messagingService.unsubscribeFromTopic(socketId);
     }
   }
@@ -52,11 +61,14 @@ export class MessagesService {
     await message.save();
   }
 
-  async getMessages(query: BaseQuery, user: ICurrentUser) {
+  async getMessages(
+    query: BaseQuery,
+    currentUser: ICurrentUser,
+  ): Promise<BaseResponse<Message>> {
     const where: FilterQuery<Message> = {};
 
-    if (user.role === Role.CLIENT) {
-      where.recipientId = user.id;
+    if (currentUser.role === Role.CLIENT) {
+      where.recipientId = currentUser.id;
     } else {
       where.forEmployee = true;
     }
@@ -82,8 +94,8 @@ export class MessagesService {
     };
   }
 
-  async saveMessage(messageDto: Message): Promise<Message> {
-    const createdMessage = await this.messageModel.create(messageDto);
+  async saveMessage(message: Message): Promise<Message> {
+    const createdMessage = await this.messageModel.create(message);
     return createdMessage.toJSON() as Message;
   }
 

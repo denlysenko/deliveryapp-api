@@ -32,7 +32,7 @@ export class PaymentsService {
 
   async getPayments(
     query: BaseQuery,
-    user: ICurrentUser,
+    currentUser: ICurrentUser,
   ): Promise<BaseResponse<Payment>> {
     const where: WhereAttributeHash = { ...query.filter };
     const offset = query.offset ?? 0;
@@ -44,8 +44,8 @@ export class PaymentsService {
 
     const scope = ['order'];
 
-    if (user.role === Role.CLIENT) {
-      where.clientId = user.id;
+    if (currentUser.role === Role.CLIENT) {
+      where.clientId = currentUser.id;
     } else {
       scope.push('client');
     }
@@ -70,12 +70,12 @@ export class PaymentsService {
     };
   }
 
-  async getPayment(id: number, user: ICurrentUser): Promise<Payment> {
+  async getPayment(id: number, currentUser: ICurrentUser): Promise<Payment> {
     const where: WhereAttributeHash = { id };
     const scope = ['order'];
 
-    if (user.role === Role.CLIENT) {
-      where.clientId = user.id;
+    if (currentUser.role === Role.CLIENT) {
+      where.clientId = currentUser.id;
     } else {
       scope.push('client');
     }
@@ -95,16 +95,16 @@ export class PaymentsService {
 
   async create(
     paymentDto: CreatePaymentDto,
-    user: ICurrentUser,
+    currentUser: ICurrentUser,
   ): Promise<{ id: number }> {
     const { orders, ...newPayment } = paymentDto;
 
     const createdPayment = await this.paymentsRepository.sequelize!.transaction(
       async (transaction) => {
-        const payment: PaymentEntity = await PaymentEntity.create(
+        const payment = await PaymentEntity.create(
           {
             ...newPayment,
-            creatorId: user.id,
+            creatorId: currentUser.id,
           },
           { transaction },
         );
@@ -118,7 +118,7 @@ export class PaymentsService {
     Promise.all([
       this.logsService.create({
         action: LogActions.ORDER_CREATE,
-        userId: user.id,
+        userId: currentUser.id,
         data: {
           id: createdPayment.id,
         },
@@ -139,7 +139,7 @@ export class PaymentsService {
   async update(
     id: number,
     paymentDto: UpdatePaymentDto,
-    user: ICurrentUser,
+    currentUser: ICurrentUser,
   ): Promise<{ id: number }> {
     const payment = await this.paymentsRepository.findByPk(id);
 
@@ -169,7 +169,7 @@ export class PaymentsService {
     Promise.all([
       this.logsService.create({
         action: LogActions.PAYMENT_UPDATE,
-        userId: user.id,
+        userId: currentUser.id,
         data: {
           id: payment.id,
         },

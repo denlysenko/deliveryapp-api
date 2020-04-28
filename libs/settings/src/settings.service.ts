@@ -30,7 +30,7 @@ export class SettingsService {
 
   async createAddress(
     addressDto: Address,
-    user: ICurrentUser,
+    currentUser: ICurrentUser,
   ): Promise<{ id: number }> {
     const address = await AddressEntity.create({
       ...addressDto,
@@ -40,7 +40,7 @@ export class SettingsService {
     this.logsService
       .create({
         action: LogActions.CREATE_COMPANY_ADDRESS,
-        userId: user.id,
+        userId: currentUser.id,
       })
       .catch((err: unknown) => {
         console.error(err);
@@ -52,7 +52,7 @@ export class SettingsService {
   async updateAddress(
     id: number,
     addressDto: Partial<Address>,
-    user: ICurrentUser,
+    currentUser: ICurrentUser,
   ): Promise<{ id: number }> {
     const address = await this.addressRepository.findByPk(id);
 
@@ -65,7 +65,7 @@ export class SettingsService {
     this.logsService
       .create({
         action: LogActions.UPDATE_COMPANY_ADDRESS,
-        userId: user.id,
+        userId: currentUser.id,
       })
       .catch((err: unknown) => {
         console.error(err);
@@ -76,7 +76,7 @@ export class SettingsService {
 
   async createBankDetails(
     bankDetailsDto: BankDetails,
-    user: ICurrentUser,
+    currentUser: ICurrentUser,
   ): Promise<{ id: number }> {
     const bankDetails = await BankDetailsEntity.create({
       ...bankDetailsDto,
@@ -86,7 +86,7 @@ export class SettingsService {
     this.logsService
       .create({
         action: LogActions.CREATE_COMPANY_BANK_DETAILS,
-        userId: user.id,
+        userId: currentUser.id,
       })
       .catch((err: unknown) => {
         console.error(err);
@@ -98,7 +98,7 @@ export class SettingsService {
   async updateBankDetails(
     id: number,
     bankDetailsDto: BankDetails,
-    user: ICurrentUser,
+    currentUser: ICurrentUser,
   ): Promise<{ id: number }> {
     const bankDetails = await this.bankDetailsRepository.findByPk(id);
 
@@ -111,7 +111,7 @@ export class SettingsService {
     this.logsService
       .create({
         action: LogActions.UPDATE_COMPANY_BANK_DETAILS,
-        userId: user.id,
+        userId: currentUser.id,
       })
       .catch((err: unknown) => {
         console.error(err);

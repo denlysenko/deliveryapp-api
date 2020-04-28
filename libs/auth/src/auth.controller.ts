@@ -77,8 +77,8 @@ export class AuthController {
   })
   @UsePipes(ValidationErrorPipe)
   @HttpCode(HttpStatus.OK)
-  register(@Body() createUserDto: RegisterUserDto): Promise<AuthPayload> {
-    return this.authService.register(createUserDto);
+  register(@Body() registerUserDto: RegisterUserDto): Promise<AuthPayload> {
+    return this.authService.register(registerUserDto);
   }
 
   /**

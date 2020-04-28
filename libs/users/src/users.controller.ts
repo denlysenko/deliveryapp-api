@@ -97,10 +97,10 @@ export class UsersController {
   @UsePipes(ValidationErrorPipe)
   @HttpCode(HttpStatus.OK)
   updateProfile(
-    @Body() userDto: UpdateProfileDto,
+    @Body() profileDto: UpdateProfileDto,
     @CurrentUser() user: ICurrentUser,
   ): Promise<{ id: number }> {
-    return this.usersService.updateProfile(user, userDto);
+    return this.usersService.updateProfile(user, profileDto);
   }
 
   /**

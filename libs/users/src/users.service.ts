@@ -41,14 +41,14 @@ export class UsersService {
 
   async create(
     userDto: Omit<User, 'id'>,
-    user: ICurrentUser,
+    currentUser: ICurrentUser,
   ): Promise<{ id: number }> {
     const createdUser = await UserEntity.create(userDto);
 
     this.logsService
       .create({
         action: LogActions.CREATE_USER,
-        userId: user.id,
+        userId: currentUser.id,
         data: {
           id: createdUser.id,
         },
@@ -120,7 +120,7 @@ export class UsersService {
   async updateUser(
     id: number,
     userDto: Partial<User>,
-    user: ICurrentUser,
+    currentUser: ICurrentUser,
   ): Promise<{ id: number }> {
     const updatedUser = await this.usersRepository.findOne({
       where: { id, role: { [Op.in]: [Role.MANAGER, Role.ADMIN] } },
@@ -138,7 +138,7 @@ export class UsersService {
     this.logsService
       .create({
         action: LogActions.UPDATE_USER,
-        userId: user.id,
+        userId: currentUser.id,
         data: {
           id: updatedUser.id,
         },
@@ -188,8 +188,11 @@ export class UsersService {
       });
   }
 
-  findUsers(query: BaseQuery, user: ICurrentUser): Promise<BaseResponse<User>> {
-    if (query.filter && query.filter.id && query.filter.id === user.id) {
+  findUsers(
+    query: BaseQuery,
+    currentUser: ICurrentUser,
+  ): Promise<BaseResponse<User>> {
+    if (query.filter && query.filter.id && query.filter.id === currentUser.id) {
       return Promise.resolve({
         count: 0,
         rows: [],
@@ -198,7 +201,7 @@ export class UsersService {
 
     const where: WhereAttributeHash = {
       role: { [Op.in]: [Role.MANAGER, Role.ADMIN] },
-      id: { [Op.notIn]: [user.id] },
+      id: { [Op.notIn]: [currentUser.id] },
       ...query.filter,
     };
 
@@ -219,8 +222,8 @@ export class UsersService {
     });
   }
 
-  async findUser(id: number, user: ICurrentUser): Promise<User> {
-    if (id === user.id) {
+  async findUser(id: number, currentUser: ICurrentUser): Promise<User> {
+    if (id === currentUser.id) {
       throw new NotFoundException(UserErrors.USER_NOT_FOUND_ERR);
     }
 
@@ -237,8 +240,8 @@ export class UsersService {
     return foundUser;
   }
 
-  async findProfile(user: ICurrentUser): Promise<User> {
-    const { id, role } = user;
+  async findProfile(currentUser: ICurrentUser): Promise<User> {
+    const { id, role } = currentUser;
     const scope = role === Role.CLIENT ? ['address', 'bankDetails'] : undefined;
 
     const profile = await this.usersRepository.scope(scope).findByPk(id, {
