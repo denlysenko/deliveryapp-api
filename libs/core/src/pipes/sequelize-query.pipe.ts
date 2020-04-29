@@ -21,7 +21,7 @@ export class SequelizeQueryPipe implements PipeTransform<object, object> {
           }
         }
 
-        return Object.assign(result, { [key]: { [Op.like]: `%${value}%` } });
+        return Object.assign(result, { [key]: { [Op.iLike]: `%${value}%` } });
       },
       {},
     );
