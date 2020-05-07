@@ -16,7 +16,11 @@ import {
 
 import { OrderService } from './orders.service';
 
-const orderEntity = createEntity(order);
+const orderEntity = createEntity({
+  ...order,
+  toJSON: jest.fn(() => order),
+});
+
 const DEFAULT_LIMIT = 20;
 const orderDto = {
   cityFrom: order.cityFrom,

@@ -44,7 +44,7 @@ export class OrderService {
     private readonly logsService: LogsService,
   ) {}
 
-  findAll(
+  async findAll(
     query: BaseQuery,
     currentUser: ICurrentUser,
   ): Promise<BaseResponse<Order>> {
@@ -62,14 +62,22 @@ export class OrderService {
       where.clientId = currentUser.id;
     }
 
-    return this.ordersRepository.scope(scope).findAndCountAll({
-      where,
-      limit,
-      offset,
-      order,
-      raw: true,
-      nest: true,
-    });
+    const { count, rows } = await this.ordersRepository
+      .scope(scope)
+      .findAndCountAll({
+        where,
+        limit,
+        offset,
+        order,
+        nest: true,
+      });
+
+    // this transformation to JSON is for fixing sequelize issue when using raw: true
+    // https://github.com/sequelize/sequelize/issues/10712
+    return {
+      count,
+      rows: rows.map((row) => row.toJSON() as Order),
+    };
   }
 
   async findOne(id: number, currentUser: ICurrentUser): Promise<Order> {
@@ -84,13 +92,13 @@ export class OrderService {
 
     const order = await this.ordersRepository
       .scope(scope)
-      .findOne({ where, raw: true, nest: true });
+      .findOne({ where, nest: true });
 
     if (isNil(order)) {
       throw new NotFoundException(OrderErrors.ORDER_NOT_FOUND_ERR);
     }
 
-    return order;
+    return order.toJSON() as Order;
   }
 
   async create(
