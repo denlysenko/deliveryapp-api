@@ -312,7 +312,6 @@ describe('UsersService', () => {
 
   describe('findUsers', () => {
     const defaultFilter = {
-      role: { [Op.in]: [Role.MANAGER, Role.ADMIN] },
       id: { [Op.notIn]: [admin.id] },
     };
     it('should return empty array if filter.id is the same as current user', async () => {
@@ -365,14 +364,14 @@ describe('UsersService', () => {
   });
 
   describe('findUser', () => {
-    let findOneSpy: jest.SpyInstance;
+    let findByPkSpy: jest.SpyInstance;
 
     beforeEach(() => {
-      findOneSpy = jest.spyOn(userEntity, 'findOne').mockResolvedValue(user);
+      findByPkSpy = jest.spyOn(userEntity, 'findByPk').mockResolvedValue(user);
     });
 
     afterEach(() => {
-      findOneSpy.mockRestore();
+      findByPkSpy.mockRestore();
     });
 
     it('should throw 404 if passed id is equal to current user', async () => {
@@ -385,15 +384,11 @@ describe('UsersService', () => {
 
     it('should find user', async () => {
       await service.findUser(user.id, admin);
-      expect(userEntity.findOne).toBeCalledWith(
-        expect.objectContaining({
-          where: { id: user.id, role: { [Op.in]: [Role.MANAGER, Role.ADMIN] } },
-        }),
-      );
+      expect(userEntity.findByPk).toBeCalledWith(user.id, expect.anything());
     });
 
     it('should throw 404', async () => {
-      findOneSpy.mockResolvedValueOnce(null);
+      findByPkSpy.mockResolvedValueOnce(null);
 
       try {
         await service.findUser(user.id, admin);

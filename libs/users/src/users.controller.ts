@@ -134,7 +134,7 @@ export class UsersController {
    * GET /users
    */
   @Get()
-  @ApiOperation({ summary: 'Gets all users(not clients)' })
+  @ApiOperation({ summary: 'Gets all users' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns users',
@@ -207,7 +207,7 @@ export class UsersController {
     required: false,
   })
   @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.MANAGER, Role.ADMIN)
   @UsePipes(SequelizeQueryPipe)
   @UsePipes(TransformPipe)
   @UseInterceptors(BaseResponseSerializerInterceptor)
@@ -226,7 +226,7 @@ export class UsersController {
    * GET /users/:id
    */
   @Get(':id')
-  @ApiOperation({ summary: 'Get user by ID(not client)' })
+  @ApiOperation({ summary: 'Get user by ID' })
   @ApiParam({
     name: 'id',
     description: 'User ID',
@@ -250,7 +250,7 @@ export class UsersController {
     description: 'Forbidden Error',
   })
   @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.MANAGER, Role.ADMIN)
   @UseInterceptors(ClassSerializerInterceptor)
   async findById(
     @Param('id', ParseIntPipe) id: number,

@@ -200,7 +200,6 @@ export class UsersService {
     }
 
     const where: WhereAttributeHash = {
-      role: { [Op.in]: [Role.MANAGER, Role.ADMIN] },
       id: { [Op.notIn]: [currentUser.id] },
       ...query.filter,
     };
@@ -227,8 +226,7 @@ export class UsersService {
       throw new NotFoundException(UserErrors.USER_NOT_FOUND_ERR);
     }
 
-    const foundUser = await this.usersRepository.findOne({
-      where: { id, role: { [Op.in]: [Role.MANAGER, Role.ADMIN] } },
+    const foundUser = await this.usersRepository.findByPk(id, {
       attributes: USER_ATTRIBUTES,
       raw: true,
     });
