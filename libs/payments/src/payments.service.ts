@@ -154,7 +154,7 @@ export class PaymentsService {
     const updatedPayment = await this.paymentsRepository.sequelize!.transaction(
       async (transaction) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { orders, clientId, ...updatedPayment } = paymentDto;
+        const { orders, ...updatedPayment } = paymentDto;
         const promises = [];
 
         promises.push(payment.update(updatedPayment, { transaction }));
