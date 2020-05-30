@@ -3,7 +3,7 @@ import { ApiProperty, PartialType, OmitType } from '@nestjs/swagger';
 import { UserErrors } from '@deliveryapp/common';
 
 import { Type } from 'class-transformer';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, ValidateIf } from 'class-validator';
 
 import { BaseResponse, User } from '../interfaces';
 import { AddressDto } from './address.dto';
@@ -102,6 +102,9 @@ export class CreateUserDto implements Omit<User, 'id'> {
 export class UpdateProfileDto
   extends OmitType(PartialType(CreateUserDto), ['password'])
   implements Partial<User> {
+  @ValidateIf((user) => user.email !== undefined)
+  readonly email: string;
+
   @ApiProperty()
   address?: AddressDto;
 
@@ -111,7 +114,10 @@ export class UpdateProfileDto
 
 export class UpdateUserDto
   extends OmitType(PartialType(CreateUserDto), ['password'])
-  implements Partial<User> {}
+  implements Partial<User> {
+  @ValidateIf((user) => user.email !== undefined)
+  readonly email: string;
+}
 
 export class RegisterUserDto extends OmitType(CreateUserDto, ['role'])
   implements Omit<User, 'id' | 'role'> {}

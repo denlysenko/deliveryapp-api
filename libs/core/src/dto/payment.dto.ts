@@ -3,7 +3,12 @@ import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger';
 import { PaymentErrors } from '@deliveryapp/common';
 
 import { Exclude, Type } from 'class-transformer';
-import { ArrayNotEmpty, IsNotEmpty, IsNumber } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsNotEmpty,
+  IsNumber,
+  ValidateIf,
+} from 'class-validator';
 
 import { BaseResponse, Order, Payment, User } from '../interfaces';
 import { OrderDto } from './order.dto';
@@ -149,4 +154,19 @@ export class CreatePaymentDto {
   readonly clientId: number;
 }
 
-export class UpdatePaymentDto extends PartialType(CreatePaymentDto) {}
+export class UpdatePaymentDto extends PartialType(CreatePaymentDto) {
+  @ValidateIf((payment) => payment.method !== undefined)
+  readonly method: number;
+
+  @ValidateIf((payment) => payment.total !== undefined)
+  readonly total: number;
+
+  @ValidateIf((payment) => payment.dueDate !== undefined)
+  readonly dueDate: Date;
+
+  @ValidateIf((payment) => payment.orders !== undefined)
+  readonly orders: number[];
+
+  @ValidateIf((payment) => payment.clientId !== undefined)
+  readonly clientId: number;
+}

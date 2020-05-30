@@ -10,10 +10,8 @@ import { ConfigService } from '@deliveryapp/config';
 import {
   BaseQuery,
   BaseResponse,
-  CreatePaymentDto,
   ICurrentUser,
   Payment,
-  UpdatePaymentDto,
 } from '@deliveryapp/core';
 import { LogsService } from '@deliveryapp/logs';
 import { createMessage, NotificationService } from '@deliveryapp/messages';
@@ -21,6 +19,12 @@ import { PaymentEntity } from '@deliveryapp/repository';
 
 import { isNil } from 'lodash';
 import { WhereAttributeHash } from 'sequelize';
+
+interface CreatePayment
+  extends Omit<Payment, 'id' | 'orders' | 'creator' | 'client'> {
+  orders: number[];
+  clientId: number;
+}
 
 export class PaymentsService {
   constructor(
@@ -94,7 +98,7 @@ export class PaymentsService {
   }
 
   async create(
-    paymentDto: CreatePaymentDto,
+    paymentDto: CreatePayment,
     currentUser: ICurrentUser,
   ): Promise<{ id: number }> {
     const { orders, ...newPayment } = paymentDto;
@@ -138,7 +142,7 @@ export class PaymentsService {
 
   async update(
     id: number,
-    paymentDto: UpdatePaymentDto,
+    paymentDto: Partial<CreatePayment>,
     currentUser: ICurrentUser,
   ): Promise<{ id: number }> {
     const payment = await this.paymentsRepository.findByPk(id);
@@ -153,8 +157,7 @@ export class PaymentsService {
         const { orders, clientId, ...updatedPayment } = paymentDto;
         const promises = [];
 
-        payment.set(updatedPayment);
-        promises.push(payment.save({ transaction }));
+        promises.push(payment.update(updatedPayment, { transaction }));
 
         if (!isNil(orders) && orders.length > 0) {
           promises.push(payment.$set('orders', orders, { transaction }));

@@ -3,7 +3,7 @@ import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger';
 import { OrderErrors } from '@deliveryapp/common';
 
 import { Exclude, Type } from 'class-transformer';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, ValidateIf } from 'class-validator';
 
 import { BaseResponse, Order, Payment, User } from '../interfaces';
 import { PaymentDto } from './payment.dto';
@@ -182,7 +182,60 @@ export class CreateOrderDto implements Omit<Order, 'id'> {
   readonly senderPhone: string;
 }
 
-export class UpdateOrderDto extends OmitType(PartialType(OrderDto), [
-  'payment',
-  'client',
-]) {}
+export class UpdateOrderDto extends PartialType(
+  OmitType(OrderDto, ['payment', 'client']),
+) {
+  @ValidateIf((order) => order.cityFrom !== undefined)
+  @IsNotEmpty({
+    message: OrderErrors.CITY_FROM_REQUIRED_ERR,
+  })
+  readonly cityFrom: string;
+
+  @ValidateIf((order) => order.cityTo !== undefined)
+  @IsNotEmpty({
+    message: OrderErrors.CITY_TO_REQUIRED_ERR,
+  })
+  readonly cityTo: string;
+
+  @ValidateIf((order) => order.addressFrom !== undefined)
+  @IsNotEmpty({
+    message: OrderErrors.ADDRESS_FROM_REQUIRED_ERR,
+  })
+  readonly addressFrom: string;
+
+  @ValidateIf((order) => order.addressTo !== undefined)
+  @IsNotEmpty({
+    message: OrderErrors.ADDRESS_TO_REQUIRED_ERR,
+  })
+  readonly addressTo: string;
+
+  @ValidateIf((order) => order.cargoName !== undefined)
+  @IsNotEmpty({
+    message: OrderErrors.CARGO_NAME_REQUIRED_ERR,
+  })
+  readonly cargoName: string;
+
+  @ValidateIf((order) => order.cargoWeight !== undefined)
+  @IsNotEmpty({
+    message: OrderErrors.CARGO_WEIGHT_REQUIRED_ERR,
+  })
+  readonly cargoWeight: number;
+
+  @ValidateIf((order) => order.senderEmail !== undefined)
+  @IsNotEmpty({
+    message: OrderErrors.EMAIL_REQUIRED_ERR,
+  })
+  @IsEmail(
+    {},
+    {
+      message: OrderErrors.INVALID_EMAIL_ERR,
+    },
+  )
+  readonly senderEmail: string;
+
+  @ValidateIf((order) => order.senderPhone !== undefined)
+  @IsNotEmpty({
+    message: OrderErrors.PHONE_REQUIRED_ERR,
+  })
+  readonly senderPhone: string;
+}

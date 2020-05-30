@@ -2,6 +2,7 @@ import { PaymentErrors } from '@deliveryapp/common';
 import { Payment } from '@deliveryapp/core';
 
 import {
+  AllowNull,
   BelongsTo,
   Column,
   DataType,
@@ -59,9 +60,13 @@ export class PaymentEntity extends BaseEntity<PaymentEntity>
   @Column
   status: boolean;
 
+  @AllowNull(false)
   @Column({
     validate: {
       notEmpty: {
+        msg: PaymentErrors.TOTAL_REQUIRED_ERR,
+      },
+      notNull: {
         msg: PaymentErrors.TOTAL_REQUIRED_ERR,
       },
       isNumeric: {
@@ -79,10 +84,14 @@ export class PaymentEntity extends BaseEntity<PaymentEntity>
   })
   paymentDate: Date;
 
+  @AllowNull(false)
   @Column({
     type: DataType.DATE,
     validate: {
       notEmpty: {
+        msg: PaymentErrors.DUE_DATE_REQUIRED_ERR,
+      },
+      notNull: {
         msg: PaymentErrors.DUE_DATE_REQUIRED_ERR,
       },
     },
