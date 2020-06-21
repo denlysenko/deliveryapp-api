@@ -6,6 +6,9 @@ import { BankDetails } from '../interfaces';
 
 export class BankDetailsDto implements BankDetails {
   @ApiProperty()
+  readonly id: number;
+
+  @ApiProperty()
   readonly name: string;
 
   @ApiProperty()

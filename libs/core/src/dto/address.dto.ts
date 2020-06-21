@@ -6,6 +6,9 @@ import { Address } from '../interfaces';
 
 export class AddressDto implements Address {
   @ApiProperty()
+  readonly id: number;
+
+  @ApiProperty()
   readonly country: string;
 
   @ApiProperty()
@@ -19,6 +22,15 @@ export class AddressDto implements Address {
 
   @Exclude()
   belongsToCompany: boolean;
+
+  @Exclude()
+  userId: number;
+
+  @Exclude()
+  createdAt: string;
+
+  @Exclude()
+  updatedAt: string;
 
   constructor(addressEntity: Address) {
     Object.assign(this, addressEntity);
