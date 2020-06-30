@@ -272,7 +272,7 @@ describe('PaymentsService', () => {
         { paymentAmount: 5 },
         admin,
       );
-      expect(paymentEntity.set).toBeCalledTimes(1);
+      expect(paymentEntity.update).toBeCalledTimes(1);
       expect(updatedPaymentId).toEqual({ id: payment.id });
     });
 
