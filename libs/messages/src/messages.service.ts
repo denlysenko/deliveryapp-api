@@ -30,11 +30,11 @@ export class MessagesService {
     private readonly messagingService: MessagingService,
   ) {}
 
-  async subscribe(session: Session, currentUser: ICurrentUser): Promise<void> {
-    await this.sessionModel.create(session);
+  async subscribe(socketId: string, currentUser: ICurrentUser): Promise<void> {
+    await this.sessionModel.create({ socketId, userId: currentUser.id });
 
     if (currentUser.role !== Role.CLIENT) {
-      await this.messagingService.subscribeToTopic(session.socketId);
+      await this.messagingService.subscribeToTopic(socketId);
     }
   }
 

@@ -1,11 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { Session } from '../interfaces';
-
-export class SessionDto implements Session {
+export class SessionDto {
   @ApiProperty()
   readonly socketId: string;
-
-  @ApiProperty()
-  readonly userId: number;
 }

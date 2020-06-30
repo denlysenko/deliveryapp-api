@@ -117,7 +117,7 @@ export class MessagesController {
     @Body() sessionDto: SessionDto,
     @CurrentUser() user: ICurrentUser,
   ) {
-    return this.messagesService.subscribe(sessionDto, user);
+    return this.messagesService.subscribe(sessionDto.socketId, user);
   }
 
   /**

@@ -88,12 +88,15 @@ describe('MessagesService', () => {
 
   describe('subscribe', () => {
     it('should create session', async () => {
-      await service.subscribe(session, client);
-      expect(sessionModel.create).toBeCalledWith(session);
+      await service.subscribe(session.socketId, client);
+      expect(sessionModel.create).toBeCalledWith({
+        socketId: session.socketId,
+        userId: client.id,
+      });
     });
 
     it('should subscribe to topic if not client', async () => {
-      await service.subscribe(session, admin);
+      await service.subscribe(session.socketId, admin);
       expect(messagingService.subscribeToTopic).toBeCalledWith(
         session.socketId,
       );
