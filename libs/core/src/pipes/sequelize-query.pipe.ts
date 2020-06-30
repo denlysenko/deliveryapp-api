@@ -6,6 +6,7 @@ import { Op } from 'sequelize';
 import { BaseQuery } from '../interfaces';
 
 @Injectable()
+// eslint-disable-next-line @typescript-eslint/ban-types
 export class SequelizeQueryPipe implements PipeTransform<object, object> {
   transform(value: BaseQuery): BaseQuery {
     const where = { ...value.filter };
